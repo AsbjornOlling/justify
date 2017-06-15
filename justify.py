@@ -30,9 +30,7 @@ def Hello():
 #####################
 # INIT DICTS AND LISTS
 # of ID:VoteCount pairs
-votes = {"song1":0,"song2":0,"song3":0}
-# ordered playlist; is sorted anew on every vote or add
-# plist = ["song1","song2"]
+votes = {}
 
 ###################
 # MOPIDY STUFF
@@ -41,6 +39,27 @@ client.timeout = 100
 client.idletimeout = None
 client.connect("localhost", 6600)
 client.consume(1)
+
+##################
+# SORTING FUNCTION
+# bubble sort, not efficient
+def Sort():
+    print(votes)
+    plist = client.playlistid() # nice list of dicts
+    swapped = 1 #set so it runs the first time
+    while swapped == 1: #only stop when it runs without swapping
+        swapped = 0
+        for i in range(len(plist)):
+            if i < len(plist)-1 and i != 0:
+                s1 = plist[i] 
+                s2 = plist[i+1]
+                if votes[s1["id"]] < votes[s2["id"]]:
+                    print("Swapping %s and %s",s1["id"],s2["id"])
+                    client.swap(int(s1["id"]),int(s2["id"]))
+                    i+=1 #to avoid infinite swapping
+                    swapped = 1
+    redirect('/list')
+
 
 ##############
 #PLAYLIST PAGE
@@ -56,6 +75,8 @@ def List():
 def Vote():
     voteid = request.POST.get('voteID')
     votes[voteid] += 1
+    print(votes)
+    Sort()
     redirect('/list')
 
 #############
