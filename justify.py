@@ -51,30 +51,8 @@ def List():
     print(plist)
     return template('list', plist=plist)
 
-#sort the playlist, doesnt work now; only makes one pass
-# should be deprecated
-def bubble():
-    buffer = ""
-    for i in range(0,len(plist) - 1):
-        title1 = plist[i]
-        title2 = plist[i + 1]
-        if songs[title1] < songs[title2]:
-            buffer = title1
-            plist[i] = title2
-            plist[i + 1] = title1
-            print("Swapped something!")
-        else:
-            print("Swapped nothing!")
-
-#Deprecated
-# Add vote to the song bank and (bubble)sort the playlist again
-@post('/vote/<title>')
-def VoteButton(title="none"):
-    songs[title] += 1
-    bubble()
-    redirect("/list")
-
-# Search page
+#############
+# SEARCH PAGE
 @route('/search')
 def SearchForm():
     inputsong=""
@@ -91,6 +69,8 @@ def Search():
     result = client.search("title", searchsong, "artist", searchartist, "album", searchalbum)
     redirect('/search/result')
 
+#####################
+# SEARCH RESULTS PAGE
 @route('/search/result')
 def SearchResults():
 # for debug
@@ -103,6 +83,7 @@ def Add(): #TODO: add to songbank,
     uri = request.POST.get('URI')
     songid = client.addid(uri)
     votes[songid] = 0
-    print(songid, "added")
+    print("Song ID:", songid, "added")
+    redirect('/list')
 
 run(host='localhost', port=9999)
