@@ -1,4 +1,5 @@
-<!-- Displays songs unsorted 
+<!-- Displays results of search
+Shows only tracks - no artists or albums
 
 #TODO:
 Add spotify album art from pyspotify or spotipy
@@ -10,7 +11,10 @@ Add spotify album art from pyspotify or spotipy
 			<li><b>Track:</b> {{song["title"]}} 
 			<br>
 			<b>Artist:</b> {{song["artist"]}}</li>
-			<input type="button" value="Add!" onclick="Add(song['file'])"> 
+			<form action="/search/result" method="POST">
+				<input type="hidden" name="URI" value="{{song["file"]}}"> 
+				<input type="submit" name="Add" value="Add"> 
+			</form>
 		% end
 	% end
 </ul>

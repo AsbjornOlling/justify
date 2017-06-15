@@ -61,6 +61,7 @@ def showList():
     return template('list', songs=songs, plist=plist)
 
 #sort the playlist, doesnt work now; only makes one pass
+# should be deprecated
 def bubble():
     buffer = ""
     for i in range(0,len(plist) - 1):
@@ -74,6 +75,7 @@ def bubble():
         else:
             print("Swapped nothing!")
 
+#Deprecated
 # Add vote to the song bank and (bubble)sort the playlist again
 @post('/vote/<title>')
 def VoteButton(title="none"):
@@ -98,9 +100,15 @@ def Search():
 
 @route('/search/result')
 def SearchResults():
-    for i in result:
-        print(i)
-    return template('result', result=result, Add=Add)
+# for debug
+#    for i in result:
+#        print(i)
+    return template('result', result=result)
+
+@post('/search/result')
+def Add():
+    uri = request.POST.get('URI')
+    print(uri)
 
 ##
 # YT DL STUFF
