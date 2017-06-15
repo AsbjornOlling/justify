@@ -87,7 +87,9 @@ def VoteButton(title="none"):
 @route('/search')
 def SearchForm():
     inputsong=""
-    return template('search', inputsong=inputsong)
+    inputartist=""
+    inputalbum=""
+    return template('search')
 
 @post('/search')
 def Search():
@@ -106,8 +108,9 @@ def SearchResults():
     return template('result', result=result)
 
 @post('/search/result')
-def Add():
+def Add(): #TODO: add to songbank,
     uri = request.POST.get('URI')
+    client.add(uri)
     print(uri)
 
 ##
