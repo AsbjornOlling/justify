@@ -42,19 +42,27 @@ client.idletimeout = None
 client.connect("localhost", 6600)
 client.consume(1)
 
-###########
-#PAGE STUFF
+##############
+#PLAYLIST PAGE
 #Shows the playlist in the current order, w/ vote buttons
 @route('/list')
 def List():
-    plist = client.playlistid()
+    plist = client.playlistid() # nice list of dicts
     print(plist)
-    return template('list', plist=plist)
+    print(votes)
+    return template('list', plist=plist, votes=votes)
+
+@post('/list')
+def Vote():
+    voteid = request.POST.get('voteID')
+    votes[voteid] += 1
+    redirect('/list')
 
 #############
 # SEARCH PAGE
 @route('/search')
 def SearchForm():
+    # clear the vars, not sure if necessary
     inputsong=""
     inputartist=""
     inputalbum=""
@@ -79,7 +87,7 @@ def SearchResults():
     return template('result', result=result)
 
 @post('/search/result')
-def Add(): #TODO: add to songbank,
+def Add(): #TODO: make song play, if state != playing
     uri = request.POST.get('URI')
     songid = client.addid(uri)
     votes[songid] = 0
