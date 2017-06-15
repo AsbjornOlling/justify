@@ -7,8 +7,8 @@ from __future__ import unicode_literals
 from bottle import route, run, post, request, template, redirect
 from mopidy import config, ext, core
 from mpd import MPDClient
-import spotipy
-import spotipy.util as util
+#import spotipy
+#import spotipy.util as util
 
 #################
 # DEBUGGING STUFF
@@ -36,29 +36,27 @@ votes = {"song1":0,"song2":0,"song3":0}
 # ordered playlist; is sorted anew on every vote or add
 # plist = ["song1","song2"]
 
-################
-# PLAYLIST STUFF
-def Add(uri):
-    print(uri)
-
 ###################
 # MOPIDY STUFF
 client = MPDClient()
-client.timeout = 10
+client.timeout = 100
 client.idletimeout = None
 client.connect("localhost", 6600)
+client.consume(1)
 
 ###############
 # SPOTIPY STUFF
-# TODO: add credentials flow
-spotify = spotipy.Spotify()
+# TODO: add credentials flow - not used for anything atm
+#spotify = spotipy.Spotify()
 
 ###########
 #PAGE STUFF
 #Shows the playlist in the current order, w/ vote buttons
 @route('/list')
 def showList():
-    return template('list', songs=songs, plist=plist)
+    plist = client.playlistid()
+    print(plist)
+    return template('list', plist=plist)
 
 #sort the playlist, doesnt work now; only makes one pass
 # should be deprecated
@@ -110,8 +108,9 @@ def SearchResults():
 @post('/search/result')
 def Add(): #TODO: add to songbank,
     uri = request.POST.get('URI')
-    client.add(uri)
-    print(uri)
+    songid = client.addid(uri)
+    votes[songid] = 0
+    print(songid, "added")
 
 ##
 # YT DL STUFF

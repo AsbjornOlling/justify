@@ -1,12 +1,14 @@
-<!-- Displays songs unsorted 
+<!-- Displays playlist from mpd
 
 #TODO:
 d-->
 
 <ul>
-	% for title in plist:
-		<li>{{title}} Votes: {{songs[title]}}</li>
-		<form action="/vote/{{title}}" method="post"> <input type="submit" name="vote" value="vote"> </form>
+	% for song in plist:
+		<li>TRACK: {{song["title"]}}<br>
+			ARTIST: {{song["artist"]}}
+	  	<form action="/list" method="post"> <input type="submit" name="Vote" value="Vote"> </form>
+    </li>
 	% end
-	<a href="add">Add another song?</a>
 </ul>
+<a href="add">Add another song?</a>
