@@ -7,8 +7,6 @@ from __future__ import unicode_literals
 from bottle import route, run, post, request, template, redirect
 from mopidy import config, ext, core
 from mpd import MPDClient
-#import spotipy
-#import spotipy.util as util
 
 #################
 # DEBUGGING STUFF
@@ -31,7 +29,7 @@ def Hello():
 
 #####################
 # INIT DICTS AND LISTS
-# of Title:VoteCount pairs
+# of ID:VoteCount pairs
 votes = {"song1":0,"song2":0,"song3":0}
 # ordered playlist; is sorted anew on every vote or add
 # plist = ["song1","song2"]
@@ -44,16 +42,11 @@ client.idletimeout = None
 client.connect("localhost", 6600)
 client.consume(1)
 
-###############
-# SPOTIPY STUFF
-# TODO: add credentials flow - not used for anything atm
-#spotify = spotipy.Spotify()
-
 ###########
 #PAGE STUFF
 #Shows the playlist in the current order, w/ vote buttons
 @route('/list')
-def showList():
+def List():
     plist = client.playlistid()
     print(plist)
     return template('list', plist=plist)
@@ -111,38 +104,5 @@ def Add(): #TODO: add to songbank,
     songid = client.addid(uri)
     votes[songid] = 0
     print(songid, "added")
-
-##
-# YT DL STUFF
-# set aside for now
-##
-
-## YDL configuration
-#ydl_opts = {
-#    'format': 'bestaudio/best',
-#    'postprocessors': [{
-#        'key': 'FFmpegExtractAudio',
-#        'preferredcodec': 'mp3',
-#        'preferredquality': '320',
-#    }],
-#}
-#
-##Youtube-url form
-#@route('/add')
-#def GetUrl():
-#    return template('add')
-#
-##Download the song, when submit button hit
-#@post('/add')
-#def DownloadUrl():
-#    yt_url = request.forms.get('yt_url')
-#    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-#        ydl.download([yt_url])
-#        meta = ydl.extract_info(yt_url, download=False) 
-#    title = (meta['title'])
-#    songs[title] = 0 # adds title to session, w/ no votes
-#    plist.append("title") # adds the title to the end of the ordered playlist 
-#    # then return to votes page
-#    redirect("/list")
 
 run(host='localhost', port=9999)
