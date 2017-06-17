@@ -11,25 +11,32 @@
 
 	</head>
 	<body>
-		<div class="container"
-			<h2>Playlist</h2>
+		<div class="container">
+			<h>Playlist</h>
 			<table class="table table-striped">
 				<thead>
 					<tr>
 						<th>Song</th>
 						<th>Artist</th>
+						<th>Time</th>
 						<th>Votes</th>
 					</tr>
 				</thead>
 				<tbody>
 				% for song in plist:
 					<tr>
-					  <td>{{song["title"]}}</td>
+					  <td>
+							% if song["pos"] == "0":
+								<span class="fa fa-play"></span>
+						  % end
+						{{song["title"]}}</td>
 						<td>{{song["artist"]}}</td>
+						<td>{{ song["time"]}}</td>
+						<td>{{int(song["time"]) / 60}}:{{str(int(song["time"]) % 60).zfill(2)}}</td>
 						<td>
 							<form action="/list" method="post"> 
 								<input type="hidden" name="voteID" value="{{song["id"]}}"> 
-								<button class="btn btn-default" type="submit"><span class="fa fa-thumbs-up">{{votes[song["id"]]}}</span></button>
+								<button class="btn btn-default" type="submit"><span class="fa fa-thumbs-up"></span> {{votes[song["id"]]}}</button>
 							</form>
 						</td>
 					</tr>
