@@ -19,6 +19,10 @@ client.idletimeout = None
 client.connect("localhost", 6600)
 client.consume(1)
 
+@route('/')
+def Debug():
+    print(votes)
+
 ##################
 # SORTING FUNCTION
 # bubble sort, not efficient
@@ -37,7 +41,8 @@ def Sort():
         print(song["title"],"VOTES",votes[song["id"]],"ID",song["id"]) 
         print(song)
         if votes[song["id"]] < votes[song2["id"]]:
-            client.swapid(song["id"],song2["id"])
+            print("Swapping songs:", song["id"], song2["id"])
+            client.moveid(song2["id"],int(song2["pos"])-1)
 
 ##############
 #PLAYLIST PAGE
