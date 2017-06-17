@@ -1,15 +1,22 @@
 ##
-## A democratic front-end for mopidy.
+## A democratic front-end for mpd
 ##
+## TODO:
+# make pretty
+# multiple passes in sorting function 
+# Spoof prevention
 
-#import youtube_dl
 from __future__ import unicode_literals
-from bottle import route, run, post, request, template, redirect
-from mopidy import config, ext, core
+from bottle import route, run, post, request, template, redirect, static_file
 from mpd import MPDClient
 
 # initalize dictionary of mpd ID : vote counts
 votes = {}
+
+# serve static files, not used atm - might use for images
+@route('/static/<filename>')
+def server_static(filepath):
+    return static_file(filepath, root='/static')
 
 ###################
 # MOPIDY STUFF
@@ -20,20 +27,22 @@ client.connect("localhost", 6600)
 client.consume(1)
 
 @route('/')
+def Root():
+    redirect('/list')
+
 def Debug():
     print(votes)
 
 ##################
 # SORTING FUNCTION
-# bubble sort, not efficient
+# bubble sort, not efficient but whatevs
 def Sort():
     plist = client.playlistid() # get nice list of dicts
     #DEBUGGING
     #print("plist",plist)
     #print("plist length", len(plist))
     print("votes",votes)
-
-    # sorting loop (only kicks in with multiple tracks)
+    # sorting loop
     for i in range(1,len(plist)-1): #iterate through playlist, skipping first and last tracks
         song = plist[i]
         song2 = plist[i+1]
@@ -96,7 +105,7 @@ def Add(uri=None):
     if status["state"] != "play":
         client.play()
     print("ADDED:", songid)
-    #redirect('/list') disabled to make temp playlist work
+    redirect('/list')
 
 # add some songs for quick debug
 #client.clear()
