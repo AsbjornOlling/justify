@@ -1,8 +1,9 @@
 ##
-## A democratic front-end for mpd
+## A democratic http front-end for mpd
 ##
-## TODO:
+# TODO:
 # make pretty
+# move search form to main page
 # multiple passes in sorting function 
 # Spoof prevention
 
@@ -43,15 +44,19 @@ def Sort():
     #print("plist length", len(plist))
     print("votes",votes)
     # sorting loop
-    for i in range(1,len(plist)-1): #iterate through playlist, skipping first and last tracks
-        song = plist[i]
-        song2 = plist[i+1]
-        print("###SORTING###")
-        print(song["title"],"VOTES",votes[song["id"]],"ID",song["id"]) 
-        print(song)
-        if votes[song["id"]] < votes[song2["id"]]:
-            print("Swapping songs:", song["id"], song2["id"])
-            client.moveid(song2["id"],int(song2["pos"])-1)
+    swap = True
+    while swap:
+        swap = False
+        for i in range(1,len(plist)-1): #iterate through playlist, skipping first and last tracks
+            song = plist[i]
+            song2 = plist[i+1]
+            print("###SORTING###")
+            print(song["title"],"VOTES",votes[song["id"]],"ID",song["id"]) 
+            print(song)
+            if votes[song["id"]] < votes[song2["id"]]:
+                swap = True
+                print("Swapping songs:", song["id"], song2["id"])
+                client.moveid(song2["id"],int(song2["pos"])-1)
 
 ##############
 #PLAYLIST PAGE
