@@ -1,5 +1,5 @@
-## 
-## A festify / partify clone, for youtube instead of spotify.
+##
+## A democratic front-end for mopidy.
 ##
 
 #import youtube_dl
@@ -8,28 +8,7 @@ from bottle import route, run, post, request, template, redirect
 from mopidy import config, ext, core
 from mpd import MPDClient
 
-#################
-# DEBUGGING STUFF
-# print variables and list, not in use
-def vars():
-    print("PLIST:")
-    for title in plist:
-        print("title")
-    print("Songbank:")
-
-#Debugging page, not really useful atm..
-@route('/debug')
-def debug():
-    vars()
-
-# Hello world 
-@route('/hello')
-def Hello():
-    return "Hello world!"
-
-#####################
-# INIT DICTS AND LISTS
-# of ID:VoteCount pairs
+# initalize dictionary of mpd ID : vote counts
 votes = {}
 
 ###################
@@ -44,38 +23,35 @@ client.consume(1)
 # SORTING FUNCTION
 # bubble sort, not efficient
 def Sort():
-    print(votes)
-    plist = client.playlistid() # nice list of dicts
-    swapped = 1 #set so it runs the first time
-    while swapped == 1: #only stop when it runs without swapping
-        swapped = 0
-        for i in range(len(plist)):
-            if i < len(plist)-1 and i != 0:
-                s1 = plist[i] 
-                s2 = plist[i+1]
-                if votes[s1["id"]] < votes[s2["id"]]:
-                    print("Swapping %s and %s",s1["id"],s2["id"])
-                    client.swap(int(s1["id"]),int(s2["id"]))
-                    i+=1 #to avoid infinite swapping
-                    swapped = 1
-    redirect('/list')
+    plist = client.playlistid() # get nice list of dicts
+    #DEBUGGING
+    #print("plist",plist)
+    #print("plist length", len(plist))
+    print("votes",votes)
 
+    # sorting loop (only kicks in with multiple tracks)
+    for i in range(1,len(plist)-1): #iterate through playlist, skipping first and last tracks
+        song = plist[i]
+        song2 = plist[i+1]
+        print("###SORTING###")
+        print(song["title"],"VOTES",votes[song["id"]],"ID",song["id"]) 
+        print(song)
+        if votes[song["id"]] < votes[song2["id"]]:
+            client.swapid(song["id"],song2["id"])
 
 ##############
 #PLAYLIST PAGE
 #Shows the playlist in the current order, w/ vote buttons
 @route('/list')
 def List():
-    plist = client.playlistid() # nice list of dicts
-    print(plist)
-    print(votes)
+    plist = client.playlistid() # get nice list of dicts
     return template('list', plist=plist, votes=votes)
 
 @post('/list')
 def Vote():
     voteid = request.POST.get('voteID')
     votes[voteid] += 1
-    print(votes)
+    print("votes",votes)
     Sort()
     redirect('/list')
 
@@ -102,17 +78,26 @@ def Search():
 # SEARCH RESULTS PAGE
 @route('/search/result')
 def SearchResults():
-# for debug
-#    for i in result:
-#        print(i)
     return template('result', result=result)
 
 @post('/search/result')
-def Add(): #TODO: make song play, if state != playing
-    uri = request.POST.get('URI')
+def Add(uri=None):
+    if uri is None:
+        uri = request.POST.get('URI')
     songid = client.addid(uri)
     votes[songid] = 0
-    print("Song ID:", songid, "added")
-    redirect('/list')
+    # play song if paused
+    status = client.status()
+    if status["state"] != "play":
+        client.play()
+    print("ADDED:", songid)
+    #redirect('/list') disabled to make temp playlist work
+
+# add some songs for quick debug
+#client.clear()
+#Add("spotify:track:781V2Y5LPtcpgONEOadadE") # get got
+#Add("spotify:track:444S3nPLefAIyQ0HphvRzx") # TAKYOON
+#Add("spotify:track:7iupjrZvckPcvC4aeqeqcC") # Autechre
+#Add("spotify:track:1gYn6OTpw5W6n8QaJjyY5m") # Nobody speak
 
 run(host='localhost', port=9999)
