@@ -12,7 +12,6 @@
 	</head>
 	<body>
 		<div class="container">
-			<h>Playlist</h>
 			<table class="table table-striped">
 				<thead>
 					<tr>
@@ -45,6 +44,7 @@
 			</table>
 			<form action="/search" method="post">
 				<div class="input-group">
+					<input class="hidden" name="searchtype" value="simple"/>
 					<input class="form-control" placeholder="Track Search or Artist Search" name="inputany" type="text" />
 					<span class="input-group-btn">
 						<button class="btn btn-default" type="submit">
@@ -53,7 +53,6 @@
 					</span>
 				</div> <!-- /input group -->
 			</form>
-			<br>
 			<br>
 			<a class="btn btn-default" href="/search">...or use Specific Search</a>
 		</div> <!-- /container -->

@@ -2,10 +2,9 @@
 ## A democratic http front-end for mpd
 ##
 # TODO:
+# generate results pages
 # make pretty
-# make search more versatile
 # Spoof prevention - timing?
-# make search algorithm do multiple passes 
 
 from __future__ import unicode_literals
 from bottle import route, run, post, request, template, redirect, static_file
@@ -65,25 +64,34 @@ def Vote():
     voteid = request.POST.get('voteID')
     votes[voteid] += 1
     print("votes",votes)
-    Sort() # the
+    Sort()
     redirect('/list')
 
 #############
 # SEARCH PAGE, deprecated, delet soon
 @route('/search')
 def SearchForm():
-    # clear the vars, not sure if even necessary
-    inputsong=""
-    inputartist=""
-    inputalbum=""
     return template('search')
 
 @post('/search')
 def Search():
-    searchany = request.forms.get('inputany')
     global result
-    result = client.search("title",searchany)
-    result += client.search("artist",searchany)
+    if request.forms.get('searchtype') == "simple":
+        print("Doing simple search!")
+        searchany = request.forms.get('inputany')
+        result = client.search("any",searchany)
+    elif request.forms.get('searchtype') == "specific":
+        print("Doing specific search!")
+        # reset vars to avoid searching for "None"
+        searchsong = ""
+        searchartist = ""
+        searchalbum = ""
+        searchsong = request.forms.get('inputsong')
+        searchartist = request.forms.get('inputartist')
+        searchalbum = request.forms.get('inputalbum')
+        result = client.search("title",searchsong,"artist",searchartist,"album",searchalbum)
+    else:
+        "Something went wrong!"
     redirect('/search/result')
 
 #####################
