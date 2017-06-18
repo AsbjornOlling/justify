@@ -4,59 +4,51 @@
 # TODO:
 # make pretty
 # move search form to main page
-# multiple passes in sorting function 
-# Spoof prevention
+# Spoof prevention - timing?
 
 from __future__ import unicode_literals
 from bottle import route, run, post, request, template, redirect, static_file
 from mpd import MPDClient
+import subprocess
 
-# initalize dictionary of mpd ID : vote counts
+# dictionary of mpd ID : vote counts
 votes = {}
 
-# serve static files, not used atm - might use for images
+# serve static files, not in use atm - might use for images
 @route('/static/<filename>')
 def server_static(filepath):
     return static_file(filepath, root='/static')
-
-###################
-# MOPIDY STUFF
-client = MPDClient()
-client.timeout = 100
-client.idletimeout = None
-client.connect("localhost", 6600)
-client.consume(1)
 
 @route('/')
 def Root():
     redirect('/list')
 
-def Debug():
-    print(votes)
+###########
+# MPD STUFF
+client = MPDClient()
+client.timeout = 100
+client.idletimeout = None
+client.connect("localhost", 6600)
+client.consume(1)
+client.clear() # clear playlist, to avoid key errors with votes dict
 
 ##################
 # SORTING FUNCTION
-# bubble sort, not efficient but whatevs
+# bubble sort, totally broken - not efficient but whatevs
 def Sort():
-    plist = client.playlistid() # get nice list of dicts
-    #DEBUGGING
-    #print("plist",plist)
-    #print("plist length", len(plist))
-    print("votes",votes)
-    # sorting loop
-    swap = True
-    while swap:
-        swap = False
-        for i in range(1,len(plist)-1): #iterate through playlist, skipping first and last tracks
-            song = plist[i]
-            song2 = plist[i+1]
-            print("###SORTING###")
+    playlist = client.playlistid() # get nice list of dicts
+    swapped = True
+    while swapped:
+        swapped = False
+        for i in range(1,len(playlist)-1): #iterate through playlist, skipping first and last tracks
+            song = playlist[i]
+            song2 = playlist[i+1]
+            print("###SORTING", song["pos"])
             print(song["title"],"VOTES",votes[song["id"]],"ID",song["id"]) 
-            print(song)
             if votes[song["id"]] < votes[song2["id"]]:
-                swap = True
-                print("Swapping songs:", song["id"], song2["id"])
-                client.moveid(song2["id"],int(song2["pos"])-1)
+                print("###MOVING DOWN")
+                client.move(int(song["pos"]),int(song["pos"])+1)
+                #swapped = True
 
 ##############
 #PLAYLIST PAGE
@@ -75,22 +67,21 @@ def Vote():
     redirect('/list')
 
 #############
-# SEARCH PAGE
-@route('/search')
-def SearchForm():
-    # clear the vars, not sure if necessary
-    inputsong=""
-    inputartist=""
-    inputalbum=""
-    return template('search')
+# SEARCH PAGE, deprecated, delet soon
+#@route('/search')
+#def SearchForm():
+#    # clear the vars, not sure if necessary
+#    inputsong=""
+#    inputartist=""
+#    inputalbum=""
+#    return template('search')
 
 @post('/search')
 def Search():
-    searchsong = request.forms.get('inputsong')
-    searchartist = request.forms.get('inputartist')
-    searchalbum = request.forms.get('inputalbum')
+    searchany = request.forms.get('inputany')
     global result
-    result = client.search("title", searchsong, "artist", searchartist, "album", searchalbum)
+    result = client.search("title",searchany)
+    result += client.search("artist",searchany)
     redirect('/search/result')
 
 #####################
@@ -104,7 +95,7 @@ def Add(uri=None):
     if uri is None:
         uri = request.POST.get('URI')
     songid = client.addid(uri)
-    votes[songid] = 0
+    votes[songid] = 1
     # play song if paused
     status = client.status()
     if status["state"] != "play":
@@ -113,7 +104,6 @@ def Add(uri=None):
     redirect('/list')
 
 # add some songs for quick debug
-#client.clear()
 #Add("spotify:track:781V2Y5LPtcpgONEOadadE") # get got
 #Add("spotify:track:444S3nPLefAIyQ0HphvRzx") # TAKYOON
 #Add("spotify:track:7iupjrZvckPcvC4aeqeqcC") # Autechre

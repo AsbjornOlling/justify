@@ -31,7 +31,6 @@
 						  % end
 						{{song["title"]}}</td>
 						<td>{{song["artist"]}}</td>
-						<td>{{ song["time"]}}</td>
 						<td>{{int(song["time"]) / 60}}:{{str(int(song["time"]) % 60).zfill(2)}}</td>
 						<td>
 							<form action="/list" method="post"> 
@@ -43,7 +42,14 @@
 				% end
 				</tbody>
 			</table>
-			<a class="btn btn-default" href="search">Add another song?</a> 
+			<div class="input-group">
+				<form action="/search" method="post">
+					<input class="form-control" name="inputany" type="text" />
+					<span class="input-group-btn">
+						<button class="btn btn-default" value="FIND DIT DAK!" type="submit"><span class="fa fa-search"></span></button>
+					</span>
+				</form>
+			</div>
 		</div> <!-- /container -->
 	</body>
 </html>
