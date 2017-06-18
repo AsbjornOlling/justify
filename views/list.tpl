@@ -53,6 +53,8 @@
 					</span>
 				</div> <!-- /input group -->
 			</form>
+			<br>
+			<br>
 			<a class="btn btn-default" href="/search">...or use Specific Search</a>
 		</div> <!-- /container -->
 	</body>

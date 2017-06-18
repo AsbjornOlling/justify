@@ -37,9 +37,9 @@ client.clear() # clear playlist, to avoid key errors from songs not in votes{}
 # SORTING FUNCTION
 # bubble sort, totally broken but whatevs
 def Sort():
-    playlist = client.playlistid() # get nice list of dicts
     swapped = True
     while swapped == True:
+        playlist = client.playlistid() # get nice list of dicts
         swapped = False
         for i in range(1,len(playlist)-1): #iterate thru playlist, skipping first and last tracks
             client.rescan()
@@ -47,9 +47,10 @@ def Sort():
             song2 = playlist[i+1]
             if votes[song["id"]] < votes[song2["id"]]:
                 client.move(int(song["pos"]),int(song["pos"])+1)
+                playlist = client.playlistid() # get nice list of dicts
+                swapped = True
                 #client.swapid(song["id"],song2["id"])
                 #client.swap(song["pos"],song2["pos"])
-                #swapped = True
 
 ##############
 #PLAYLIST PAGE
@@ -65,10 +66,6 @@ def Vote():
     votes[voteid] += 1
     print("votes",votes)
     Sort() # the
-    Sort() # absolute
-    Sort() # worst
-    Sort() # hack
-    Sort() # solution
     redirect('/list')
 
 #############
