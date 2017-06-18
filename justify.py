@@ -3,12 +3,15 @@
 ##
 # TODO:
 # make pretty
-# move search form to main page
+# make search more versatile
 # Spoof prevention - timing?
+# make search algorithm do multiple passes 
 
 from __future__ import unicode_literals
 from bottle import route, run, post, request, template, redirect, static_file
 from mpd import MPDClient
+
+import time
 import subprocess
 
 # dictionary of mpd ID : vote counts
@@ -34,20 +37,20 @@ client.clear() # clear playlist, to avoid key errors with votes dict
 
 ##################
 # SORTING FUNCTION
-# bubble sort, totally broken - not efficient but whatevs
+# bubble sort, totally broken but whatevs
 def Sort():
     playlist = client.playlistid() # get nice list of dicts
     swapped = True
-    while swapped:
+    while swapped == True:
         swapped = False
-        for i in range(1,len(playlist)-1): #iterate through playlist, skipping first and last tracks
+        for i in range(1,len(playlist)-1): #iterate thru playlist, skipping first and last tracks
+            client.rescan()
             song = playlist[i]
             song2 = playlist[i+1]
-            print("###SORTING", song["pos"])
-            print(song["title"],"VOTES",votes[song["id"]],"ID",song["id"]) 
             if votes[song["id"]] < votes[song2["id"]]:
-                print("###MOVING DOWN")
                 client.move(int(song["pos"]),int(song["pos"])+1)
+                #client.swapid(song["id"],song2["id"])
+                #client.swap(song["pos"],song2["pos"])
                 #swapped = True
 
 ##############
@@ -63,7 +66,11 @@ def Vote():
     voteid = request.POST.get('voteID')
     votes[voteid] += 1
     print("votes",votes)
-    Sort()
+    Sort() # the
+    Sort() # absolute
+    Sort() # worst
+    Sort() # hack
+    Sort() # solution
     redirect('/list')
 
 #############
