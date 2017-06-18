@@ -29,7 +29,8 @@
 							% if song["pos"] == "0":
 								<span class="fa fa-play"></span>
 						  % end
-						{{song["title"]}}</td>
+							{{song["title"]}}
+						</td>
 						<td>{{song["artist"]}}</td>
 						<td>{{int(song["time"]) / 60}}:{{str(int(song["time"]) % 60).zfill(2)}}</td>
 						<td>
@@ -42,14 +43,17 @@
 				% end
 				</tbody>
 			</table>
-			<div class="input-group">
-				<form action="/search" method="post">
-					<input class="form-control" name="inputany" type="text" />
+			<form action="/search" method="post">
+				<div class="input-group">
+					<input class="form-control" placeholder="Track Search or Artist Search" name="inputany" type="text" />
 					<span class="input-group-btn">
-						<button class="btn btn-default" value="FIND DIT DAK!" type="submit"><span class="fa fa-search"></span></button>
+						<button class="btn btn-default" type="submit">
+							<span class="fa fa-search"></span>
+						</button>
 					</span>
-				</form>
-			</div>
+				</div> <!-- /input group -->
+			</form>
+			<a class="btn btn-default" href="/search">...or use Specific Search</a>
 		</div> <!-- /container -->
 	</body>
 </html>

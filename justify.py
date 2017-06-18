@@ -11,9 +11,6 @@ from __future__ import unicode_literals
 from bottle import route, run, post, request, template, redirect, static_file
 from mpd import MPDClient
 
-import time
-import subprocess
-
 # dictionary of mpd ID : vote counts
 votes = {}
 
@@ -22,6 +19,7 @@ votes = {}
 def server_static(filepath):
     return static_file(filepath, root='/static')
 
+#redirect to main page
 @route('/')
 def Root():
     redirect('/list')
@@ -33,7 +31,7 @@ client.timeout = 100
 client.idletimeout = None
 client.connect("localhost", 6600)
 client.consume(1)
-client.clear() # clear playlist, to avoid key errors with votes dict
+client.clear() # clear playlist, to avoid key errors from songs not in votes{}
 
 ##################
 # SORTING FUNCTION
@@ -75,13 +73,13 @@ def Vote():
 
 #############
 # SEARCH PAGE, deprecated, delet soon
-#@route('/search')
-#def SearchForm():
-#    # clear the vars, not sure if necessary
-#    inputsong=""
-#    inputartist=""
-#    inputalbum=""
-#    return template('search')
+@route('/search')
+def SearchForm():
+    # clear the vars, not sure if even necessary
+    inputsong=""
+    inputartist=""
+    inputalbum=""
+    return template('search')
 
 @post('/search')
 def Search():
