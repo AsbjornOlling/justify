@@ -2,16 +2,24 @@
 ## A democratic http front-end for mpd
 ##
 # TODO:
-# generate results pages
-# make pretty
 # Spoof prevention - timing?
+# make pretty
+# add no results message to templates
+# generate results pages dynamically - test w/ multiple people first
+# add admin panel
+# write readme.md
 
 from __future__ import unicode_literals
 from bottle import route, run, post, request, template, redirect, static_file
 from mpd import MPDClient
+import time
 
 # dictionary of mpd ID : vote counts
 votes = {}
+# dictionary of mpd ID : vote times, for spoof prevention
+timers = {}
+# minimum delay between votes, in seconds
+delay = 10
 
 # serve static files, not in use atm - might use for images
 @route('/static/<filename>')
@@ -36,17 +44,16 @@ client.clear() # clear playlist, to avoid key errors from songs not in votes{}
 # SORTING FUNCTION
 # bubble sort, totally broken but whatevs
 def Sort():
+    playlist = client.playlistid() # get nice list of dicts
     swapped = True
     while swapped == True:
-        playlist = client.playlistid() # get nice list of dicts
         swapped = False
         for i in range(1,len(playlist)-1): #iterate thru playlist, skipping first and last tracks
-            client.rescan()
             song = playlist[i]
             song2 = playlist[i+1]
             if votes[song["id"]] < votes[song2["id"]]:
                 client.move(int(song["pos"]),int(song["pos"])+1)
-                playlist = client.playlistid() # get nice list of dicts
+                playlist = client.playlistid() # reload playlist after swap
                 swapped = True
                 #client.swapid(song["id"],song2["id"])
                 #client.swap(song["pos"],song2["pos"])
@@ -57,18 +64,20 @@ def Sort():
 @route('/list')
 def List():
     plist = client.playlistid() # get nice list of dicts
-    return template('list', plist=plist, votes=votes)
+    return template('list', plist=plist, votes=votes, timers=timers, delay=delay, time=time)
 
 @post('/list')
 def Vote():
     voteid = request.POST.get('voteID')
     votes[voteid] += 1
+    timers[voteid] = time.time() # reset timer
     print("votes",votes)
     Sort()
     redirect('/list')
 
 #############
-# SEARCH PAGE, deprecated, delet soon
+# SEARCH PAGE
+# for specific search form
 @route('/search')
 def SearchForm():
     return template('search')
@@ -106,6 +115,7 @@ def Add(uri=None):
         uri = request.POST.get('URI')
     songid = client.addid(uri)
     votes[songid] = 1
+    timers[songid] = time.time() - delay
     # play song if paused
     status = client.status()
     if status["state"] != "play":

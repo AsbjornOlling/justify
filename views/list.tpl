@@ -35,7 +35,11 @@
 						<td>
 							<form action="/list" method="post"> 
 								<input type="hidden" name="voteID" value="{{song["id"]}}"> 
+								% if time.time() - timers[song["id"]] < delay:
+								<button class="btn btn-default disabled" type="button"><span class="fa fa-thumbs-up"></span> {{votes[song["id"]]}}</button>
+								% else:
 								<button class="btn btn-default" type="submit"><span class="fa fa-thumbs-up"></span> {{votes[song["id"]]}}</button>
+								% end
 							</form>
 						</td>
 					</tr>
