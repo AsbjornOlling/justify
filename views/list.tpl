@@ -18,25 +18,31 @@
 			</div>
 		</nav>
 		<div class="container">
-			<table class="table table-striped">
+			<table class="table table-striped table-hover">
 				<thead>
 					<tr>
 						<th>Song</th>
 						<th>Artist</th>
+						<th class="hidden-xs">Album</th>
 						<th>Time</th>
 						<th>Votes</th>
 					</tr>
 				</thead>
 				<tbody>
-				% for song in plist:
+					<tr class="warning">
+						% if plist:
+							<td>{{plist[0]["title"]}}</td>
+							<td>{{plist[0]["artist"]}}</td>
+							<td class="hidden-xs">{{plist[0]["album"]}}</td>
+							<td>{{int(plist[0]["time"]) / 60}}:{{str(int(plist[0]["time"]) % 60).zfill(2)}}</td>
+							<td><button class="btn btn-default disabled"><span class="fa fa-thumbs-up"></span> {{votes[plist[0]["id"]]}}</button>
+						% end
+					</tr>
+				% for song in plist[1:]:
 					<tr>
-					  <td>
-							% if song["pos"] == "0":
-								<span class="fa fa-play"></span>
-						  % end
-							{{song["title"]}}
-						</td>
+					  <td>{{song["title"]}}</td>
 						<td>{{song["artist"]}}</td>
+						<td class="hidden-xs">{{song["album"]}}</td>
 						<td>{{int(song["time"]) / 60}}:{{str(int(song["time"]) % 60).zfill(2)}}</td>
 						<td>
 							<form action="/list" method="post"> 

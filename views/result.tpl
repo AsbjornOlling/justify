@@ -19,6 +19,7 @@ Add spotify album art from pyspotify or spotipy
 					<tr>
 						<th>Song</th>
 						<th>Artist</th>
+						<th class="hidden-xs">Album</th>
 						<th>Length</th>
 						<th>Add</th>
 					</tr>
@@ -29,6 +30,7 @@ Add spotify album art from pyspotify or spotipy
 							<tr>
 								<td>{{song["title"]}}</td>
 								<td>{{song["artist"]}}</td>
+								<td class="hidden-xs">{{song["album"]}}</td>
 								<td>{{int(song["time"]) / 60}}:{{str(int(song["time"]) % 60).zfill(2)}}</td>
 								<td>
 									<form action="/search/result" method="POST">
