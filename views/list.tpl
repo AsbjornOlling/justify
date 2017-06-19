@@ -34,7 +34,7 @@
 							<td>{{plist[0]["title"]}}</td>
 							<td>{{plist[0]["artist"]}}</td>
 							<td class="hidden-xs">{{plist[0]["album"]}}</td>
-							<td>{{int(plist[0]["time"]) / 60}}:{{str(int(plist[0]["time"]) % 60).zfill(2)}}</td>
+							<td>{{int(int(plist[0]["time"]) / 60)}}:{{str(int(plist[0]["time"]) % 60).zfill(2)}}</td>
 							<td><button class="btn btn-default disabled"><span class="fa fa-thumbs-up"></span> {{votes[plist[0]["id"]]}}</button>
 						% end
 					</tr>
@@ -43,7 +43,7 @@
 					  <td>{{song["title"]}}</td>
 						<td>{{song["artist"]}}</td>
 						<td class="hidden-xs">{{song["album"]}}</td>
-						<td>{{int(song["time"]) / 60}}:{{str(int(song["time"]) % 60).zfill(2)}}</td>
+						<td>{{int(int(song["time"]) / 60)}}:{{str(int(song["time"]) % 60).zfill(2)}}</td>
 						<td>
 							<form action="/list" method="post"> 
 								<input type="hidden" name="voteID" value="{{song["id"]}}"> 

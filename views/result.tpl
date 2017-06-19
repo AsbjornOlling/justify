@@ -41,7 +41,7 @@ Add spotify album art from pyspotify or spotipy
 								<td>{{song["title"]}}</td>
 								<td>{{song["artist"]}}</td>
 								<td class="hidden-xs">{{song["album"]}}</td>
-								<td>{{int(song["time"]) / 60}}:{{str(int(song["time"]) % 60).zfill(2)}}</td>
+								<td>{{int(int(song["time"]) / 60)}}:{{str(int(song["time"]) % 60).zfill(2)}}</td>
 								<td>
 									<form action="/search/result" method="POST">
 										<input type="hidden" name="URI" value="{{song["file"]}}"> 

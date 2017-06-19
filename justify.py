@@ -2,11 +2,13 @@
 ## A democratic http front-end for mpd
 ##
 # TODO:
-# switch away from development server - to paste?
-# generate results pages dynamically - test w/ multiple people first
+# write readme.md
+# add config file
 # allow more than just spotify results
 # write admin panel
-# write readme.md
+# write a sexy front page
+# switch away from development server - test w/ multiple people first
+# generate results pages dynamically - test w/ multiple people first
 
 from __future__ import unicode_literals
 from bottle import route, run, post, request, template, redirect, static_file
@@ -25,7 +27,7 @@ delay = 10
 def server_static(filepath):
     return static_file(filepath, root='/static')
 
-#redirect to main page
+#redirect to main page,
 @route('/')
 def Root():
     redirect('/list')
