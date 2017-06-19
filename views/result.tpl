@@ -25,6 +25,16 @@ Add spotify album art from pyspotify or spotipy
 					</tr>
 				</thead>	
 				<tbody>
+					% if not result:
+						<tr>
+							<td>Huh, didn't find any tracks matching your search...</td>
+							<td/><td/><td/><td/>
+						</tr>
+						<tr>
+							<td>Maybe try <button class="btn btn-sm btn-default" href="/search">specific search</button> instead?</td>
+							<td/><td/><td/><td/>
+						</tr>
+					% end
 					% for song in result:
 						% if song["file"][:14] == "spotify:track:":
 							<tr>

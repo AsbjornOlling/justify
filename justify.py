@@ -2,10 +2,9 @@
 ## A democratic http front-end for mpd
 ##
 # TODO:
-# put currently playing track in header
 # switch away from development server - to paste?
-# add no results message to templates
 # generate results pages dynamically - test w/ multiple people first
+# allow more than just spotify results
 # write admin panel
 # write readme.md
 
