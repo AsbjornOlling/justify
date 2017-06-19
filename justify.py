@@ -2,11 +2,10 @@
 ## A democratic http front-end for mpd
 ##
 # TODO:
-# Spoof prevention - timing?
-# make pretty
+# put currently playing track in header
 # add no results message to templates
 # generate results pages dynamically - test w/ multiple people first
-# add admin panel
+# write admin panel
 # write readme.md
 
 from __future__ import unicode_literals
