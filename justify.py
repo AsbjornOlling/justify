@@ -15,12 +15,19 @@ from bottle import route, run, post, request, template, redirect, static_file
 from mpd import MPDClient
 import time
 
+###############
+# CONFIGURATION
+# minimum delay between votes, in seconds
+delay = 10
+# address to host the webserver on, must be a string
+host = "localhost"
+# port to host the webserver on, must be a string
+port = "9999"
+
 # dictionary of mpd ID : vote counts
 votes = {}
 # dictionary of mpd ID : vote times, for spoof prevention
 timers = {}
-# minimum delay between votes, in seconds
-delay = 10
 
 # serve static files, not in use atm - might use for images
 @route('/static/<filename>')
@@ -130,4 +137,4 @@ def Add(uri=None):
 #Add("spotify:track:7iupjrZvckPcvC4aeqeqcC") # Autechre
 #Add("spotify:track:1gYn6OTpw5W6n8QaJjyY5m") # Nobody speak
 
-run(host='localhost', port=9999)
+run(host=host, port=port)
