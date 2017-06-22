@@ -2,8 +2,8 @@
 ## A democratic http front-end for mpd
 ##
 # TODO:
-# add config file and sample config file
 # write admin panel
+# look into workaround for non-justify songs key errors
 # allow more than just spotify results
 # switch away from development server - test w/ multiple people first
 # generate results pages dynamically - test w/ multiple people first
@@ -16,41 +16,31 @@ import configparser
 import os.path
 import time
 
-###############
-# CONFIGURATION
-config = configparser.RawConfigParser()
-config.read("config.txt")
-host = config.get("http", "host")
-port = config.getint("http","port")
-mpdhost = config.get("mpd", "host")
-mpdport = config.getint("mpd","port")
-delay = config.getint("other","delay")
-
-if not os.path.isfile('./example.conf'):
-    with open('example.conf', 'wb') as configfile:
-        config.write(configfile)
-
-# network stuff for the webinterface
-host = "localhost"
-port = "9999"
-
 # dictionary of mpd ID : vote counts
 votes = {}
 # dictionary of mpd ID : vote times, for spoof prevention
 timers = {}
 
-# serve static files, not in use atm - might use for images
+###############
+# CONFIGURATION
+config = configparser.RawConfigParser()
+config.read("config.txt")
+# http
+host = config.get("http", "host")
+port = config.getint("http","port")
+#mpd
+mpdhost = config.get("mpd", "host")
+mpdport = config.getint("mpd","port")
+# other
+delay = config.getint("other","delay")
+
+# serve static files, in use only for background image atm
 @route('/static/<filename>')
 def server_static(filename):
     return static_file(filename, root='./static')
 
-#redirect to main page,
-@route('/')
-def Root():
-    return template('front',delay=delay)
-
 ###########
-# MPD STUFF
+# INIT MPD STUFF
 client = MPDClient()
 client.timeout = 100
 client.idletimeout = None
@@ -58,14 +48,8 @@ client.connect(mpdhost, mpdport)
 client.consume(1)
 client.clear() # clear playlist, to avoid key errors from songs not in votes{}
 
-def MPDCheck():
-    ping = client.ping()
-    if ping != "Ok":
-        client.connect(mpdhost, mpdport)
-
 ##################
 # SORTING FUNCTION
-# bubble sort, totally broken but whatevs
 def Sort():
     playlist = client.playlistid() # get nice list of dicts
     swapped = True
@@ -81,13 +65,24 @@ def Sort():
                 #client.swapid(song["id"],song2["id"])
                 #client.swap(song["pos"],song2["pos"])
 
+# Function to add songs from other front-ends to votes / timers databases
+def Register(songid):
+    votes[songid] = 0
+    timers[songid] = time.time()
+
+############
+# FRONT PAGE
+@route('/')
+def Root():
+    return template('front',delay=delay)
+
 ##############
 #PLAYLIST PAGE
 #Shows the playlist in the current order, w/ vote buttons
 @route('/list')
 def List():
     plist = client.playlistid() # get nice list of dicts
-    return template('list', plist=plist, votes=votes, timers=timers, delay=delay, time=time)
+    return template('list', plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register)
 
 @post('/list')
 def Vote():

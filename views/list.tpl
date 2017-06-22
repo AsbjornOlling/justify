@@ -32,16 +32,22 @@
 					</tr>
 				</thead>
 				<tbody>
+					% if plist:
+						% if votes.get(plist[0]["id"]) == None:
+							% Register(plist[0]["id"])
+					% end
 					<tr class="warning">
-						% if plist:
 							<td>{{plist[0]["title"]}}</td>
 							<td>{{plist[0]["artist"]}}</td>
 							<td class="hidden-xs">{{plist[0]["album"]}}</td>
 							<td class="hidden-xs">{{int(int(plist[0]["time"]) / 60)}}:{{str(int(plist[0]["time"]) % 60).zfill(2)}}</td>
 							<td><button class="btn btn-default disabled"><span class="fa fa-thumbs-up"></span> {{votes[plist[0]["id"]]}}</button>
-						% end
 					</tr>
-				% for song in plist[1:]:
+					% end
+					% for song in plist[1:]:
+						% if votes.get(song["id"]) == None:
+							% Register(song["id"])
+						% end
 					<tr>
 					  <td>{{song["title"]}}</td>
 						<td>{{song["artist"]}}</td>
@@ -51,7 +57,7 @@
 							<form action="/list" method="post"> 
 								<input type="hidden" name="voteID" value="{{song["id"]}}"> 
 								% if time.time() - timers[song["id"]] < delay or song["pos"] == "0":
-								<button class="btn btn-default disabled" type="button"><span class="fa fa-thumbs-up"></span> {{votes[song["id"]]}}</button>
+									<button class="btn btn-default disabled" type="button"><span class="fa fa-thumbs-up"></span> {{votes[song["id"]]}}</button>
 								% else:
 								<button class="btn btn-default" type="submit"><span class="fa fa-thumbs-up"></span> {{votes[song["id"]]}}</button>
 								% end
