@@ -24,7 +24,7 @@ Justify.py does NOT work alongside other simultaneous mopidy front-ends. It cras
 
 ### Installing
 
-Install and configure [mopidy](https://github.com/mopidy/mopidy), and [mopidy-spotify](https://github.com/mopidy/mopidy-spotify).
+Install and configure [mopidy](https://github.com/mopidy/mopidy), and [mopidy-spotify](https://github.com/mopidy/mopidy-spotify). Make sure to set the connection_timeout value in the [mpd] section to something high.
 I recommend testing with a simple frontend (like mpc or ncmpcpp) before setting up justify.py
 
 Install python dependencies

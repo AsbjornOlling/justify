@@ -11,26 +11,32 @@
 	</head>
 
 	<body>
-		<div class="container">
-			<form action="/search" method="post">
-				<input class="hidden" name="searchtype" value="specific"/>
-				<div class="input-group">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-music"></i></span>
-					<input class="form-control" placeholder="Track title" name="inputsong" type="text" />
+		<div class="container text-center">
+			<div class="row">
+				<div class="hidden-xs col-md-4 col-lg-4"></div>
+				<div class="col-xs-12 col-md-4 col-lg-4">
+					<form action="/search" method="post">
+						<input class="hidden" name="searchtype" value="specific"/>
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-music"></i></span>
+							<input class="form-control" placeholder="Track title" name="inputsong" type="text" />
+						</div>
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+							<input class="form-control" placeholder="Artist" name="inputartist" type="text" />
+						</div>
+						<div class="input-group">
+							<span class="input-group-addon"><i class="glyphicon glyphicon-cd"></i></span>
+							<input class="form-control" placeholder="Album" name="inputalbum" type="text" />
+						</div>
+						<br>
+						<div align="center">
+							<button class="btn btn-default" type="submit"><i class="fa fa-search"></i> Search!</button>
+						</div>
+					</form>
 				</div>
-				<div class="input-group">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-					<input class="form-control" placeholder="Artist" name="inputartist" type="text" />
-				</div>
-				<div class="input-group">
-					<span class="input-group-addon"><i class="glyphicon glyphicon-cd"></i></span>
-					<input class="form-control" placeholder="Album" name="inputalbum" type="text" />
-				</div>
-				<br>
-				<div align="center">
-					<button class="btn btn-default" type="submit"><i class="fa fa-search"></i> Search!</button>
-				</div>
-			</form>
+				<div class="hidden-xs col-md-4 col-lg-4"></div>
+			</div>
 		</div> <!-- container -->
 	</body>
 </html>

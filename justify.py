@@ -2,27 +2,30 @@
 ## A democratic http front-end for mpd
 ##
 # TODO:
-# write readme.md
-# add config file
-# allow more than just spotify results
+# add config file and sample config file
 # write admin panel
+# allow more than just spotify results
 # write a sexy front page
 # switch away from development server - test w/ multiple people first
 # generate results pages dynamically - test w/ multiple people first
 
 from __future__ import unicode_literals
 from bottle import route, run, post, request, template, redirect, static_file
+from paste import httpserver
 from mpd import MPDClient
+import PersistentMPDClient
 import time
 
 ###############
 # CONFIGURATION
 # minimum delay between votes, in seconds
 delay = 10
-# address to host the webserver on, must be a string
+# network stuff for the webinterface
 host = "localhost"
-# port to host the webserver on, must be a string
 port = "9999"
+# network stuff for mpd
+mpdhost = "localhost"
+mpdport = "6600"
 
 # dictionary of mpd ID : vote counts
 votes = {}
@@ -44,9 +47,14 @@ def Root():
 client = MPDClient()
 client.timeout = 100
 client.idletimeout = None
-client.connect("localhost", 6600)
+client.connect(mpdhost, mpdport)
 client.consume(1)
 client.clear() # clear playlist, to avoid key errors from songs not in votes{}
+
+def MPDCheck():
+    ping = client.ping()
+    if ping != "Ok":
+        client.connect(mpdhost, mpdport)
 
 ##################
 # SORTING FUNCTION
@@ -130,11 +138,5 @@ def Add(uri=None):
         client.play()
     print("ADDED:", songid)
     redirect('/list')
-
-# add some songs for quick debug
-#Add("spotify:track:781V2Y5LPtcpgONEOadadE") # get got
-#Add("spotify:track:444S3nPLefAIyQ0HphvRzx") # TAKYOON
-#Add("spotify:track:7iupjrZvckPcvC4aeqeqcC") # Autechre
-#Add("spotify:track:1gYn6OTpw5W6n8QaJjyY5m") # Nobody speak
 
 run(host=host, port=port)
