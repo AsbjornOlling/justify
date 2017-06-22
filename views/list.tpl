@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>DAKKEDAK</title>
+		<title>Justify</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 		<!-- link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"-->
 		<link rel="stylesheet" href="https://bootswatch.com/cyborg/bootstrap.min.css" crossorigin="anonymous">
@@ -66,7 +66,7 @@
 					<input class="hidden" name="searchtype" value="simple"/>
 					<input class="form-control" placeholder="Add your own songs from spotify" name="inputany" type="text" />
 					<span class="input-group-btn">
-						<button class="btn btn-default" type="submit">
+						<button class="btn btn-warning" type="submit">
 							<span class="fa fa-search"></span>
 						</button>
 					</span>

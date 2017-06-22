@@ -5,7 +5,6 @@
 # add config file and sample config file
 # write admin panel
 # allow more than just spotify results
-# finish navbar
 # write a sexy front page
 # switch away from development server - test w/ multiple people first
 # generate results pages dynamically - test w/ multiple people first
@@ -34,13 +33,13 @@ timers = {}
 
 # serve static files, not in use atm - might use for images
 @route('/static/<filename>')
-def server_static(filepath):
-    return static_file(filepath, root='/static')
+def server_static(filename):
+    return static_file(filename, root='./static')
 
 #redirect to main page,
 @route('/')
 def Root():
-    redirect('/list')
+    return template('front',delay=delay)
 
 ###########
 # MPD STUFF
