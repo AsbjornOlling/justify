@@ -1,0 +1,11 @@
+[http]
+host=localhost
+port=9999
+
+[mpd]
+host=localhost
+port=6600
+
+[other]
+delay=30
+justify_dir=

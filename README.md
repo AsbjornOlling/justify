@@ -18,6 +18,7 @@ mopidy (tested on version 2.1.0)
 mopidy-spotify (tested on version 3.1.0)
 bottle (tested on version 0.12)
 python-mpd2 (tested on version 0.5.5)
+ConfigParser (testded on version 3.5.0)
 ```
 
 Justify.py does NOT work alongside other simultaneous mopidy front-ends. It crashes when is a song is added by other means.
@@ -31,6 +32,7 @@ Install python dependencies
 ```
 pip install bottle
 pip install python-mpd2  
+pip install ConfigParser
 ```
 
 Download this project

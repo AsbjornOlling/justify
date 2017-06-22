@@ -5,7 +5,6 @@
 # add config file and sample config file
 # write admin panel
 # allow more than just spotify results
-# write a sexy front page
 # switch away from development server - test w/ multiple people first
 # generate results pages dynamically - test w/ multiple people first
 
@@ -13,18 +12,27 @@ from __future__ import unicode_literals
 from bottle import route, run, post, request, template, redirect, static_file
 from paste import httpserver
 from mpd import MPDClient
+import configparser
+import os.path
 import time
 
 ###############
 # CONFIGURATION
-# minimum delay between votes, in seconds
-delay = 10
+config = configparser.RawConfigParser()
+config.read("config.txt")
+host = config.get("http", "host")
+port = config.getint("http","port")
+mpdhost = config.get("mpd", "host")
+mpdport = config.getint("mpd","port")
+delay = config.getint("other","delay")
+
+if not os.path.isfile('./example.conf'):
+    with open('example.conf', 'wb') as configfile:
+        config.write(configfile)
+
 # network stuff for the webinterface
 host = "localhost"
 port = "9999"
-# network stuff for mpd
-mpdhost = "localhost"
-mpdport = "6600"
 
 # dictionary of mpd ID : vote counts
 votes = {}
