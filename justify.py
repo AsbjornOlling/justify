@@ -5,6 +5,7 @@
 # add config file and sample config file
 # write admin panel
 # allow more than just spotify results
+# finish navbar
 # write a sexy front page
 # switch away from development server - test w/ multiple people first
 # generate results pages dynamically - test w/ multiple people first
@@ -13,7 +14,6 @@ from __future__ import unicode_literals
 from bottle import route, run, post, request, template, redirect, static_file
 from paste import httpserver
 from mpd import MPDClient
-import PersistentMPDClient
 import time
 
 ###############

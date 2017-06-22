@@ -13,7 +13,15 @@ Add spotify album art from pyspotify or spotipy
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
 	<body>
+		<nav class="navbar navbar-inverse">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/list">Justify</a>
+			</div>
+		</nav>
 		<div class="container">
+		<div class="page-header">
+			<h3>Search Results</h3>
+		</div>
 			<table class="table table-striped">
 				<thead>	
 					<tr>

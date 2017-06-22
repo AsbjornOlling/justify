@@ -11,7 +11,15 @@
 	</head>
 
 	<body>
+		<nav class="navbar navbar-inverse">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/list">Justify</a>
+			</div>
+		</nav>
 		<div class="container text-center">
+		<div class="page-header">
+			<h3>Specific Search</h3>
+		</div>
 			<div class="row">
 				<div class="hidden-xs col-md-4 col-lg-4"></div>
 				<div class="col-xs-12 col-md-4 col-lg-4">

@@ -14,10 +14,13 @@
 	<body>
 		<nav class="navbar navbar-inverse">
 			<div class="navbar-header">
-				<a class="navbar-brand">2820.camp</a>
+				<a class="navbar-brand" href="/list">Justify</a>
 			</div>
 		</nav>
 		<div class="container">
+			<div class="page-header">
+				<h3>Current playlist</h3>
+			</div>
 			<table class="table table-striped table-hover">
 				<thead>
 					<tr>
@@ -61,7 +64,7 @@
 			<form action="/search" method="post">
 				<div class="input-group">
 					<input class="hidden" name="searchtype" value="simple"/>
-					<input class="form-control" placeholder="Track Search or Artist Search" name="inputany" type="text" />
+					<input class="form-control" placeholder="Add your own songs from spotify" name="inputany" type="text" />
 					<span class="input-group-btn">
 						<button class="btn btn-default" type="submit">
 							<span class="fa fa-search"></span>
