@@ -7,6 +7,5 @@ host=localhost
 port=6600
 
 [other]
-delay=30
-admin_password=hvaderkoden
-admin_uri=12
+delay=10
+admin_uri=/secretadminpanel

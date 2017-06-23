@@ -1,12 +1,11 @@
-#d#
+#
 ## Justify.py
 # A democratic http front-end for Mopidy
 #
 # TODO:
 # better logs
-# add refresh button to list view
-# make release + 2820.camp branch
 # rewrite front page
+# make release + 2820.camp branch
 # write admin panel
 # allow more than just spotify results
 # switch away from development server - test w/ multiple people first
@@ -28,11 +27,12 @@ votes = {}
 timers = {}
 
 # Set paths
-relpath = os.path.dirname(sys.argv[0])        
-abspath = os.path.abspath(relpath)
-confpath = abspath + "/config.txt"
-stapath = abspath + "/static"
-tplpath = abspath + "/views/"
+relpath = os.path.dirname(sys.argv[0]) # path relative to shell dir
+abspath = os.path.abspath(relpath) # absolute path of script
+confpath = abspath + "/config.txt" # config file path
+stapath = abspath + "/static" #static server path
+tplpath = abspath + "/views/" #html templates path
+print("Paths set.")
 
 ###############
 # CONFIGURATION
@@ -46,54 +46,57 @@ mpdhost = config.get("mpd", "host")
 mpdport = config.getint("mpd","port")
 # other section
 delay = config.getint("other","delay")
-admin_uri = config.getint("other","admin_uri")
+admin_uri = config.get("other","admin_uri")
+print("Configuration loaded.")
 
-# serve static files, in use only for background image atm
-@route('/static/<filename>')
-def server_static(filename):
-    return static_file(filename, root=stapath)
-
-###########
-# INIT MPD STUFF
+# MPD SETTINGS
 client = MPDClient()
 client.timeout = 100
 client.idletimeout = None
 client.connect(mpdhost, mpdport)
 client.consume(1)
+print("MPD connection established.")
 
-##################
 # SORTING FUNCTION
+# Runs on every vote and add. Sorts the song by bubble sort
 def Sort():
     playlist = client.playlistid() # get nice list of dicts
     swapped = True
     while swapped == True:
         swapped = False
         for i in range(1,len(playlist)-1): #iterate thru playlist, skipping first and last tracks
+            print("Sorting song nr. %i" % i)
             song = playlist[i]
             song2 = playlist[i+1]
             if votes[song["id"]] < votes[song2["id"]]:
                 client.move(int(song["pos"]),int(song["pos"])+1)
                 playlist = client.playlistid() # reload playlist after swap
                 swapped = True
-                #client.swapid(song["id"],song2["id"])
-                #client.swap(song["pos"],song2["pos"])
+    print("Completed sorting.")
 
-# Function to add songs from other front-ends to votes / timers databases
+# REGISTER FUNCTION
+# Triggered from list.tpl, adds a song to the dicts if not there. (for songs from other front-ends)
 def Register(songid):
     votes[songid] = 0
     timers[songid] = time.time()
+    print("Found and registered an unknown song.")
 
-############
+# STATIC FILE SERVER
+@route('/static/<filename>')
+def server_static(filename):
+    return static_file(filename, root=stapath)
+
 # FRONT PAGE
 @route('/')
 def Root():
+    print("Serving front page.")
     return template(tplpath+'front',delay=delay)
 
-##############
 #PLAYLIST PAGE
 #Shows the playlist in the current order, w/ vote buttons
 @route('/list')
 def List():
+    print("Serving playlist page.")
     plist = client.playlistid() # get nice list of dicts
     return template(tplpath+'list', plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register)
 
@@ -102,15 +105,15 @@ def Vote():
     voteid = request.POST.get('voteID')
     votes[voteid] += 1
     timers[voteid] = time.time() # reset timer
-    print("votes",votes)
+    print("Received vote.")
     Sort()
     redirect('/list')
 
-#############
 # SEARCH PAGE
 # for specific search form
 @route('/search')
 def SearchForm():
+    print("Serving specific search page")
     return template(tplpath+'search')
 
 @post('/search')
@@ -134,10 +137,10 @@ def Search():
         "Something went wrong!"
     redirect('/search/result')
 
-#####################
 # SEARCH RESULTS PAGE
 @route('/search/result')
 def SearchResults():
+    print("Serving search results page")
     return template(tplpath+'result', result=result)
 
 @post('/search/result')
@@ -151,16 +154,15 @@ def Add(uri=None):
     status = client.status()
     if status["state"] != "play":
         client.play()
-    print("ADDED:", songid)
+    print("Added a song.")
     redirect('/list')
 
-############
 # ADMIN PAGE totally incomplete
 def Delete(id="None"):
     if not id == "None":
         client.deleteid(id)
 
-@route('/secretadminpanel')
+@route(admin_uri)
 def AdminPanel():
     return template(tplpath+'admin', plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register)
 
