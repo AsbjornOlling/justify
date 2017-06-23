@@ -1,20 +1,29 @@
 ##
-## A democratic http front-end for mpd
-##
+## Justify.py
+# A democratic http front-end for Mopidy
+#
 # TODO:
+# make search field text more clear
+# fix no results redirect button
+# better logs
+# make back arrows
+# add refresh button to list view
+# make release + 2820.camp branch
+# rewrite front page
 # write admin panel
-# look into workaround for non-justify songs key errors
 # allow more than just spotify results
+# add relative paths (especially for static)
 # switch away from development server - test w/ multiple people first
 # generate results pages dynamically - test w/ multiple people first
 
 from __future__ import unicode_literals
-from bottle import route, run, post, request, template, redirect, static_file
-from paste import httpserver
+from bottle import route, run, post, request, template, redirect, static_file, auth_basic, parse_auth
+from paste import httpserver # not in use atm
 from mpd import MPDClient
+import time
 import configparser
 import os.path
-import time
+from passlib.hash import sha256_crypt
 
 # dictionary of mpd ID : vote counts
 votes = {}
@@ -25,19 +34,20 @@ timers = {}
 # CONFIGURATION
 config = configparser.RawConfigParser()
 config.read("config.txt")
-# http
+# http section
 host = config.get("http", "host")
 port = config.getint("http","port")
-#mpd
+# mpd section
 mpdhost = config.get("mpd", "host")
 mpdport = config.getint("mpd","port")
-# other
+# other section
 delay = config.getint("other","delay")
+admin_uri = config.getint("other","admin_uri")
 
 # serve static files, in use only for background image atm
 @route('/static/<filename>')
 def server_static(filename):
-    return static_file(filename, root='./static')
+    return static_file(filename, root='./static') #TODO: import path
 
 ###########
 # INIT MPD STUFF
@@ -46,7 +56,6 @@ client.timeout = 100
 client.idletimeout = None
 client.connect(mpdhost, mpdport)
 client.consume(1)
-client.clear() # clear playlist, to avoid key errors from songs not in votes{}
 
 ##################
 # SORTING FUNCTION
@@ -140,5 +149,15 @@ def Add(uri=None):
         client.play()
     print("ADDED:", songid)
     redirect('/list')
+
+############
+# ADMIN PAGE totally incomplete
+def Delete(id="None"):
+    if not id == "None":
+        client.deleteid(id)
+
+@route('/secretadminpanel')
+def AdminPanel():
+    return template('list', plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register)
 
 run(host=host, port=port)

@@ -13,7 +13,10 @@
 	<body>
 		<nav class="navbar navbar-inverse">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="/list">Justify</a>
+				<a class="navbar-brand" href="/list">
+					<i class="glyphicon glyphicon-chevron-left"></i>
+					Justify
+				</a>
 			</div>
 		</nav>
 		<div class="container text-center">

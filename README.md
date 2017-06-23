@@ -18,10 +18,8 @@ mopidy (tested on version 2.1.0)
 mopidy-spotify (tested on version 3.1.0)
 bottle (tested on version 0.12)
 python-mpd2 (tested on version 0.5.5)
-ConfigParser (testded on version 3.5.0)
+configparser (testded on version 3.5.0)
 ```
-
-Justify.py does NOT work alongside other simultaneous mopidy front-ends. It crashes when is a song is added by other means.
 
 ### Installing
 
@@ -32,7 +30,7 @@ Install python dependencies
 ```
 pip install bottle
 pip install python-mpd2  
-pip install ConfigParser
+pip install configparser
 ```
 
 Download this project
@@ -49,9 +47,7 @@ Then open http://localhost:9999/ in a browser to test it.
 
 ### Configuration
 
-Configuration is done in the python script itself. A simpler config file is planned.
-
-Near the top of the script, there's a section labelled "CONFIGURATION". This is where you change host and port for the server, and the minimum delay between votes on a track. It should be pretty self-explanatory.
+Configuration is done in the config file: config.txt
 
 Themeing is most easily done by switching out the css stylesheets in the head of the .tpl html files. Right now I'm just using the Cyborg bootstrap theme from bootswatch. Could easily be replaced with any other bootstrap theme.
 
