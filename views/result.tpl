@@ -42,7 +42,7 @@ Add spotify album art from pyspotify or spotipy
 							<td/><td/><td/><td/>
 						</tr>
 						<tr>
-							<td>Maybe try <button class="btn btn-sm btn-default" href="/search">specific search</button> instead?</td>
+							<td>Maybe try <a class="btn btn-sm btn-default" href="/search">specific search</a> instead?</td>
 							<td/><td/><td/><td/>
 						</tr>
 					% end
