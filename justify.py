@@ -3,7 +3,6 @@
 # A democratic http front-end for Mopidy
 #
 # TODO:
-# write admin panel
 # make release + 2820.camp branch
 # rewrite front page
 # allow more than just spotify results
@@ -176,6 +175,8 @@ def AdminAction():
             votes[voteID] -= 1
         elif request.forms.get('votedirection') == "up":
             votes[voteID] += 1
+        elif request.forms.get('votedirection') == "420":
+            votes[voteID] = 420
         Sort()
         redirect(admin_uri)
     else:
