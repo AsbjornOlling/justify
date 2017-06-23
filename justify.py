@@ -9,7 +9,6 @@
 # rewrite front page
 # write admin panel
 # allow more than just spotify results
-# add relative paths (especially for static)
 # switch away from development server - test w/ multiple people first
 # generate results pages dynamically - test w/ multiple people first
 
@@ -52,7 +51,7 @@ admin_uri = config.getint("other","admin_uri")
 # serve static files, in use only for background image atm
 @route('/static/<filename>')
 def server_static(filename):
-    return static_file(filename, root=stapath) #TODO: import path
+    return static_file(filename, root=stapath)
 
 ###########
 # INIT MPD STUFF
