@@ -35,9 +35,15 @@ pip install configparser
 
 Download this project
 ```
-git clone https://github.com/AsbjornOlling/justify.py.git
+git clone https://github.com/AsbjornOlling/justify.git
 ```
 
+Copy the example config file
+```
+cd justify
+cp config.example.txt config.txt
+```
+### Starting justify
 Start mopidy first, then justify.py
 ```
 mopidy &
@@ -47,7 +53,7 @@ Then open http://localhost:9999/ in a browser to test it.
 
 ### Configuration
 
-Configuration is done in the config file: config.txt
+Configuration is done in config.txt, it should be pretty self-explanatory.
 
 Themeing is most easily done by switching out the css stylesheets in the head of the .tpl html files. Right now I'm just using the Cyborg bootstrap theme from bootswatch. Could easily be replaced with any other bootstrap theme.
 
