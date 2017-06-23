@@ -153,15 +153,32 @@ def Add(uri=None):
     if status["state"] != "play":
         client.play()
     print("Added a song.")
+    Sort()
     redirect('/list')
 
 # ADMIN PAGE totally incomplete
-def Delete(id="None"):
-    if not id == "None":
-        client.deleteid(id)
-
 @route(admin_uri)
 def AdminPanel():
-    return template(tplpath+'admin', plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register)
+    print("Serving admin panel.")
+    plist = client.playlistid() # get nice list of dicts
+    return template(tplpath+'admin', plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register, admin_uri=admin_uri)
+
+@post(admin_uri)
+def AdminAction():
+    if request.forms.get('actionType') == "delete":
+        deleteID = request.forms.get('deleteID')
+        client.deleteid(deleteID)
+        print("Deleting ID: %s" % deleteID)
+        redirect(admin_uri)
+    elif request.forms.get('actionType') == "vote":
+        voteID = request.forms.get('voteID')
+        if request.forms.get('votedirection') == "down":
+            votes[voteID] -= 1
+        elif request.forms.get('votedirection') == "up":
+            votes[voteID] += 1
+        Sort()
+        redirect(admin_uri)
+    else:
+        print("Something went wrong.")
 
 run(host=host, port=port)

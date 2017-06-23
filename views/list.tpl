@@ -42,13 +42,13 @@
 						% if plist:
 							% if votes.get(plist[0]["id"]) == None:
 								% Register(plist[0]["id"])
-						% end
+						  % end
 						<tr class="warning">
 								<td>{{plist[0]["title"]}}</td>
 								<td>{{plist[0]["artist"]}}</td>
 								<td class="hidden-xs">{{plist[0]["album"]}}</td>
 								<td class="hidden-xs">{{int(int(plist[0]["time"]) / 60)}}:{{str(int(plist[0]["time"]) % 60).zfill(2)}}</td>
-								<td><button class="btn btn-default disabled"><span class="fa fa-thumbs-up"></span> {{votes[plist[0]["id"]]}}</button>
+								<td><button class="btn btn-default disabled"><span class="fa fa-thumbs-up"></span> {{votes[plist[0]["id"]]}}</button></td>
 						</tr>
 						% end
 						% for song in plist[1:]:

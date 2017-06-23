@@ -26,8 +26,7 @@
 					<tr>
 						<th>Song</th>
 						<th>Artist</th>
-						<th class="hidden-xs">Album</th>
-						<th class="hidden-xs">Time</th>
+						<th>Delete</th>
 						<th>Votes</th>
 					</tr>
 				</thead>
@@ -35,13 +34,22 @@
 					% if plist:
 						% if votes.get(plist[0]["id"]) == None:
 							% Register(plist[0]["id"])
-					% end
+					  % end
 					<tr class="warning">
-							<td>{{plist[0]["title"]}}</td>
-							<td>{{plist[0]["artist"]}}</td>
-							<td class="hidden-xs">{{plist[0]["album"]}}</td>
-							<td class="hidden-xs">{{int(int(plist[0]["time"]) / 60)}}:{{str(int(plist[0]["time"]) % 60).zfill(2)}}</td>
-							<td><button class="btn btn-default disabled"><span class="fa fa-thumbs-up"></span> {{votes[plist[0]["id"]]}}</button>
+						<td>{{plist[0]["title"]}}</td>
+						<td>{{plist[0]["artist"]}}</td>
+						<td>
+							<form action="{{admin_uri}}" method="post">
+								<input type="hidden" name="actionType" value="delete">
+								<input type="hidden" name="deleteID" value="{{plist[0]["id"]}}">
+								<button type="submit" class="btn btn-danger"><i class="fa fa-trash-o"></i></button>
+							</form>
+						</td>
+						<td>
+							<button class="btn btn-default disabled">
+								<span class="fa fa-thumbs-up"></span> {{votes[plist[0]["id"]]}}
+							</button>
+						</td>
 					</tr>
 					% end
 					% for song in plist[1:]:
@@ -51,38 +59,38 @@
 					<tr>
 					  <td>{{song["title"]}}</td>
 						<td>{{song["artist"]}}</td>
-						<td class="hidden-xs">{{song["album"]}}</td>
-						<td class="hidden-xs">{{int(int(song["time"]) / 60)}}:{{str(int(song["time"]) % 60).zfill(2)}}</td>
 						<td>
-							<form action="/list" method="post"> 
-								<input type="hidden" name="voteID" value="{{song["id"]}}"> 
-								% if time.time() - timers[song["id"]] < delay or song["pos"] == "0":
-									<button class="btn btn-default disabled" type="button"><span class="fa fa-thumbs-up"></span> {{votes[song["id"]]}}</button>
-								% else:
-								<button class="btn btn-default" type="submit"><span class="fa fa-thumbs-up"></span> {{votes[song["id"]]}}</button>
-								% end
+							<form action="{{admin_uri}}" method="post">
+								<input type="hidden" name="actionType" value="delete">
+								<input type="hidden" name="deleteID" value="{{song["id"]}}">
+								<button type="submit" class="btn btn-danger"><i class="fa fa-trash-o"></i></button>
 							</form>
-						</td>
+						</td> <!-- /delete button -->
+						<td>
+								<form style="float: left; padding: 0px;" action="{{admin_uri}}" method="post">
+									<input type="hidden" name="actionType" value="vote">
+									<input type="hidden" name="votedirection" value="down">
+									<input type="hidden" name="voteID" value="{{song["id"]}}">
+									<button class="btn btn-secondary" type="submit">
+										<i class="fa fa-minus"></i>
+									</button>
+								</form>
+								<button style="float: left;" class="btn btn-secondary disabled">
+									<span class="fa fa-thumbs-up"></span> {{votes[song["id"]]}}
+								</button>
+								<form style="float: left; padding: 0px;" action="{{admin_uri}}" method="post">
+									<input type="hidden" name="actionType" value="vote">
+									<input type="hidden" name="votedirection" value="up">
+									<input type="hidden" name="voteID" value="{{song["id"]}}">
+									<button class="btn btn-secondary" type="submit">
+										<i class="fa fa-plus"></i>
+									</button>
+								</form>
+						</td> <!-- /votes buttons -->
 					</tr>
 				% end
 				</tbody>
 			</table>
-			<form action="/search" method="post">
-				<div class="input-group">
-					<input class="hidden" name="searchtype" value="simple"/>
-					<input class="form-control" placeholder="Add your own songs from spotify" name="inputany" type="text" />
-					<span class="input-group-btn">
-						<button class="btn btn-warning" type="submit">
-							<span class="fa fa-search"></span>
-						</button>
-					</span>
-				</div> <!-- /input group -->
-			</form>
-			<br>
-			<br>
-			<div align="right">
-				<a class="btn btn-default" href="/search">...or use Specific Search</a>
-			</div>
 		</div> <!-- /container -->
 	</body>
 </html>
