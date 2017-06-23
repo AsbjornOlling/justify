@@ -3,9 +3,9 @@
 # A democratic http front-end for Mopidy
 #
 # TODO:
-# rewrite front page
-# make release + 2820.camp branch
 # write admin panel
+# make release + 2820.camp branch
+# rewrite front page
 # allow more than just spotify results
 # switch away from development server - test w/ multiple people first
 # generate results page dynamically - test w/ multiple people first
@@ -18,7 +18,6 @@ import time
 import configparser
 import sys
 import os.path
-from passlib.hash import sha256_crypt
 
 # dictionary of mpd ID : vote counts
 votes = {}
