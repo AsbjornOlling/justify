@@ -3,13 +3,12 @@
 # A democratic http front-end for Mopidy
 #
 # TODO:
-# better logs
 # rewrite front page
 # make release + 2820.camp branch
 # write admin panel
 # allow more than just spotify results
 # switch away from development server - test w/ multiple people first
-# generate results pages dynamically - test w/ multiple people first
+# generate results page dynamically - test w/ multiple people first
 
 from __future__ import unicode_literals
 from bottle import route, run, post, request, template, redirect, static_file, auth_basic, parse_auth
