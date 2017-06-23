@@ -10,4 +10,3 @@ port=6600
 delay=30
 admin_password=hvaderkoden
 admin_uri=12
-justify_dir=

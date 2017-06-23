@@ -1,12 +1,9 @@
-##
+#d#
 ## Justify.py
 # A democratic http front-end for Mopidy
 #
 # TODO:
-# make search field text more clear
-# fix no results redirect button
 # better logs
-# make back arrows
 # add refresh button to list view
 # make release + 2820.camp branch
 # rewrite front page
@@ -22,6 +19,7 @@ from paste import httpserver # not in use atm
 from mpd import MPDClient
 import time
 import configparser
+import sys
 import os.path
 from passlib.hash import sha256_crypt
 
@@ -30,10 +28,17 @@ votes = {}
 # dictionary of mpd ID : vote times, for spoof prevention
 timers = {}
 
+# Set paths
+relpath = os.path.dirname(sys.argv[0])        
+abspath = os.path.abspath(relpath)
+confpath = abspath + "/config.txt"
+stapath = abspath + "/static"
+tplpath = abspath + "/views/"
+
 ###############
 # CONFIGURATION
 config = configparser.RawConfigParser()
-config.read("config.txt")
+config.read(confpath)
 # http section
 host = config.get("http", "host")
 port = config.getint("http","port")
@@ -47,7 +52,7 @@ admin_uri = config.getint("other","admin_uri")
 # serve static files, in use only for background image atm
 @route('/static/<filename>')
 def server_static(filename):
-    return static_file(filename, root='./static') #TODO: import path
+    return static_file(filename, root=stapath) #TODO: import path
 
 ###########
 # INIT MPD STUFF
@@ -83,7 +88,7 @@ def Register(songid):
 # FRONT PAGE
 @route('/')
 def Root():
-    return template('front',delay=delay)
+    return template(tplpath+'front',delay=delay)
 
 ##############
 #PLAYLIST PAGE
@@ -91,7 +96,7 @@ def Root():
 @route('/list')
 def List():
     plist = client.playlistid() # get nice list of dicts
-    return template('list', plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register)
+    return template(tplpath+'list', plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register)
 
 @post('/list')
 def Vote():
@@ -107,7 +112,7 @@ def Vote():
 # for specific search form
 @route('/search')
 def SearchForm():
-    return template('search')
+    return template(tplpath+'search')
 
 @post('/search')
 def Search():
@@ -134,7 +139,7 @@ def Search():
 # SEARCH RESULTS PAGE
 @route('/search/result')
 def SearchResults():
-    return template('result', result=result)
+    return template(tplpath+'result', result=result)
 
 @post('/search/result')
 def Add(uri=None):
@@ -158,6 +163,6 @@ def Delete(id="None"):
 
 @route('/secretadminpanel')
 def AdminPanel():
-    return template('list', plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register)
+    return template(tplpath+'admin', plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register)
 
 run(host=host, port=port)
