@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Justify</title>
+		<title>{{header}}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 		<link rel="stylesheet" href="https://bootswatch.com/cyborg/bootstrap.min.css" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -13,7 +13,7 @@
 	<body style="overflow-x: hidden;">
 		<nav class="navbar navbar-inverse">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="/list">Justify</a>
+				<a class="navbar-brand" href="/list">{{header}}</a>
 			</div>
 		</nav>
 		<div class="container">
@@ -64,9 +64,9 @@
 								<form action="/list" method="post"> 
 									<input type="hidden" name="voteID" value="{{song["id"]}}"> 
 									% if time.time() - timers[song["id"]] < delay or song["pos"] == "0":
-										<button class="btn btn-default disabled" type="button"><span class="fa fa-thumbs-up"></span> {{votes[song["id"]]}}</button>
+										<button class="btn btn-default disabled" type="button"><i class="fa fa-thumbs-up"></i> {{votes[song["id"]]}}</button>
 									% else:
-									<button class="btn btn-default" type="submit"><span class="fa fa-thumbs-up"></span> {{votes[song["id"]]}}</button>
+									<button class="btn btn-default" type="submit"><i class="fa fa-thumbs-up"></i>{{votes[song["id"]]}}</button>
 									% end
 								</form>
 							</td>
@@ -90,7 +90,7 @@
 			<br>
 			<br>
 			<div align="right">
-				<a class="btn btn-default" href="/search">...or use Specific Search</a>
+				<a class="btn btn-default" href="/search">...or use Better Search</a>
 			</div>
 		</div> <!-- /container -->
 	</body>

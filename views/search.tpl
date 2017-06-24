@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Justify</title>
+		<title>{{header}}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 		<link rel="stylesheet" href="https://bootswatch.com/cyborg/bootstrap.min.css" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -15,13 +15,13 @@
 			<div class="navbar-header">
 				<a class="navbar-brand" href="/list">
 					<i class="glyphicon glyphicon-chevron-left"></i>
-					Justify
+					{{header}}
 				</a>
 			</div>
 		</nav>
 		<div class="container text-center">
 		<div class="page-header">
-			<h3>Specific Search</h3>
+			<h3>Better Search</h3>
 		</div>
 			<div class="row">
 				<div class="hidden-xs col-md-4 col-lg-4"></div>

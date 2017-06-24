@@ -44,6 +44,7 @@ mpdport = config.getint("mpd","port")
 # other section
 delay = config.getint("other","delay")
 admin_uri = config.get("other","admin_uri")
+header = config.get("other","header")
 print("Configuration loaded.")
 
 # MPD SETTINGS
@@ -87,7 +88,7 @@ def server_static(filename):
 @route('/')
 def Root():
     print("Serving front page.")
-    return template(tplpath+'front',delay=delay)
+    return template(tplpath+'front',delay=delay,header=header)
 
 #PLAYLIST PAGE
 #Shows the playlist in the current order, w/ vote buttons
@@ -95,7 +96,7 @@ def Root():
 def List():
     print("Serving playlist page.")
     plist = client.playlistid() # get nice list of dicts
-    return template(tplpath+'list', plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register)
+    return template(tplpath+'list', header=header, plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register)
 
 @post('/list')
 def Vote():
@@ -111,7 +112,7 @@ def Vote():
 @route('/search')
 def SearchForm():
     print("Serving specific search page")
-    return template(tplpath+'search')
+    return template(tplpath+'search', header=header)
 
 @post('/search')
 def Search():
@@ -138,7 +139,7 @@ def Search():
 @route('/search/result')
 def SearchResults():
     print("Serving search results page")
-    return template(tplpath+'result', result=result)
+    return template(tplpath+'result', header=header, result=result)
 
 @post('/search/result')
 def Add(uri=None):
@@ -160,7 +161,7 @@ def Add(uri=None):
 def AdminPanel():
     print("Serving admin panel.")
     plist = client.playlistid() # get nice list of dicts
-    return template(tplpath+'admin', plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register, admin_uri=admin_uri)
+    return template(tplpath+'admin', header=header, plist=plist, votes=votes, timers=timers, delay=delay, time=time, Register=Register, admin_uri=admin_uri)
 
 @post(admin_uri)
 def AdminAction():

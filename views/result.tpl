@@ -7,7 +7,7 @@ Add spotify album art from pyspotify or spotipy
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Justify</title>
+		<title>{{header}}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 		<link rel="stylesheet" href="https://bootswatch.com/cyborg/bootstrap.min.css" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -17,7 +17,7 @@ Add spotify album art from pyspotify or spotipy
 			<div class="navbar-header">
 				<a class="navbar-brand" href="/list">
 					<i class="glyphicon glyphicon-chevron-left"></i>
-					Justify
+					{{header}}
 				</a>
 			</div>
 		</nav>
@@ -42,7 +42,7 @@ Add spotify album art from pyspotify or spotipy
 							<td/><td/><td/><td/>
 						</tr>
 						<tr>
-							<td>Maybe try <a class="btn btn-sm btn-default" href="/search">specific search</a> instead?</td>
+							<td>Maybe try <a class="btn btn-sm btn-default" href="/search">better search</a> instead?</td>
 							<td/><td/><td/><td/>
 						</tr>
 					% end

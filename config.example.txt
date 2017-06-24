@@ -8,4 +8,5 @@ port=6600
 
 [other]
 delay=10
+header=Justify 
 admin_uri=/secretadminpanel
