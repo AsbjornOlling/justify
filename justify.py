@@ -3,9 +3,6 @@
 # A democratic http front-end for Mopidy
 #
 # TODO:
-# make release + 2820.camp branch
-# rewrite front page
-# allow more than just spotify results
 # switch away from development server - test w/ multiple people first
 # generate results page dynamically - test w/ multiple people first
 
