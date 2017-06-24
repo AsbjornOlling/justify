@@ -41,7 +41,7 @@ git clone https://github.com/AsbjornOlling/justify.git
 Copy the example config file
 ```
 cd justify
-cp config.example.txt config.txt
+cp sample.config.txt config.txt
 ```
 ### Starting justify
 Start mopidy first, then justify.py
