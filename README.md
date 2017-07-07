@@ -8,6 +8,17 @@ I made this because I wanted to have a democratic playlist running on a Raspberr
 This is my first ever project that isn't either a plain excersize or a shitty bash script. 
 I promise the programming is very terrible, and little to no maintenance will be done. Enjoy.
 
+### Features
+
+* Playlist is sorted by votes
+* Works with mopidy-spotify
+* Delay timer to prevent rapid voting
+* Some visual customization
+* Secret admin panel
+
+### Screenshot
+![A Screenshot of the playlist page](screenshot.png)
+
 ### Prerequisites
 
 Justify.py has the following dependencies:
