@@ -1,4 +1,4 @@
-# Justify.py
+# Justi.py
 
 Justify.py is a simple HTTP front-end for mopidy w/ the spotify extension.
 Inspired by similar programs (see: festify, partify), justify orders the playlist according to number of votes on a track. 
