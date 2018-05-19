@@ -1,10 +1,7 @@
-#
+#!/usr/bin/env python
+
 ## Justify.py
 # A democratic http front-end for Mopidy
-#
-# TODO:
-# switch away from development server - test w/ multiple people first
-# generate results page dynamically - test w/ multiple people first
 
 from __future__ import unicode_literals
 from bottle import route, run, post, request, template, redirect, static_file, auth_basic, parse_auth
@@ -15,6 +12,8 @@ import configparser
 import sys
 import os.path
 
+
+# TODO: move into model
 # dictionary of mpd ID : vote counts
 votes = {}
 # dictionary of mpd ID : vote times, for spoof prevention
@@ -53,14 +52,14 @@ client.consume(1)
 print("MPD connection established.")
 
 # SORTING FUNCTION
-# Runs on every vote and add. Sorts the song by bubble sort
-def Sort():
+# Runs on every vote and add. sorts the song by bubble sort
+def sort():
     playlist = client.playlistid() # get nice list of dicts
     swapped = True
     while swapped == True:
         swapped = False
         for i in range(1,len(playlist)-1): #iterate thru playlist, skipping first and last tracks
-            print("Sorting song nr. %i" % i)
+            print("sorting song nr. %i" % i)
             song = playlist[i]
             song2 = playlist[i+1]
             if votes[song["id"]] < votes[song2["id"]]:
@@ -101,7 +100,7 @@ def Vote():
     votes[voteid] += 1
     timers[voteid] = time.time() # reset timer
     print("Received vote.")
-    Sort()
+    sort()
     redirect('/list')
 
 # SEARCH PAGE
@@ -150,7 +149,7 @@ def Add(uri=None):
     if status["state"] != "play":
         client.play()
     print("Added a song.")
-    Sort()
+    sort()
     redirect('/list')
 
 # ADMIN PAGE totally incomplete
@@ -175,9 +174,9 @@ def AdminAction():
             votes[voteID] += 1
         elif request.forms.get('votedirection') == "420":
             votes[voteID] = 420
-        Sort()
+        sort()
         redirect(admin_uri)
     else:
         print("Something went wrong.")
 
-run(host=host, port=port)
+run(server='paste', host=host, port=port)
