@@ -13,18 +13,20 @@ class Viewer():
 
         # read config
         self.path = self.config.viewspath
-        self.header = self.config.headertext
-
+        self.headertext = self.config.headertext
 
 
     def welcome(self):
-        """ Introduction page """
-        return template(self.path + '/front', header=self.header)
+        """ Introduction page.
+        Only shown to users with no valid cookie.
+        """
+        return template(self.path + '/welcome.tpl', viewer=self)
 
 
-
-
-
-    # serve static files
     def get_static(filename):
+        """ Serve any static files """
         return static_file(filename, root=stapath)
+
+
+    def songinfo(filename):
+        playlist = self.model.playlist

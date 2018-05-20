@@ -7,12 +7,15 @@ from mpd import MPDClient
 # other application imports
 from client import Client
 
+
 ### Model
 # This is the class that handles the logic of sorting songs,
 # searching for songs, keeping track of identities, and communicating with mpd
 class Model():
     clients = []
     cookies = []
+    votes = {}
+
 
     def __init__(self, parent):
         self.parent = parent
@@ -22,6 +25,10 @@ class Model():
         # connect to mpd
         self.mpd = MPDClient()
         self.connect_mpd()
+
+        # read known cookies from file
+        cookiefile = open(self.cookies, 'r')
+        self.cookies = cookiefile.read().split("\n")
 
 
     def validate_cookie(self, cookie):
@@ -60,11 +67,19 @@ class Model():
         Should be run each time the user loads a playlist.
         """
         self.playlist = self.mpd.playlistid()  # ordered list of dicts
+
+        for song in self.playlist:
+            songid = song["file"]
+
+            # fix songs with no votes entry
+            votecount = self.votes.get(songid)
+            if votecount is None:
+                self.votes[songid] = 0
+
+            # add votecount to dict
+            song["votes"] = votecount
+
         return self.playlist
-
-
-
-
 
 
 

@@ -12,11 +12,13 @@ class Configuration():
 
     # set paths
     def set_paths(self):
-        relpath = os.path.dirname(sys.argv[0]) # path relative to shell dir
-        abspath = os.path.abspath(relpath) # absolute path of script
-        self.configpath = abspath + "/config.txt" # config file path
-        self.staticpath = abspath + "/static" #static server path
-        self.viewspath = abspath + "/views" #html templates path
+        relpath = os.path.dirname(sys.argv[0])     # path relative to shell dir
+        abspath = os.path.abspath(relpath)         # absolute path of script
+        self.configpath = abspath + "/config.txt"  # config file path
+        self.staticpath = abspath + "/static"      # static server path
+        self.viewspath = abspath + "/views"        # html templates path
+        self.logpath = abspath + "/log"            # logfile
+        self.cookiepath = abspath + "/cookies"     # previously dealt cookies
 
 
     def read_config(self):

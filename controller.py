@@ -18,14 +18,13 @@ class Controller():
         self.logger.log(3, "Instantiated Controller object")
 
 
-    # handle GET for the server root
+    # handle GET for anything but the admin panel
     def get_root(self):
         # get and check cookie
         cookie = request.get_cookie("id")
         if self.model.validate_cookie(cookie):
             # if the cookie is valid, show list
             page = self.viewer.playlist()
-
         else:
             # if no cookie found, make one
             newcookie = self.model.new_client()
