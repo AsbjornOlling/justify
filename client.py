@@ -8,13 +8,13 @@ class Client():
         self.model = model
 
         # generate identifying cookie
-        self.cookie = self.gen_id()
+        self.cookie = self.gen_cookie()
 
         # add to model list
         self.model.clients.append(self)
         self.model.cookies.append(self.cookie)
 
 
-    def gen_cookie():
+    def gen_cookie(self):
         """ Generate random cookie """
         return str(hex(random.getrandbits(128)))[2:]

@@ -1,5 +1,6 @@
 
-from bottle import get
+# library imports
+from bottle import get, template
 
 ### Viewer
 # Class responsible for handling template files,
@@ -11,16 +12,14 @@ class Viewer():
         self.config = parent.config
 
         # read config
-        self.path = config.viewspath
-        self.header = config.header
+        self.path = self.config.viewspath
+        self.header = self.config.headertext
 
-        # read template files
-        self.welcome = template(self.path+'front', header=self.header)
 
 
     def welcome(self):
         """ Introduction page """
-        return self.welcome
+        return template(self.path + '/front', header=self.header)
 
 
 

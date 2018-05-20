@@ -1,18 +1,24 @@
 
-from bottle import get
+from bottle import get, request, response
 
 ### Controller
 # class that handles all incoming requests,
 # and calls the appropriate methods in other classes
 class Controller():
     def __init__(self, parent):
+        # other app ojbects
         self.parent = parent
         self.model = parent.model
         self.viewer = parent.viewer
 
+        # utility objects
+        self.logger = parent.logger
+
+        # done
+        self.logger.log(3, "Instantiated Controller object")
+
 
     # handle GET for the server root
-    @get('/')
     def get_root(self):
         # get and check cookie
         cookie = request.get_cookie("id")

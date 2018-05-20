@@ -1,8 +1,11 @@
 # utility imports
 import random
 
+# library imports
+from mpd import MPDClient
+
 # other application imports
-import client
+from client import Client
 
 ### Model
 # This is the class that handles the logic of sorting songs,
@@ -17,16 +20,16 @@ class Model():
         self.logger = parent.logger
 
         # connect to mpd
-        sefl.mpd = MPDClient()
-        connect_mpd()
+        self.mpd = MPDClient()
+        self.connect_mpd()
 
 
     def validate_cookie(self, cookie):
         """Check if the clients cookie is a geniune user-id"""
         if cookie in self.cookies:
-            return true
+            return True
         else:
-            return false
+            return False
 
 
     def new_client(self):
@@ -35,16 +38,21 @@ class Model():
         """
         client = Client(self)
         cookie = client.cookie
-        logger.log(1, "")
+        self.logger.log(2, "Made new client object.")
         return cookie
 
 
     def connect_mpd(self):
         """ Connect to the mpd server, ensuring the right settings """
+        # some settings
         self.mpd.timeout = 100
         self.mpd.idletimeout = None
-        self.mpd.connect(self.config.mpdhost, self.config.mpdport)
-        self.mpd.consume(1)
+        try:  # connecting
+            self.mpd.connect(self.config.mpdhost, self.config.mpdport)
+            self.logger.log(1, "Connected to MPD instance.")
+            self.mpd.consume(1)  # clear each track after playing
+        except:
+            self.logger.log(0, "Failed connecting to MPD.")
 
 
     def get_playlist(self):
