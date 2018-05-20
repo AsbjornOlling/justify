@@ -2,4 +2,5 @@
 *.swp
 *.mp3
 config.txt
+__pycache__
 TODO.*
