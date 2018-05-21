@@ -2,8 +2,9 @@
 	% include('header.tpl', viewer=viewer)
 
 		<div class="container">
+
 			<h3 class="text-center">Want to put on a song?</h3>
-			<a style="display: block; margin-left: auto; margin-right: auto;" href="/list" class="btn btn-lg btn-warning">Fuck yeah!</a>
+			<a style="display: block; margin-left: auto; margin-right: auto;" href="/" class="btn btn-lg btn-warning">Fuck yeah!</a>
 
 			<br>
 
