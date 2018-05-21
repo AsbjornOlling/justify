@@ -12,8 +12,9 @@ from client import Client
 # This is the class that handles the logic of sorting songs,
 # searching for songs, keeping track of identities, and communicating with mpd
 class Model():
-    clients = []
-    cookies = []
+    # cookie-string : client-object pairs
+    clients = {}
+    # song-id : votecount pairs
     votes = {}
 
 
@@ -21,19 +22,22 @@ class Model():
         self.parent = parent
         self.config = parent.config
         self.logger = parent.logger
+        self.logger.log(3, "Making Model object.")
 
         # connect to mpd
         self.mpd = MPDClient()
         self.connect_mpd()
 
         # read known cookies from file
+        self.logger.log(3, "Reading cookie file.")
         cookiefile = open(self.config.cookiepath, 'r')
-        self.cookies = cookiefile.read().split("\n")
+        ## TODO make client objects based on this
 
 
     def validate_cookie(self, cookie):
         """ Check if the clients cookie is a geniune user-id """
-        if cookie in self.cookies:
+        self.logger.log(3, "Validating cookie")
+        if cookie in self.clients:
             return True
         else:
             return False
@@ -50,7 +54,7 @@ class Model():
 
 
     def connect_mpd(self):
-        """ Connect to the mpd server, 
+        """ Connect to the mpd server,
         ensuring the right settings when connected.
         """
         # some settings
@@ -68,21 +72,67 @@ class Model():
         """ Gets new playlist information from MPD.
         Should be run each time the user loads a playlist.
         """
-        self.logger.log(2, "Getting new playlist")
+        self.logger.log(3, "Getting new playlist.")
         self.playlist = self.mpd.playlistid()  # ordered list of dicts
 
+        self.clear_votes()    # clear old votes
+        self.sync_playlist()  # add missing songs to votes
+                              # and add votecount to playlist
+
+        return self.playlist
+
+
+    def sync_playlist(self):
+        """ Sync playlist from MPD with votes dict.
+        Add votecounts to playlist, as a new field in each song dict.
+        If playlist contains song not in votes dict, add it to votes dict.
+        Is called from get_playlist()
+        """
+        # add votes to playlist
+        # add missing songs to votes
         for song in self.playlist:
             songid = song["file"]
 
-            # fix songs with no votes entry
+            # add songs missing in votes dict
+            # (relevant if songs added from another frontend)
             votecount = self.votes.get(songid)
             if votecount is None:
-                self.votes[songid] = 0
+                self.votes[songid] = 1
 
             # add votecount to dict
             song["votes"] = votecount
 
-        return self.playlist
+
+    def clear_votes(self):
+        """ Clean up the vote dict.
+        Reset any voteentries which are no longer in the playlist.
+        Is called from get_playlist().
+        """
+        for votesentry in self.votes:
+            if not self.song_in_playlist(votesentry):  # if song missing
+                # remove from votes dict
+                self.logger.log(2, "Resmoving votes for song: " + votesentry)
+                del(self.votes[votesentry])
+                # remove clients' records of voting on that song
+                for client in clients:
+                    if votesentry in client.votes:
+                        self.logger.log(3, "Removing record of song " + votesentry
+                                            + " from client " + client.cookie)
+                        client.votes.remove(votesentry)
+
+
+    def song_in_playlist(self, songid):
+        """ Returns boolean, whether songid is in the current playlist.
+        This func does not call get_playlist() and update the playlist,
+        because it is being called from get_playlist() (and it would make a
+        recursive mess). Remember to call get_playlist() before calling me.
+        """
+        found = False
+        for song in playlist:
+            if song["file"] == songid:
+                found = True
+                break
+        return found
 
 
     def search(self, searchstring):
@@ -105,6 +155,51 @@ class Model():
         results = mpd.search("title", searcharray[0], "album", searcharray[1], "artist", searcharrray[2])
         self.logger.log(3, "Got reults: " + str(results))
         return results
+
+
+    def add_song(self, cookie, songid):
+        """ Add a song to the playlist.
+        Takes the cookie of the user who added it,
+        and the MPD filename of the song.
+        """
+        if not song_in_playlist(songid):
+            # add song to mpd
+            self.logger.log(1, "Client " + cookie + " added song " + songid + ".")
+            mpd.add(songid)
+            # make new votes entry
+            self.votes[songid] = 0
+        else:  # song already added
+            self.logger.log(1, "Couldn't add song, " + songid + " is already on playlist. Interpreting as vote.")
+        # cast vote on the new song
+        self.vote(cookie, songid)
+
+
+    def vote(self, cookie, songid):
+        """ Vote on a song from the playlist.
+        Takes the cookie of the user who voted,
+        and the MPD filename of the song.
+        """
+        # check if client is allowed to vote
+        client = self.clients[cookie]
+        if songid not in client.votes:
+            # if client has not cast vote yet
+            client.register_vote(songid)
+            self.votes[songid] = votes.get(songid) + 1
+        else:  # client has already voted on that song
+            self.logger.log(1, "Client " + cookie + " tried voting on a song twice.")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

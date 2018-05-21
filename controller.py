@@ -18,53 +18,94 @@ class Controller():
         self.logger.log(3, "Instantiated Controller object")
 
 
-    def get_root(self):
-        """ Handle GET for the root dir """
-        if self.check_cookie(request):
-            playlist = self.model.get_playlist()   # get playlist from model
-            page = self.viewer.playlist(playlist)  # generate playlist html
-        else:
+    def get_any(self, path=None):
+        """ Any GET request routes through here.
+        This function checks the cookie for validity,
+        then passes the request on.
+        """
+        if self.check_cookie(request):  # check cookie
+            # GET /
+            if path == None:
+                page = self.get_root()
+            else:
+                page = self.viewer.not_found()
+        else:  # bad cookie
             page = self.bad_cookie(response)
 
-        # send whichever html out to browser
+        return page
+
+
+    def post_any(self, path=None):
+        """ Any POST request routes through here.
+        This function checks the cookie, then passes it on.
+        """
+        if self.check_cookie(request):  # check cookie
+            if path == "search":
+                page = self.post_search()
+            elif path == "add":
+                page = self.post_add()
+            elif path == "vote":
+                pass
+            else:
+                page = self.viewer.not_found()
+
+        else:  # bad cookie
+            page = self.bad_cookie(response)
+        return page
+
+
+    def get_root(self):
+        """ Handle GET for the root dir """
+        playlist = self.model.get_playlist()   # get playlist from model
+        page = self.viewer.playlist(playlist)  # generate playlist html
         return page
 
 
     def post_search(self):
         """ Handle POST requests for /search """
-        if self.check_cookie(request):  # check cookie
-            searchtype = request.forms.get("searchtype")
-            results = []
+        searchtype = request.forms.get("searchtype")
+        results = []
 
-            # Simple Seearch
-            if searchtype == "simple":
-                query = request.forms.get("query")
-                results = self.model.search(query)
+        # Simple Search
+        if searchtype == "simple":
+            query = request.forms.get("query")
+            results = self.model.search(query)
 
-            # Better Search
-            elif searchtype == "better":
-                searcharray = [ request.forms.get("track"),
-                                request.forms.get("album"),
-                                request.forms.get("artist") ]
-                results = self.model.better_search(searcharray)
-
-            # Invalid POST
-            else:
-                self.logger.log(0, "Received bad search type.")
-
-            # generate results page
-            page = self.viewer.search(results)
+        # Better Search
+        elif searchtype == "better":
+            results = self.model.better_search([request.forms.get("track"),
+                                                request.forms.get("album"),
+                                                request.forms.get("artist")])
+        # Invalid type
         else:
-            # if bad cookie
-            page = self.bad_cookie(response)
-
+            self.logger.log(0, "Received bad search type.")
+        # generate results page
+        page = self.viewer.search(results)
         # send html out
         return page
 
 
+    def post_add(self):
+        """ Handle POST requests for /add """
+        songid = request.forms.get("songid")
+        cookie = self.get_cookie()
+        self.model.add_song(cookie, songid)
+        return page
+
+
+    def get_cookie(self, request):
+        """ Just return the cookie """
+        return request.get_cookie("id")
+
+
+    def set_cookie(self, response, cookie):
+        """ Set the cookie on the response object """
+        response.set_cookie("id", cookie)
+
+
     def check_cookie(self, request):
         """ Passes cookie from request object to the model for validation """
-        cookie = request.get_cookie("id")
+        cookie = self.get_cookie(request)
         return self.model.validate_cookie(cookie)
 
     
@@ -72,8 +113,9 @@ class Controller():
         """ If an unknown cookie is found
         Must be passed the response object of the request.
         """
-        # if no cookie found, make one
+        self.logger.log(2, "Reacting to bad cookie state.")
+        # make a new client object / cookie
         newcookie = self.model.new_client()
-        response.set_cookie("id", newcookie)
+        self.set_cookie(response, newcookie)
         # show welcome page
         return self.viewer.welcome()

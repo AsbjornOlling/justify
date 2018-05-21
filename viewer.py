@@ -37,10 +37,11 @@ class Viewer():
         return template(self.path + '/searchresults.tpl', searchresults=searchresults, viewer=self)
 
 
+    def not_found(self):
+        """ 404 Page """
+        return "<h1>404 - Page not found</h1>"
+
+
     def get_static(filename):
         """ Serve any static files """
         return static_file(filename, root=stapath)
-
-
-    def songinfo(filename):
-        playlist = self.model.playlist

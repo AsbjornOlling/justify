@@ -27,7 +27,7 @@ class App(Bottle):
 
         # utility objects
         self.config = Configuration()
-        self.logger = Logger(self, 10)
+        self.logger = Logger(self, 2)
 
         # main mvc objects
         self.model = Model(self)
@@ -44,8 +44,12 @@ class App(Bottle):
 
     def set_routes(self):
         """ Assigns web directories to functions """
-        self.route('/', method="GET", callback=self.controller.get_root)
-        self.route('/search', method="POST", callback=self.controller.post_search)
+        #self.route('/', method="GET", callback=self.controller.get_root)
+        #self.route('/search', method="POST", callback=self.controller.post_search)
+        #self.route('/add', method="POST", callback=self.controller.post_add)
+        self.route('/', method="GET", callback=self.controller.get_any)
+        self.route('/<path>', method="GET", callback=self.controller.get_any)
+        self.route('/<path>', method="POST", callback=self.controller.post_any)
 
 
 if __name__ == "__main__":
