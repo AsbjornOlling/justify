@@ -73,12 +73,10 @@ class Model():
         Should be run each time the user loads a playlist.
         """
         self.logger.log(3, "Getting new playlist.")
-        self.playlist = self.mpd.playlistid()  # ordered list of dicts
-
+        self.playlist = self.bubblesort_playlist()  # sort and get playlist
         self.clear_votes()    # clear old votes
-        self.sync_playlist()  # add missing songs to votes
-                              # and add votecount to playlist
-
+        self.sync_playlist()  # add missing songs to votes,
+                              # & add votecounts to playlist
         return self.playlist
 
 
@@ -170,8 +168,6 @@ class Model():
             self.votes[songid] = 0
         else:  # song already added
             self.logger.log(1, "Couldn't add song, " + songid + " is already on playlist. Interpreting as vote.")
-        # cast vote on the new song
-        self.vote(cookie, songid)
 
 
     def vote(self, cookie, songid):
@@ -189,6 +185,43 @@ class Model():
             self.logger.log(1, "Client " + cookie + " tried voting on a song twice.")
 
 
+    def bubblesort_playlist(self, level=0):
+        """ Bubble-sorts the playlist according to votes.
+        It  sorts using bubble sort,
+        where every single swap is a "move" call to MPV
+        This code is legacy from Justify v1.0:
+        """
+        swapped = False
+        playlist = self.mpd.playlistid()
+
+        # iterate through playlist, skipping first and last tracks 
+        for i in range(1, len(playlist) - 1):
+            # get songs
+            s1 = playlist[i]
+            s2 = playlist[i+1]
+
+            for s in [s1, s2]:
+                if self.votes.get(s["file"]) is None:
+                    self.votes[s["file"]] = 0
+
+            # count votes
+            votecount = [ self.votes[s["file"]] for s in [s1, s2] ]
+
+            if votecount[0] < votecount[1]:
+                # move song1 down
+                self.mpd.move(int(s1["pos"]),int(s1["pos"])+1)
+                playlist = self.mpd.playlistid() # re-load playlist only after swap
+                swapped = True
+
+        # recurse until done
+        if swapped:
+            self.bubblesort_playlist(level=level + 1)
+
+        # log and fix playlist before exiting
+        if level is 0:
+            self.logger.log(2, "Sorted playlist.")
+
+        return playlist
 
 
 
