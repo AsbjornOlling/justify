@@ -5,6 +5,8 @@ class Logger():
     def __init__(self, parent, loglevel):
         self.parent = parent
         self.config = parent.config
+
+        self.loglevel = loglevel
         self.logfile = open(self.config.logpath, 'a')
 
 
@@ -21,5 +23,5 @@ class Logger():
             elif priority is 3:
                 logstring = "[WTF] " + logstring
 
-        self.logfile.write(logstring)
+        self.logfile.write(logstring + "\n")
         print(logstring)

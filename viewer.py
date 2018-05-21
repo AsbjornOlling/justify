@@ -1,4 +1,3 @@
-
 # library imports
 from bottle import get, template
 
@@ -21,6 +20,13 @@ class Viewer():
         Only shown to users with no valid cookie.
         """
         return template(self.path + '/welcome.tpl', viewer=self)
+
+
+    def playlist(self, playlist):
+        """ Main playlist page.
+        Generates playlist with song info, and vote buttons.
+        """
+        return template(self.path + '/playlist.tpl', playlist=playlist, viewer=self)
 
 
     def get_static(filename):

@@ -23,8 +23,8 @@ class Controller():
         # get and check cookie
         cookie = request.get_cookie("id")
         if self.model.validate_cookie(cookie):
-            # if the cookie is valid, show list
-            page = self.viewer.playlist()
+            playlist = self.model.get_playlist()   # get playlist from model
+            page = self.viewer.playlist(playlist)  # generate playlist html
         else:
             # if no cookie found, make one
             newcookie = self.model.new_client()
@@ -32,5 +32,5 @@ class Controller():
             # show welcome page
             page = self.viewer.welcome()
 
-        #return template(tplpath+'front', delay=delay, header=header)
+        # send whichever html out to browser
         return page

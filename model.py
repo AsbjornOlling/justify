@@ -27,7 +27,7 @@ class Model():
         self.connect_mpd()
 
         # read known cookies from file
-        cookiefile = open(self.cookies, 'r')
+        cookiefile = open(self.config.cookiepath, 'r')
         self.cookies = cookiefile.read().split("\n")
 
 
