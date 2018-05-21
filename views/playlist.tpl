@@ -100,33 +100,8 @@
 			</div>
 			<!-- Table Done -->
 
-			<!-- Search -->
-			<h6>Add your own songs from Spotify:</h6>
+			% include("search.tpl", viewer=viewer)
 
-			<form action="/search" method="post">
-				<div class="input-group">
-
-					<input class="hidden" name="searchtype" value="simple"/>
-
-					<!-- Search field -->
-					<input class="form-control" placeholder="Input either the song title [OR] the artist" name="inputany" type="text" />
-
-					<!-- Button -->
-					<span class="input-group-btn">
-						<button class="btn btn-warning" type="submit">
-							<span class="fa fa-search"></span>
-						</button>
-					</span>
-
-				</div> <!-- /input group -->
-			</form>
-
-			<br>
-			<br>
-			<div align="right">
-				<a class="btn btn-default" href="/search">...or use Better Search</a>
-			</div>
-			<!-- Search section done -->
 
 		</div> <!-- /container -->
 
