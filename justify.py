@@ -27,7 +27,7 @@ class App(Bottle):
 
         # utility objects
         self.config = Configuration()
-        self.logger = Logger(self, 2)
+        self.logger = Logger(self, 1)
 
         # main mvc objects
         self.model = Model(self)

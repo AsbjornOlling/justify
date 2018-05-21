@@ -128,7 +128,7 @@ class Model():
         recursive mess). Remember to call get_playlist() before calling me.
         """
         found = False
-        for song in playlist:
+        for song in self.playlist:
             if song["file"] == songid:
                 found = True
                 break
@@ -152,7 +152,7 @@ class Model():
 
         # search
         self.logger.log(1, "Better Search for " + str(searcharray))
-        results = mpd.search("title", searcharray[0], "album", searcharray[1], "artist", searcharrray[2])
+        results = self.mpd.search("title", searcharray[0], "album", searcharray[1], "artist", searcharrray[2])
         self.logger.log(3, "Got reults: " + str(results))
         return results
 
@@ -162,10 +162,10 @@ class Model():
         Takes the cookie of the user who added it,
         and the MPD filename of the song.
         """
-        if not song_in_playlist(songid):
+        if not self.song_in_playlist(songid):
             # add song to mpd
             self.logger.log(1, "Client " + cookie + " added song " + songid + ".")
-            mpd.add(songid)
+            self.mpd.add(songid)
             # make new votes entry
             self.votes[songid] = 0
         else:  # song already added
@@ -184,7 +184,7 @@ class Model():
         if songid not in client.votes:
             # if client has not cast vote yet
             client.register_vote(songid)
-            self.votes[songid] = votes.get(songid) + 1
+            self.votes[songid] = self.votes.get(songid) + 1
         else:  # client has already voted on that song
             self.logger.log(1, "Client " + cookie + " tried voting on a song twice.")
 

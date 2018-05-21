@@ -48,7 +48,6 @@ class Controller():
                 pass
             else:
                 page = self.viewer.not_found()
-
         else:  # bad cookie
             page = self.bad_cookie(response)
         return page
@@ -88,9 +87,10 @@ class Controller():
     def post_add(self):
         """ Handle POST requests for /add """
         songid = request.forms.get("songid")
-        cookie = self.get_cookie()
+        cookie = self.get_cookie(request)
         self.model.add_song(cookie, songid)
-        return page
+        # redirect to main view
+        return self.get_root()
 
 
     def get_cookie(self, request):

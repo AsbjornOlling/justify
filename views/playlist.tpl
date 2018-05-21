@@ -45,10 +45,10 @@
 								% artist = playlist[0]["artist"]
 								<td>{{ artist }}</td>
 
-								% album = plist[0]["album"]
+								% album = playlist[0]["album"]
 								<td class="hidden-xs">{{ album }}</td>
 
-								% duration = str(int(int(plist[0]["time"]) / 60)) + ":" + str(int(plist[0]["time"]) % 60).zfill(2)
+								% duration = str(int(int(playlist[0]["time"]) / 60)) + ":" + str(int(playlist[0]["time"]) % 60).zfill(2)
 								<td class="hidden-xs">{{ duration }}</td>
 
 								% votecount = playlist[0]["votes"]
@@ -84,7 +84,7 @@
 										% voteID = song["file"]
 										<input type="hidden" name="voteID" value="{{ voteID }}"> 
 
-										% votecount = votes[song["id"]]
+										% votecount = song["votes"]
 										<button class="btn btn-default" type="submit">
 											<i class="fa fa-thumbs-up"></i>
 											{{ votecount }}

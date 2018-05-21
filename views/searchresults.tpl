@@ -56,7 +56,7 @@
 
 							<!-- Add button -->
 							<td>
-								<form action="/search/result" method="POST">
+								<form action="/add" method="POST">
 
 									% songid = song["file"]
 									<input type="hidden" name="songid" value="{{ songid }}"> 
