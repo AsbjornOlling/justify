@@ -241,62 +241,6 @@ class Model():
 #                    swapped = True
 #        print("Completed sorting.")
 #
-#
-#    # REGISTER FUNCTION
-#    # Triggered from list.tpl, adds a song to the dicts if not there. (for songs from other front-ends)
-#    def register(songid):
-#        votes[songid] = 0
-#        timers[songid] = time.time()
-#        print("Found and registered an unknown song.")
-#
-#
-#    #PLAYLIST PAGE
-#    #Shows the playlist in the current order, w/ vote buttons
-#    @route('/list')
-#    def list():
-#        print("Serving playlist page.")
-#        plist = client.playlistid() # get nice list of dicts
-#        return template(tplpath+'list', header=header, plist=plist, votes=votes, timers=timers, delay=delay, time=time, register=register)
-#
-#
-#    @post('/list')
-#    def vote():
-#        voteid = request.POST.get('voteID')
-#        votes[voteid] += 1
-#        timers[voteid] = time.time() # reset timer
-#        print("Received vote.")
-#        sort()
-#        redirect('/list')
-#
-#    # SEARCH PAGE
-#    # for specific search form
-#    @route('/search')
-#    def search_form():
-#        print("Serving specific search page")
-#        return template(tplpath+'search', header=header)
-#
-#
-#    # SEARCH RESULTS PAGE
-#    @route('/search/result')
-#    def search_results():
-#        print("Serving search results page")
-#        return template(tplpath+'result', header=header, result=result)
-#
-#    @post('/search/result')
-#    def add(uri=None):
-#        if uri is None:
-#            uri = request.POST.get('URI')
-#        songid = client.addid(uri)
-#        votes[songid] = 1
-#        timers[songid] = time.time() - delay
-#        # play song if paused
-#        status = client.status()
-#        if status["state"] != "play":
-#            client.play()
-#        print("added a song.")
-#        sort()
-#        redirect('/list')
-#
 #    # ADMIN PAGE totally incomplete
 #    @route(admin_uri)
 #    def admin_panel():
