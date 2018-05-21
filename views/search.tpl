@@ -7,7 +7,7 @@
 		<input class="hidden" name="searchtype" value="simple"/>
 
 		<!-- Search field -->
-		<input class="form-control" placeholder="Input either the song title [OR] the artist" name="inputany" type="text" />
+		<input class="form-control" placeholder="Input either the song title [OR] the artist" name="query" type="text" />
 
 		<!-- Button -->
 		<span class="input-group-btn">

@@ -29,6 +29,14 @@ class Viewer():
         return template(self.path + '/playlist.tpl', playlist=playlist, viewer=self)
 
 
+    def search(self, searchresults):
+        """ Search results page.
+        Generates list of search reults in table,
+        with an add button.
+        """
+        return template(self.path + '/searchresults.tpl', searchresults=searchresults, viewer=self)
+
+
     def get_static(filename):
         """ Serve any static files """
         return static_file(filename, root=stapath)

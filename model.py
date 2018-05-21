@@ -32,7 +32,7 @@ class Model():
 
 
     def validate_cookie(self, cookie):
-        """Check if the clients cookie is a geniune user-id"""
+        """ Check if the clients cookie is a geniune user-id """
         if cookie in self.cookies:
             return True
         else:
@@ -40,7 +40,7 @@ class Model():
 
 
     def new_client(self):
-        """Generate a new client object.
+        """ Generate a new client object.
         Returns a cookie, to be sent to the client.
         """
         client = Client(self)
@@ -50,7 +50,9 @@ class Model():
 
 
     def connect_mpd(self):
-        """ Connect to the mpd server, ensuring the right settings """
+        """ Connect to the mpd server, 
+        ensuring the right settings when connected.
+        """
         # some settings
         self.mpd.timeout = 100
         self.mpd.idletimeout = None
@@ -66,6 +68,7 @@ class Model():
         """ Gets new playlist information from MPD.
         Should be run each time the user loads a playlist.
         """
+        self.logger.log(2, "Getting new playlist")
         self.playlist = self.mpd.playlistid()  # ordered list of dicts
 
         for song in self.playlist:
@@ -82,8 +85,26 @@ class Model():
         return self.playlist
 
 
+    def search(self, searchstring):
+        """ MPD "Any"-search with just one string. """
+        if searchstring is None:
+            searchstring = ""
+        self.logger.log(1, "Simple search for " + searchstring)
+        results = self.mpd.search("any", searchstring)
+        self.logger.log(3, "Received results: " + str(results))
+        return results
 
 
+    def better_search(self, searcharray):
+        """ Search with separate track/album/artist fields """
+        # replace None with empty string
+        searcharray = ["" for x in searcharray if x is None]
+
+        # search
+        self.logger.log(1, "Better Search for " + str(searcharray))
+        results = mpd.search("title", searcharray[0], "album", searcharray[1], "artist", searcharrray[2])
+        self.logger.log(3, "Got reults: " + str(results))
+        return results
 
 
 
@@ -159,26 +180,6 @@ class Model():
 #        print("Serving specific search page")
 #        return template(tplpath+'search', header=header)
 #
-#    @post('/search')
-#    def search():
-#        global result
-#        if request.forms.get('searchtype') == "simple":
-#            print("Doing simple search!")
-#            searchany = request.forms.get('inputany')
-#            result = client.search("any",searchany)
-#        elif request.forms.get('searchtype') == "specific":
-#            print("Doing specific search!")
-#            # reset vars to avoid searching for "None"
-#            searchsong = ""
-#            searchartist = ""
-#            searchalbum = ""
-#            searchsong = request.forms.get('inputsong')
-#            searchartist = request.forms.get('inputartist')
-#            searchalbum = request.forms.get('inputalbum')
-#            result = client.search("title",searchsong,"artist",searchartist,"album",searchalbum)
-#        else:
-#            "Something went wrong!"
-#        redirect('/search/result')
 #
 #    # SEARCH RESULTS PAGE
 #    @route('/search/result')

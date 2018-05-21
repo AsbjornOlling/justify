@@ -45,6 +45,7 @@ class App(Bottle):
     def set_routes(self):
         """ Assigns web directories to functions """
         self.route('/', method="GET", callback=self.controller.get_root)
+        self.route('/search', method="POST", callback=self.controller.post_search)
 
 
 if __name__ == "__main__":
