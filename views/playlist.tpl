@@ -79,10 +79,10 @@
 
 								<!-- Vote button -->
 								<td>
-									<form action="/list" method="post"> 
+									<form action="/vote" method="post"> 
 
-										% voteID = song["file"]
-										<input type="hidden" name="voteID" value="{{ voteID }}"> 
+										% songid = song["file"]
+										<input type="hidden" name="songid" value="{{ songid }}"> 
 
 										% votecount = song["votes"]
 										<button class="btn btn-default" type="submit">

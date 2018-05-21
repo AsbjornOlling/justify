@@ -23,14 +23,14 @@ class Controller():
         This function checks the cookie for validity,
         then passes the request on.
         """
-        if self.check_cookie(request):  # check cookie
+        if self.check_cookie():  # check cookie
             # GET /
             if path == None:
                 page = self.get_root()
             else:
                 page = self.viewer.not_found()
         else:  # bad cookie
-            page = self.bad_cookie(response)
+            page = self.bad_cookie()
 
         return page
 
@@ -39,17 +39,17 @@ class Controller():
         """ Any POST request routes through here.
         This function checks the cookie, then passes it on.
         """
-        if self.check_cookie(request):  # check cookie
+        if self.check_cookie():  # check cookie
             if path == "search":
                 page = self.post_search()
             elif path == "add":
                 page = self.post_add()
             elif path == "vote":
-                pass
+                page = self.post_vote()
             else:
                 page = self.viewer.not_found()
         else:  # bad cookie
-            page = self.bad_cookie(response)
+            page = self.bad_cookie()
         return page
 
 
@@ -87,35 +87,43 @@ class Controller():
     def post_add(self):
         """ Handle POST requests for /add """
         songid = request.forms.get("songid")
-        cookie = self.get_cookie(request)
+        cookie = self.get_cookie()
         self.model.add_song(cookie, songid)
         # redirect to main view
         return self.get_root()
 
 
-    def get_cookie(self, request):
+    def post_vote(self):
+        """ Handle POST requests for /vote """
+        songid = request.forms.get("songid")
+        cookie = self.get_cookie()
+        self.model.vote(cookie, songid)
+        return self.get_root()
+
+
+    def get_cookie(self):
         """ Just return the cookie """
         return request.get_cookie("id")
 
 
-    def set_cookie(self, response, cookie):
+    def set_cookie(self, cookie):
         """ Set the cookie on the response object """
         response.set_cookie("id", cookie)
 
 
-    def check_cookie(self, request):
+    def check_cookie(self):
         """ Passes cookie from request object to the model for validation """
-        cookie = self.get_cookie(request)
+        cookie = self.get_cookie()
         return self.model.validate_cookie(cookie)
 
     
-    def bad_cookie(self, response):
+    def bad_cookie(self):
         """ If an unknown cookie is found
         Must be passed the response object of the request.
         """
         self.logger.log(2, "Reacting to bad cookie state.")
         # make a new client object / cookie
         newcookie = self.model.new_client()
-        self.set_cookie(response, newcookie)
+        self.set_cookie(newcookie)
         # show welcome page
         return self.viewer.welcome()
