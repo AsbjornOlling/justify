@@ -10,18 +10,18 @@ class Logger():
         self.logfile = open(self.config.logpath, 'a')
 
 
-    def log(self, priority, logstring):
+    def log(self, loglevel, logstring):
         """ Main logging function. called from everywhere """
         # filter according to loglevel
-        if priority <= self.loglevel:
-            if priority is 0:
-                logstring = "[ERROR] " + logstring
-            elif priority is 1:
-                logstring = "[INFO] " + logstring
-            elif priority is 2:
-                logstring = "[DEBUG] " + logstring
-            elif priority is 3:
-                logstring = "[WTF] " + logstring
+        if self.loglevel >= loglevel:
+            if loglevel == 0:
+                output = "[ERROR] " + logstring
+            elif loglevel == 1:
+                output = "[INFO] " + logstring
+            elif loglevel == 2:
+                output = "[DEBUG] " + logstring
+            elif loglevel == 3:
+                output = "[WTF] " + logstring
 
-        self.logfile.write(logstring + "\n")
-        print(logstring)
+            self.logfile.write(logstring + "\n")
+            print(output)

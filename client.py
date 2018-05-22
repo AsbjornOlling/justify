@@ -7,11 +7,14 @@ class Client():
     # list of voted-on songIDs
     votes = []
 
-    def __init__(self, model):
+    def __init__(self, model, cookie=None):
         self.model = model
 
         # generate identifying cookie
-        self.cookie = self.gen_cookie()
+        if cookie is None:
+            self.cookie = self.gen_cookie()
+        else:
+            self.cookie = cookie
 
         # add to model dictionary
         self.model.clients[self.cookie] = self

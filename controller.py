@@ -1,5 +1,5 @@
 
-from bottle import get, request, response
+from bottle import get, request, response, redirect
 
 ### Controller
 # class that handles all incoming requests,
@@ -56,8 +56,7 @@ class Controller():
     def get_root(self):
         """ Handle GET for the root dir """
         playlist = self.model.get_playlist()   # get playlist from model
-        page = self.viewer.playlist(playlist)  # generate playlist html
-        return page
+        return self.viewer.playlist(playlist)  # generate playlist html
 
 
     def post_search(self):
@@ -90,7 +89,7 @@ class Controller():
         cookie = self.get_cookie()
         self.model.add_song(cookie, songid)
         # redirect to main view
-        return self.get_root()
+        redirect('/')
 
 
     def post_vote(self):
@@ -98,7 +97,7 @@ class Controller():
         songid = request.forms.get("songid")
         cookie = self.get_cookie()
         self.model.vote(cookie, songid)
-        return self.get_root()
+        redirect('/')
 
 
     def get_cookie(self):

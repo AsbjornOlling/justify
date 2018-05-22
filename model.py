@@ -29,9 +29,24 @@ class Model():
         self.connect_mpd()
 
         # read known cookies from file
+        self.read_cookies()
+
+
+    def read_cookies(self):
+        """ Read cookies file, and make client object for each. """
         self.logger.log(3, "Reading cookie file.")
         cookiefile = open(self.config.cookiepath, 'r')
-        ## TODO make client objects based on this
+        cookies = cookiefile.read().split("\n")
+        for cookie in cookies:
+            Client(self,cookie)
+        cookiefile.close()
+
+
+    def write_cookie(self, cookie):
+        """ Write a string to a file. """
+        cookiefile = open(self.config.cookiepath, 'a')
+        cookiefile.write(cookie + "\n")
+        cookiefile.close()
 
 
     def validate_cookie(self, cookie):
@@ -49,6 +64,7 @@ class Model():
         """
         client = Client(self)
         cookie = client.cookie
+        self.write_cookie(cookie)
         self.logger.log(2, "Made new client object.")
         return cookie
 
