@@ -4,7 +4,7 @@
 	<div class="input-group">
 
 		<!-- Search type hidden field -->
-		<input class="hidden" name="searchtype" value="simple"/>
+		<input class="d-none" name="searchtype" value="simple"/>
 
 		<!-- Search field -->
 		<input class="form-control" placeholder="Input either the song title [OR] the artist" name="query" type="text" />
