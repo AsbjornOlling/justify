@@ -1,12 +1,21 @@
 [http]
-host=localhost
-port=8080
+#host=localhost
+#port=8080
 
 [mpd]
-host=localhost
-port=6600
+#host=localhost
+#port=6600
+#neverpause=yes
+
+[paths]
+## Paths are set with code dir as root,
+## no trailing slash.
+#static_content=/static
+#templates=/views
+#stylesheets=/static/css
+#cookiefile=/cookies
+#logfile=/log
 
 [other]
-delay=10
-header=Justify 
-admin_uri=/secretadminpanel
+#header=Justify 
+#admin_uri=/secretadminpanel

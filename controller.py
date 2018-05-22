@@ -1,5 +1,6 @@
 
 from bottle import get, request, response, redirect
+import re
 
 ### Controller
 # class that handles all incoming requests,
@@ -27,22 +28,34 @@ class Controller():
             # GET /
             if path is None:
                 page = self.get_root()
+
+            # GET stylesheet
+            elif re.match("static\/css\/[^\/]+\.css", path):
+                page = self.viewer.get_static(path)
+
+            # GET favicon.ico TODO
+            elif path == "favicon.ico":
+                page = None
+
             # POST /search
             elif path == "search":
                 page = self.post_search()
+
             # POST /add
             elif path == "add":
                 page = self.post_add()
+
             # POST /vote
             elif path == "vote":
                 page = self.post_vote()
+
             # ERR 404
             else:
                 self.logger.log(0, "Client tried to load " + str(path))
                 page = self.viewer.not_found()
         else:  # bad cookie
             page = self.bad_cookie()
-        return page
+        return page  # send response
 
 
     def get_root(self):

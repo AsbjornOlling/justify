@@ -84,6 +84,12 @@ class Model():
             self.logger.log(0, "Failed connecting to MPD.")
 
 
+    def unpause_mpd(self):
+        """ Sends play command to mpd if paused """
+        if self.mpd.status().get("state") != "play":
+            mpd.play(0)  # play first song on list
+
+
     def get_playlist(self):
         """ Gets new playlist information from MPD.
         Should be run each time the user loads a playlist.
@@ -93,6 +99,8 @@ class Model():
         self.clear_votes()    # clear old votes
         self.sync_playlist()  # add missing songs to votes,
                               # & add votecounts to playlist
+        if self.config.neverpause:
+            self.unpause_mpd()  # WHYD THE MUSIC STOP
         return self.playlist
 
 

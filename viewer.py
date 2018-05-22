@@ -42,6 +42,12 @@ class Viewer():
         return "<h1>404 - Page not found</h1>"
 
 
-    def get_static(filename):
+    def get_static(self, filename):
         """ Serve any static files """
         return static_file(filename, root=stapath)
+
+
+    def stylesheet(stylesheet):
+        """ Fetch stylesheet """
+        return static_file(stylesheet, root=self.config.csspath)
+
