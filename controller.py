@@ -18,32 +18,27 @@ class Controller():
         self.logger.log(3, "Instantiated Controller object")
 
 
-    def get_any(self, path=None):
-        """ Any GET request routes through here.
+    def route_request(self, path=None):
+        """ Any GET or POST request routes through here.
         This function checks the cookie for validity,
         then passes the request on.
         """
         if self.check_cookie():  # check cookie
             # GET /
-            if path == None:
+            if path is None:
                 page = self.get_root()
-        else:  # bad cookie
-            page = self.bad_cookie()
-        return page
-
-
-    def post_any(self, path=None):
-        """ Any POST request routes through here.
-        This function checks the cookie, then passes it on.
-        """
-        if self.check_cookie():  # check cookie
-            if path == "search":
+            # POST /search
+            elif path == "search":
                 page = self.post_search()
+            # POST /add
             elif path == "add":
                 page = self.post_add()
+            # POST /vote
             elif path == "vote":
                 page = self.post_vote()
+            # ERR 404
             else:
+                self.logger.log(0, "Client tried to load " + str(path))
                 page = self.viewer.not_found()
         else:  # bad cookie
             page = self.bad_cookie()
