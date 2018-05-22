@@ -86,7 +86,7 @@ class Model():
 
     def unpause_mpd(self):
         """ Sends play command to mpd if paused """
-        if self.mpd.status().get("state") != "play":
+        if self.mpd.status().get("state") != "play" and self.playlist:
             self.mpd.play(0)  # play first song on list
 
 

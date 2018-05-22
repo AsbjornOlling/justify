@@ -1,5 +1,5 @@
 # library imports
-from bottle import get, template
+from bottle import get, template, static_file
 
 ### Viewer
 # Class responsible for handling template files,
@@ -9,6 +9,7 @@ class Viewer():
         self.parent = parent
         self.model = parent.model
         self.config = parent.config
+        self.logger = parent.logger
 
         # read config
         self.path = self.config.viewspath
@@ -47,7 +48,7 @@ class Viewer():
         return static_file(filename, root=stapath)
 
 
-    def stylesheet(stylesheet):
+    def stylesheet(self, stylesheet):
         """ Fetch stylesheet """
         self.logger.log(3, "Serving stylesheet" + stylesheet)
         return static_file(stylesheet, root=self.config.csspath)

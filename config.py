@@ -64,3 +64,4 @@ class Configuration(RawConfigParser):
         self.headertext = self.get("other",
                                    "header",
                                    fallback="Justify")
+

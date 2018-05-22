@@ -31,7 +31,7 @@ class Controller():
 
             # GET stylesheet
             elif re.match("static\/css\/[^\/]+\.css", path):
-                page = self.viewer.get_stylesheet(path.split("/")[-1])
+                page = self.viewer.stylesheet(path.split("/")[-1])
 
             # GET favicon.ico TODO
             elif path == "favicon.ico":
@@ -128,7 +128,7 @@ class Controller():
         """ If an unknown cookie is found
         Must be passed the response object of the request.
         """
-        self.logger.log(2, "Reacting to bad cookie state.")
+        self.logger.log(1, "Reacting to bad cookie state.")
         # make a new client object / cookie
         newcookie = self.model.new_client()
         self.set_cookie(newcookie)
