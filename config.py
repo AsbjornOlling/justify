@@ -41,9 +41,8 @@ class Configuration(RawConfigParser):
                                    "port",
                                    fallback="6600")
         self.neverpause = self.getboolean("mpd",
-                                          "port",
-                                          fallback="6600")
-        # PATHS
+                                          "neverpause",
+                                          fallback="yes")
         self.staticpath = self.path + self.get("paths",
                                                "static_content",
                                                fallback="/static")
