@@ -42,16 +42,16 @@
 					% # filter out non-track results (artists and albums)
 					% if song["file"].split(":")[1] == "track":
 						<tr>
-							% title = song["title"]
+							% title = song.get("title")
 							<td>{{ title }}</td>
 
-							% artist = song["artist"]
+							% artist = song.get("artist")
 							<td>{{ artist }}</td>
 
-							% album = song["album"]
+							% album = song.get("album")
 							<td class="hidden-xs">{{ album }}</td>
 
-							% duration = str(int(int(song["time"]) / 60)) + ":" + str(int(song["time"]) % 60).zfill(2)
+							% duration = str(int(int(song.get("time")) / 60)) + ":" + str(int(song.get("time")) % 60).zfill(2)
 							<td class="hidden-xs">{{ duration }}</td>
 
 							<!-- Add button -->

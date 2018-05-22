@@ -6,7 +6,7 @@ from bottle import get, request, response, redirect
 # and calls the appropriate methods in other classes
 class Controller():
     def __init__(self, parent):
-        # other app ojbects
+        # other app objects
         self.parent = parent
         self.model = parent.model
         self.viewer = parent.viewer
@@ -27,11 +27,8 @@ class Controller():
             # GET /
             if path == None:
                 page = self.get_root()
-            else:
-                page = self.viewer.not_found()
         else:  # bad cookie
             page = self.bad_cookie()
-
         return page
 
 

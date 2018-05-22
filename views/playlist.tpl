@@ -39,16 +39,16 @@
 						% if playlist:
 							<tr class="warning">
 
-								% title = playlist[0]["title"]
+								% title = playlist[0].get("title")
 								<td>{{ title }}</td>
 
-								% artist = playlist[0]["artist"]
+								% artist = playlist[0].get("artist")
 								<td>{{ artist }}</td>
 
-								% album = playlist[0]["album"]
+								% album = playlist[0].get("album")
 								<td class="hidden-xs">{{ album }}</td>
 
-								% duration = str(int(int(playlist[0]["time"]) / 60)) + ":" + str(int(playlist[0]["time"]) % 60).zfill(2)
+								% duration = str(int(int(playlist[0].get("time")) / 60)) + ":" + str(int(playlist[0].get("time")) % 60).zfill(2)
 								<td class="hidden-xs">{{ duration }}</td>
 
 								% votecount = playlist[0]["votes"]
