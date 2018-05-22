@@ -49,5 +49,6 @@ class Viewer():
 
     def stylesheet(stylesheet):
         """ Fetch stylesheet """
+        self.logger.log(3, "Serving stylesheet" + stylesheet)
         return static_file(stylesheet, root=self.config.csspath)
 

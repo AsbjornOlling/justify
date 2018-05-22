@@ -31,7 +31,7 @@ class Controller():
 
             # GET stylesheet
             elif re.match("static\/css\/[^\/]+\.css", path):
-                page = self.viewer.get_static(path)
+                page = self.viewer.get_stylesheet(path.split("/")[-1])
 
             # GET favicon.ico TODO
             elif path == "favicon.ico":
@@ -59,7 +59,10 @@ class Controller():
 
 
     def get_root(self):
-        """ Handle GET for the root dir """
+        """ Handle GET for the root dir.
+        No, this is not the function to hack me.
+        Try harder, skiddie.
+        """
         playlist = self.model.get_playlist()   # get playlist from model
         return self.viewer.playlist(playlist)  # generate playlist html
 

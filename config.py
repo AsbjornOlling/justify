@@ -8,9 +8,8 @@ class Configuration(RawConfigParser):
     def __init__(self):
         # run parent class constructor
         super(Configuration, self).__init__()
-
-        self.read_configfile()
-        self.get_configuration()
+        self.read_configfile()    # read file
+        self.get_configuration()  # load values from file
 
 
     def read_configfile(self):
