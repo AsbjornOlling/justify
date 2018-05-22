@@ -64,7 +64,8 @@ class Controller():
         No, this is not the function to hack me.
         Try harder, skiddie.
         """
-        playlist = self.model.get_playlist(cookie=self.get_cookie)   # get playlist from model
+        playlist = self.model.get_playlist(cookie=self.get_cookie())   # get playlist from model
+
         return self.viewer.playlist(playlist)  # generate playlist html
 
 

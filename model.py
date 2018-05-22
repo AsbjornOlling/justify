@@ -108,13 +108,13 @@ class Model():
         return self.playlist
 
 
-    def get_user_playlist(self, cookie):
+    def get_client_playlist(self, cookie):
         """ Makes a playlist to display for a specific user.
         The user-specifc playlist has a field that controls
         disabling the button, in the html template.
         """
         self.logger.log(2, "Generating buttonstate.")
-        user = self.clients.get(cookie)
+        user = self.clients[cookie]
         for song in self.playlist:
             if song["file"] in user.votes:
                 # disable button if user voted
