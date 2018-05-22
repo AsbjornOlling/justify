@@ -58,10 +58,13 @@ class Configuration(RawConfigParser):
                                             "logfile",
                                             fallback="/log")
         # OTHER
-        self.admin_uri = self.get("other",
-                                  "admin_uri",
-                                  fallback="secretadminpanel")
+        self.theme = self.get("other",
+                              "theme",
+                              fallback="darkly")
         self.headertext = self.get("other",
                                    "header",
                                    fallback="Justify")
+        self.admin_uri = self.get("other",
+                                  "admin_uri",
+                                  fallback="secretadminpanel")
 

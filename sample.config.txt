@@ -18,4 +18,5 @@
 
 [other]
 #header=Justify 
+#theme=darkly
 #admin_uri=/secretadminpanel
