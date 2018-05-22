@@ -50,7 +50,7 @@ class Model():
 
 
     def validate_cookie(self, cookie):
-        """ Check if the clients cookie is a geniune user-id """
+        """ Check if the clients cookie is a geniune client-id """
         self.logger.log(3, "Validating cookie")
         if cookie in self.clients:
             return True
@@ -90,18 +90,39 @@ class Model():
             self.mpd.play(0)  # play first song on list
 
 
-    def get_playlist(self):
+    def get_playlist(self, cookie=None):
         """ Gets new playlist information from MPD.
-        Should be run each time the user loads a playlist.
+        Should be run each time client loads a playlist.
         """
         self.logger.log(3, "Getting new playlist.")
         self.playlist = self.bubblesort_playlist()  # sort and get playlist
         self.clear_votes()    # clear old votes
         self.sync_playlist()  # add missing songs to votes,
                               # & add votecounts to playlist
+
+        # add button states to the playlist
+        if cookie: self.get_client_playlist(cookie)
+
         if self.config.neverpause:
             self.unpause_mpd()  # WHYD THE MUSIC STOP
         return self.playlist
+
+
+    def get_user_playlist(self, cookie):
+        """ Makes a playlist to display for a specific user.
+        The user-specifc playlist has a field that controls
+        disabling the button, in the html template.
+        """
+        self.logger.log(2, "Generating buttonstate.")
+        user = self.clients.get(cookie)
+        for song in self.playlist:
+            if song["file"] in user.votes:
+                # disable button if user voted
+                song["buttonstate"] = False
+            else:
+                # let button stay if untouched
+                song["buttonstate"] = True
+
 
 
     def sync_playlist(self):

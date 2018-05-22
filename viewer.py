@@ -14,6 +14,7 @@ class Viewer():
         # read config
         self.path = self.config.viewspath
         self.headertext = self.config.headertext
+        self.theme = self.config.theme
 
 
     def welcome(self):

@@ -11,17 +11,13 @@
 
 		<!-- Button -->
 		<span class="input-group-btn">
-			<button class="btn btn-warning" type="submit">
+			<button class="btn btn-primary" type="submit">
 				<span class="fa fa-search"></span>
 			</button>
 		</span>
 
 	</div> <!-- /input group -->
 </form>
-
-<br>
-
-<br>
 
 <div align="right">
 	<a class="btn btn-default" href="/search">...or use <b>Better Search</b></a>

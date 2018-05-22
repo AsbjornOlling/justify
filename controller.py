@@ -60,10 +60,11 @@ class Controller():
 
     def get_root(self):
         """ Handle GET for the root dir.
+        This is the main playlist view.
         No, this is not the function to hack me.
         Try harder, skiddie.
         """
-        playlist = self.model.get_playlist()   # get playlist from model
+        playlist = self.model.get_playlist(cookie=self.get_cookie)   # get playlist from model
         return self.viewer.playlist(playlist)  # generate playlist html
 
 

@@ -85,7 +85,8 @@
 										<input type="hidden" name="songid" value="{{ songid }}"> 
 
 										% votecount = song["votes"]
-										<button class="btn btn-default" type="submit">
+										% buttonstate = "" if song["buttonstate"] else "disabled"
+										<button class="btn btn-default {{ buttonstate }}" type="submit">
 											<i class="fa fa-thumbs-up"></i>
 											{{ votecount }}
 										</button>
