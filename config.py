@@ -15,8 +15,9 @@ class Configuration():
         relpath = os.path.dirname(sys.argv[0])     # path relative to shell dir
         abspath = os.path.abspath(relpath)         # absolute path of script
         self.configpath = abspath + "/config.txt"  # config file path
-        self.staticpath = abspath + "/static"      # static server path
-        self.viewspath = abspath + "/views"        # html templates path
+        self.staticpath = abspath + "/static"      # static content dir
+        self.viewspath = abspath + "/views"        # html templates dir
+        self.csspath = self.stapath + "/css"       # css stylesheets dir
         self.logpath = abspath + "/log"            # logfile
         self.cookiepath = abspath + "/cookies"     # previously dealt cookies
 
