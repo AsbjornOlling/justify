@@ -84,13 +84,21 @@ class Controller():
             results = self.model.search(query)
 
         # Better Search
-        elif searchtype == "better":
-            results = self.model.better_search([request.forms.get("track"),
-                                                request.forms.get("album"),
-                                                request.forms.get("artist")])
-        # Invalid type
+        elif searchtype == "specific":
+            # build array of search data
+            fields = ["track", "album", "artist"]
+            searcharray = [ None for _ in range(len(fields)) ]
+            for field in fields:
+                fieldvalue = request.forms.get(field)
+                searcharray[fields.index(field)] = fieldvalue if fieldvalue is not None else ""
+
+            # search for results
+            results = self.model.better_search(searcharray)
+
+        # Invalid search type
         else:
-            self.logger.log(0, "Received bad search type.")
+            self.logger.log(0, "Received bad search type " + str(searchtype))
+
         # generate results page
         page = self.viewer.search(results)
         # send html out

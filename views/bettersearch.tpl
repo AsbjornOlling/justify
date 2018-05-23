@@ -18,42 +18,36 @@
 
 					<!-- Track title-->
 					<div class="input-group">
-
 						<!-- Icon -->
 						<div class="input-group-prepend">
 							<span class="input-group-text">
 								<ion-icon name="musical-note"></ion-icon>
 							</span>
 						</div>
-
 						<!-- Input -->
-						<input class="form-control" placeholder="Track title" name="song" type="text" />
+						<input class="form-control" placeholder="Track title" name="track" type="text" />
 					</div>
 
 					<!-- Artist -->
 					<div class="input-group">
-
 						<!-- Icon -->
 						<div class="input-group-prepend">
 							<span class="input-group-text">
 								<ion-icon name="person"></ion-icon>
 							</span>
 						</div>
-
 						<!-- Input -->
 						<input class="form-control" placeholder="Artist" name="artist" type="text" />
 					</div>
 
 					<!-- Album -->
 					<div class="input-group">
-
 						<!-- Icon -->
 						<div class="input-group-prepend">
 							<span class="input-group-text">
 								<ion-icon name="disc"></ion-icon>
 							</span>
 						</div>
-
 						<!-- Input -->
 						<input class="form-control" placeholder="Album" name="album" type="text" />
 					</div>

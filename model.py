@@ -193,12 +193,9 @@ class Model():
 
     def better_search(self, searcharray):
         """ Search with separate track/album/artist fields """
-        # replace None with empty string
-        searcharray = ["" for x in searcharray if x is None]
-
         # search
         self.logger.log(1, "Better Search for " + str(searcharray))
-        results = self.mpd.search("title", searcharray[0], "album", searcharray[1], "artist", searcharrray[2])
+        results = self.mpd.search("title", searcharray[0], "album", searcharray[1], "artist", searcharray[2])
         self.logger.log(3, "Got reults: " + str(results))
         return results
 
@@ -242,7 +239,7 @@ class Model():
         swapped = False
         playlist = self.mpd.playlistid()
 
-        # iterate through playlist, skipping first and last tracks 
+        # iterate through playlist, skipping first and last tracks
         for i in range(1, len(playlist) - 1):
             # get songs
             s1 = playlist[i]
