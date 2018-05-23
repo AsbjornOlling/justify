@@ -10,9 +10,9 @@
 		<input class="form-control" placeholder="Input either the song title [OR] the artist" name="query" type="text" />
 
 		<!-- Button -->
-		<span class="input-group-btn">
-			<button class="btn btn-primary" type="submit">
-				<span class="fa fa-search"></span>
+		<span class="input-group-append">
+			<button class="btn btn-secondary" type="submit">
+				<ion-icon name="search"></ion-icon>
 			</button>
 		</span>
 
@@ -20,6 +20,6 @@
 </form>
 
 <div align="right">
-	<a class="btn btn-default" href="/search">...or use <b>Better Search</b></a>
+	<a class="btn btn-default" href="/bettersearch">...or use <b>Better Search</b></a>
 </div>
 <!-- Search section done -->

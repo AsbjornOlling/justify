@@ -39,6 +39,13 @@ class Viewer():
         return template(self.path + '/searchresults.tpl', searchresults=searchresults, viewer=self)
 
 
+    def better_search(self):
+        """ Better Search page.
+        Search with specific track, artist and album fields
+        """
+        return template(self.path + '/bettersearch.tpl', viewer=self)
+
+
     def not_found(self):
         """ 404 Page """
         return "<h1>404 - Page not found</h1>"

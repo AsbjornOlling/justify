@@ -12,8 +12,12 @@
 		<!--link rel="stylesheet" href="/static/css/cyborg.css" crossorigin="anonymous"-->
 		<link rel="stylesheet" href="/static/css/{{ viewer.theme }}.css" crossorigin="anonymous">
 
-		<!-- Fontawesome Icons -->
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<!-- Fontawesome Icons >
+		<script src="https://use.fontawesome.com/e16f25d1a5.js"></script-->
+
+		<!--  IonIcons -->
+		<script src="https://unpkg.com/ionicons@4.1.2/dist/ionicons.js"></script>
+
 	</head>
 
 	<!-- Background image -->

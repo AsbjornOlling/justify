@@ -28,6 +28,9 @@ class Model():
         self.mpd = MPDClient()
         self.connect_mpd()
 
+        # initial playlist (fix votes dict, etc)
+        self.playlist = self.get_playlist()
+
         # read known cookies from file
         self.read_cookies()
 
@@ -157,7 +160,7 @@ class Model():
                 self.logger.log(2, "Resmoving votes for song: " + votesentry)
                 del(self.votes[votesentry])
                 # remove clients' records of voting on that song
-                for client in clients:
+                for client in self.clients:
                     if votesentry in client.votes:
                         self.logger.log(3, "Removing record of song " + votesentry
                                             + " from client " + client.cookie)

@@ -32,7 +32,7 @@
 						<td/><td/><td/><td/>
 					</tr>
 					<tr>
-						<td>Maybe try <a class="btn btn-sm btn-default" href="/search"><b>Better Search</b></a> instead?</td>
+						<td>Maybe try <a class="btn btn-sm btn-default" href="/bettersearch"><b>Better Search</b></a> instead?</td>
 						<td/><td/><td/><td/>
 					</tr>
 				% end
@@ -61,8 +61,8 @@
 									% songid = song["file"]
 									<input type="hidden" name="songid" value="{{ songid }}"> 
 
-									<button class="btn btn-default" type="submit">
-										<span class="fa fa-plus"></span>
+									<button class="btn btn-secondary" type="submit">
+										<ion-icon name="add"></ion-icon>
 									</button> 
 								</form>
 							</td>

@@ -29,6 +29,10 @@ class Controller():
             if path is None:
                 page = self.get_root()
 
+            # GET /bettersearch
+            elif path == "bettersearch": 
+                page = self.viewer.better_search()
+
             # GET stylesheet
             elif re.match("static\/css\/[^\/]+\.css", path):
                 page = self.viewer.stylesheet(path.split("/")[-1])

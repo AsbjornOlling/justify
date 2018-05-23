@@ -5,11 +5,14 @@
 
 			<!-- Header text -->
 			<div class="page-header">
-				<div class="btn-toolbar pull-right">
+				<div class="btn-toolbar float-right">
 					<div class="btn-group">
-						<a class="btn btn-default" href="/list"><i class="fa fa-refresh"></i></a>
+						<a class="btn btn-secondary" href="/">
+							<ion-icon name="refresh"></ion-icon>
+						</a>
 					</div>
 				</div>
+
 				<h3>
 					Current playlist
 				</h3>
@@ -51,9 +54,10 @@
 								% duration = str(int(int(playlist[0].get("time")) / 60)) + ":" + str(int(playlist[0].get("time")) % 60).zfill(2)
 								<td class="hidden-xs">{{ duration }}</td>
 
-								% votecount = playlist[0]["votes"]
+								% votecount = " " + str(playlist[0]["votes"])
 								<td>
-									<button class="btn btn-default disabled"><span class="fa fa-thumbs-up"></span>
+									<button class="btn btn-primary disabled">
+										<ion-icon class="align-middle" name="thumbs-up"></ion-icon>
 										{{ votecount }}
 									</button>
 								</td>
@@ -84,10 +88,10 @@
 										% songid = song["file"]
 										<input type="hidden" name="songid" value="{{ songid }}"> 
 
-										% votecount = song["votes"]
+										% votecount = " " + str(song["votes"])
 										% buttonstate = "" if song["buttonstate"] else "disabled"
-										<button class="btn btn-default {{ buttonstate }}" type="submit">
-											<i class="fa fa-thumbs-up"></i>
+										<button class="btn btn-primary {{ buttonstate }}" type="submit">
+											<ion-icon class="align-middle" name="thumbs-up"></ion-icon>
 											{{ votecount }}
 										</button>
 
