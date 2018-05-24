@@ -27,8 +27,8 @@
 						<tr>
 							<th>Song</th>
 							<th>Artist</th>
-							<th class="hidden-xs">Album</th>
-							<th class="hidden-xs">Time</th>
+							<th class="d-none d-sm-table-cell">Album</th>
+							<th class="d-none d-sm-table-cell">Time</th>
 							<th>Votes</th>
 						</tr>
 					</thead>
@@ -49,14 +49,14 @@
 								<td>{{ artist }}</td>
 
 								% album = playlist[0].get("album")
-								<td class="hidden-xs">{{ album }}</td>
+								<td class="d-none d-sm-table-cell">{{ album }}</td>
 
 								% duration = str(int(int(playlist[0].get("time")) / 60)) + ":" + str(int(playlist[0].get("time")) % 60).zfill(2)
-								<td class="hidden-xs">{{ duration }}</td>
+								<td class="d-none d-sm-table-cell">{{ duration }}</td>
 
 								% votecount = " " + str(playlist[0]["votes"])
 								<td>
-									<button class="btn btn-primary disabled">
+									<button class="btn btn-default disabled">
 										<ion-icon class="align-middle" name="thumbs-up"></ion-icon>
 										{{ votecount }}
 									</button>
@@ -76,10 +76,10 @@
 								<td>{{ artist }}</td>
 
 								% album = song["album"]
-								<td class="hidden-xs">{{ album }}</td>
+								<td class="d-none d-sm-table-cell">{{ album }}</td>
 
 								% duration = str(int(int(song["time"]) / 60)) + ":" + str(int(song["time"]) % 60).zfill(2)
-								<td class="hidden-xs">{{ duration }}</td>
+								<td class="d-none d-sm-table-cell">{{ duration }}</td>
 
 								<!-- Vote button -->
 								<td>
@@ -90,7 +90,7 @@
 
 										% votecount = " " + str(song["votes"])
 										% buttonstate = "" if song["buttonstate"] else "disabled"
-										<button class="btn btn-primary {{ buttonstate }}" type="submit">
+										<button class="btn btn-outline-success {{ buttonstate }}" type="submit">
 											<ion-icon class="align-middle" name="thumbs-up"></ion-icon>
 											{{ votecount }}
 										</button>

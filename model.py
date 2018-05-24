@@ -81,8 +81,8 @@ class Model():
         self.mpd.idletimeout = None
         try:  # connecting
             self.mpd.connect(self.config.mpdhost, self.config.mpdport)
-            self.logger.log(1, "Connected to MPD instance.")
             self.mpd.consume(1)  # clear each track after playing
+            self.logger.log(1, "Connected to MPD instance.")
         except:
             self.logger.log(0, "Failed connecting to MPD.")
 
@@ -160,7 +160,7 @@ class Model():
                 self.logger.log(2, "Resmoving votes for song: " + votesentry)
                 del(self.votes[votesentry])
                 # remove clients' records of voting on that song
-                for client in self.clients:
+                for cookie, client in self.clients.items():
                     if votesentry in client.votes:
                         self.logger.log(3, "Removing record of song " + votesentry
                                             + " from client " + client.cookie)
