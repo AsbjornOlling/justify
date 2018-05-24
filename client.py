@@ -4,11 +4,11 @@ import random
 # A class to represent client connection, identified by a random string.
 # The client keeps track of votes from a user, to prevent voting multiple times.
 class Client():
-    # list of voted-on songIDs
-    votes = []
-
     def __init__(self, model, cookie=None):
         self.model = model
+
+        # list of voted-on songIDs
+        self.votes = []
 
         # generate identifying cookie
         if cookie is None:

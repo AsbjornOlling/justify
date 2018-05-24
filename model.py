@@ -1,3 +1,6 @@
+# DEBUGGING SHIT
+import pdb
+
 # utility imports
 import random
 
@@ -97,7 +100,7 @@ class Model():
         """ Gets new playlist information from MPD.
         Should be run each time client loads a playlist.
         """
-        self.logger.log(3, "Getting new playlist.")
+        self.logger.log(2, "Getting new playlist.")
         self.playlist = self.bubblesort_playlist()  # sort and get playlist
         self.clear_votes()    # clear old votes
         self.sync_playlist()  # add missing songs to votes,
@@ -116,11 +119,11 @@ class Model():
         The user-specifc playlist has a field that controls
         disabling the button, in the html template.
         """
-        self.logger.log(2, "Generating buttonstate.")
-        user = self.clients[cookie]
+        client = self.clients.get(cookie)
+        self.logger.log(2, "Generating buttonstates for client " + client.cookie)
         for song in self.playlist:
-            if song["file"] in user.votes:
-                # disable button if user voted
+            if song["file"] in client.votes:
+                # disable button if client voted
                 song["buttonstate"] = False
             else:
                 # let button stay if untouched
@@ -226,8 +229,10 @@ class Model():
             # if client has not cast vote yet
             client.register_vote(songid)
             self.votes[songid] = self.votes.get(songid) + 1
+            self.logger.log(1, "Client " + client.cookie 
+                            + " voted on song " + songid)
         else:  # client has already voted on that song
-            self.logger.log(1, "Client " + cookie + " tried voting on a song twice.")
+            self.logger.log(0, "Client " + cookie + " tried voting on a song twice.")
 
 
     def bubblesort_playlist(self, level=0):

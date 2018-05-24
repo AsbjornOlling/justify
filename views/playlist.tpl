@@ -40,23 +40,23 @@
 
 						% # handle empty playlist
 						% if playlist:
-							<tr class="warning">
+							<tr class="table-success">
 
 								% title = playlist[0].get("title")
-								<td>{{ title }}</td>
+								<td style="vertical-align: middle;">{{ title }}</td>
 
 								% artist = playlist[0].get("artist")
-								<td>{{ artist }}</td>
+								<td style="vertical-align:middle;">{{ artist }}</td>
 
 								% album = playlist[0].get("album")
-								<td class="d-none d-sm-table-cell">{{ album }}</td>
+								<td class="d-none d-sm-table-cell" style="vertical-align: middle;">{{ album }}</td>
 
 								% duration = str(int(int(playlist[0].get("time")) / 60)) + ":" + str(int(playlist[0].get("time")) % 60).zfill(2)
-								<td class="d-none d-sm-table-cell">{{ duration }}</td>
+								<td class="d-none d-sm-table-cell" style="vertical-align: middle;">{{ duration }}</td>
 
 								% votecount = " " + str(playlist[0]["votes"])
-								<td>
-									<button class="btn btn-default disabled">
+								<td style="vertical-align: middle;">
+									<button class="btn btn-outline-secondary disabled">
 										<ion-icon class="align-middle" name="thumbs-up"></ion-icon>
 										{{ votecount }}
 									</button>
@@ -70,27 +70,27 @@
 							<tr>
 
 								% title = song["title"]
-								<td>{{ title }}</td>
+								<td style="vertical-align: middle;">{{ title }}</td>
 
 								% artist = song["artist"]
-								<td>{{ artist }}</td>
+								<td style="vertical-align: middle;">{{ artist }}</td>
 
 								% album = song["album"]
-								<td class="d-none d-sm-table-cell">{{ album }}</td>
+								<td class="d-none d-sm-table-cell" style="vertical-align: middle;">{{ album }}</td>
 
 								% duration = str(int(int(song["time"]) / 60)) + ":" + str(int(song["time"]) % 60).zfill(2)
-								<td class="d-none d-sm-table-cell">{{ duration }}</td>
+								<td class="d-none d-sm-table-cell" style="vertical-align: middle;">{{ duration }}</td>
 
 								<!-- Vote button -->
-								<td>
-									<form action="/vote" method="post"> 
+								<td class="align-middle">
+									<form action="/vote" method="post" style="vertical-align: middle;">
 
 										% songid = song["file"]
 										<input type="hidden" name="songid" value="{{ songid }}"> 
 
 										% votecount = " " + str(song["votes"])
 										% buttonstate = "" if song["buttonstate"] else "disabled"
-										<button class="btn btn-outline-success {{ buttonstate }}" type="submit">
+										<button class="btn btn-outline-success {{ buttonstate }}"  style="vertical-align: middle;" type="submit">
 											<ion-icon class="align-middle" name="thumbs-up"></ion-icon>
 											{{ votecount }}
 										</button>
