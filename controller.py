@@ -37,9 +37,10 @@ class Controller():
             elif re.match("static\/css\/[^\/]+\.css", path):
                 page = self.viewer.stylesheet(path.split("/")[-1])
 
-            # GET favicon.ico TODO
-            elif path == "favicon.ico":
-                page = None
+            # GET static files
+            # GET /favicon.ico
+            elif re.match("static\/[^\/]+", path) or path == "favicon.ico":
+                page = self.viewer.get_static(path.split("/")[-1])
 
             # POST /search
             elif path == "search":

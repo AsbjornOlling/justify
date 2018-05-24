@@ -23,8 +23,11 @@
 	<!-- Background image -->
 	<!-- body style="background-image: url(/static/bg.png); background-size: cover; background-repeat: no-repeat; background-position:; "-->
 
+	<body>
+
+
 		<!-- Top navbar -->
-		<nav class="navbar navbar-inverse">
+		<nav class="navbar navbar-default">
 			<div class="navbar-header">
 				<a class="navbar-brand" href="/">{{ viewer.headertext }}</a>
 			</div>

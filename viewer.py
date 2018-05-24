@@ -53,7 +53,7 @@ class Viewer():
 
     def get_static(self, filename):
         """ Serve any static files """
-        return static_file(filename, root=stapath)
+        return static_file(filename, root=self.config.staticpath)
 
 
     def stylesheet(self, stylesheet):

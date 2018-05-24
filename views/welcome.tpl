@@ -3,6 +3,12 @@
 
 		<div class="container">
 
+			<img src="/static/j256.png" alt="logo" class="img-responsive mx-auto d-block" />
+
+			<br>
+
+			<br>
+
 			<h3 class="text-center">Want to put on a song?</h3>
 			<a style="display: block; margin-left: auto; margin-right: auto;" href="/" class="btn btn-lg btn-warning">Fuck yeah!</a>
 
