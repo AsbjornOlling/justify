@@ -16,8 +16,8 @@
 				<tr>
 					<th>Song</th>
 					<th>Artist</th>
-					<th class="hidden-xs">Album</th>
-					<th class="hidden-xs">Length</th>
+					<th class="d-none d-sm-table-cell">Album</th>
+					<th class="d-none d-sm-table-cell">Length</th>
 					<th>Add</th>
 				</tr>
 			</thead>	
@@ -49,11 +49,10 @@
 							<td>{{ artist }}</td>
 
 							% album = song.get("album")
-							<td class="hidden-xs">{{ album }}</td>
+							<td class="d-none d-sm-table-cell">{{ album }}</td>
 
 							% duration = str(int(int(song.get("time")) / 60)) + ":" + str(int(song.get("time")) % 60).zfill(2)
-							<td class="hidden-xs">{{ duration }}</td>
-
+							<td class="d-none d-sm-table-cell">{{ duration }}</td>
 							<!-- Add button -->
 							<td>
 								<form action="/add" method="POST">

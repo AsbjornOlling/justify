@@ -36,34 +36,11 @@
 
 					<!-- Table contents -->
 					<tbody>
+
 						<!-- Currently playing song -->
-
-						% # handle empty playlist
 						% if playlist:
-							<tr class="table-success">
-
-								% title = playlist[0].get("title")
-								<td style="vertical-align: middle;">{{ title }}</td>
-
-								% artist = playlist[0].get("artist")
-								<td style="vertical-align:middle;">{{ artist }}</td>
-
-								% album = playlist[0].get("album")
-								<td class="d-none d-sm-table-cell" style="vertical-align: middle;">{{ album }}</td>
-
-								% duration = str(int(int(playlist[0].get("time")) / 60)) + ":" + str(int(playlist[0].get("time")) % 60).zfill(2)
-								<td class="d-none d-sm-table-cell" style="vertical-align: middle;">{{ duration }}</td>
-
-								% votecount = " " + str(playlist[0]["votes"])
-								<td style="vertical-align: middle;">
-									<button class="btn btn-outline-secondary disabled">
-										<ion-icon class="align-middle" name="thumbs-up"></ion-icon>
-										{{ votecount }}
-									</button>
-								</td>
-							</tr>
+							% include("playing.tpl", song=playlist[0])
 						% end
-
 
 						<!-- Remaining songs -->
 						% for song in playlist[1:]:
@@ -98,7 +75,7 @@
 									</form>
 								</td>
 							</tr>
-						% end
+						% end  # table loop
 
 					</tbody>
 				</table>

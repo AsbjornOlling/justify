@@ -10,7 +10,7 @@
 		<!-- link rel="stylesheet" href="https://bootswatch.com/cyborg/bootstrap.min.css" crossorigin="anonymous" -->
 		<!-- link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css" crossorigin="anonymous" -->
 		<!--link rel="stylesheet" href="/static/css/cyborg.css" crossorigin="anonymous"-->
-		<link rel="stylesheet" href="/static/css/{{ viewer.theme }}.css" crossorigin="anonymous">
+		<link rel="stylesheet" href="static/css/{{ viewer.theme }}.css" crossorigin="anonymous">
 
 		<!--  IonIcons -->
 		<script src="https://unpkg.com/ionicons@4.1.2/dist/ionicons.js"></script>
@@ -36,7 +36,7 @@
 				</div>
 
 				<!-- Search -->
-				<form class="form-inline input-group my-auto" style="width: 50%;" action="/search" method="post">
+				<form class="form-inline input-group my-auto" style="width: 66%;" action="/search" method="post">
 					<!-- Search type hidden field -->
 					<input class="d-none" name="searchtype" value="simple"/> 
 
