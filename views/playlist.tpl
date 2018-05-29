@@ -12,10 +12,6 @@
 						</a>
 					</div>
 				</div>
-
-				<h3>
-					Current playlist
-				</h3>
 			</div>
 
 			<!-- Table container -->
@@ -39,7 +35,7 @@
 
 						<!-- Currently playing song -->
 						% if playlist:
-							% include("playing.tpl", song=playlist[0])
+							% include("playing.tpl", song=playlist[0], viewer=viewer)
 						% end
 
 						<!-- Remaining songs -->

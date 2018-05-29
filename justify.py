@@ -28,6 +28,7 @@ class App(Bottle):
         # utility objects
         self.config = Configuration()
         self.logger = Logger(self, 2)
+        self.logger.log(1, "Starting Justify.")
 
         # main mvc objects
         self.model = Model(self)
@@ -38,7 +39,6 @@ class App(Bottle):
         self.set_routes()
 
         # RUN SHIT!
-        self.logger.log(1, "Starting Justify.")
         self.run(server='paste', host=self.config.host, port=self.config.port)
 
 

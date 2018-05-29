@@ -16,6 +16,10 @@
 #cookiefile=/cookies
 #logfile=/log
 
+[last.fm]
+#api_key=
+#api_secret=
+
 [other]
 #header=Justify 
 #theme=darkly

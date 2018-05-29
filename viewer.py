@@ -1,5 +1,6 @@
 # library imports
 from bottle import get, template, static_file
+import pylast
 
 ### Viewer
 # Class responsible for handling template files,
@@ -15,6 +16,7 @@ class Viewer():
         self.path = self.config.viewspath
         self.headertext = self.config.headertext
         self.theme = self.config.theme
+        self.defaultcoverart = self.config.defaultcoverart
 
 
     def welcome(self):
@@ -60,4 +62,3 @@ class Viewer():
         """ Fetch stylesheet """
         self.logger.log(3, "Serving stylesheet" + stylesheet)
         return static_file(stylesheet, root=self.config.csspath)
-

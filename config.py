@@ -57,6 +57,19 @@ class Configuration(RawConfigParser):
         self.logpath = self.path + self.get("paths",
                                             "logfile",
                                             fallback="/log")
+        self.defaultcoverart = self.get("paths",
+                                        "default_coverart",
+                                        fallback = "static/default_coverart.png")
+
+        # LAST.FM
+        self.lastfm_key = self.get("last.fm",
+                                   "api_key",
+                                   fallback="")
+        self.lastfm_secret = self.get("last.fm",
+                                      "secret",
+                                      fallback="")
+        self.lastfm_secret
+
         # OTHER
         self.theme = self.get("other",
                               "theme",

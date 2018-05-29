@@ -6,6 +6,7 @@ import random
 
 # library imports
 from mpd import MPDClient
+import pylast
 
 # other application imports
 from client import Client
@@ -19,6 +20,8 @@ class Model():
     clients = {}
     # song-id : votecount pairs
     votes = {}
+    # holds the last fetched coverart
+    artinfo = ("", "")
 
 
     def __init__(self, parent):
@@ -30,6 +33,9 @@ class Model():
         # connect to mpd
         self.mpd = MPDClient()
         self.connect_mpd()
+
+        # connect to lastfm
+        self.lastfm = self.connect_lastfm()
 
         # initial playlist (fix votes dict, etc)
         self.playlist = self.get_playlist()
@@ -90,6 +96,24 @@ class Model():
             self.logger.log(0, "Failed connecting to MPD.")
 
 
+    def connect_lastfm(self):
+        """ Connect to last.fm.
+        Uses api_keys provided by the user, in ther config file.
+        """
+        if self.config.lastfm_key and self.config.lastfm_secret:
+            lastfm = pylast.LastFMNetwork(self.config.lastfm_key, api_secret = 
+                                          self.config.lastfm_secret)
+        else:
+            lastfm = None
+
+        if lastfm:
+            self.logger.log(1, "Connected to Last.fm")
+        else:
+            self.logger.log(0, "Could not connect to Last.fm,")
+
+        return lastfm
+
+
     def unpause_mpd(self):
         """ Sends play command to mpd if paused """
         if self.mpd.status().get("state") != "play" and self.playlist:
@@ -102,15 +126,20 @@ class Model():
         """
         self.logger.log(2, "Getting new playlist.")
         self.playlist = self.bubblesort_playlist()  # sort and get playlist
-        self.clear_votes()    # clear old votes
-        self.sync_playlist()  # add missing songs to votes,
-                              # & add votecounts to playlist
 
-        # add button states to the playlist
-        if cookie: self.get_client_playlist(cookie)
+        if self.playlist:
+            # process playlist
+            self.add_coverart()   # get coverart from last.fm
+            self.clear_votes()    # clear old votes
+            self.sync_playlist()  # add missing songs to votes,
+                                  # & add votecounts to playlist
 
-        if self.config.neverpause:
-            self.unpause_mpd()  # WHYD THE MUSIC STOP
+            # add button states to the playlist
+            if cookie: self.get_client_playlist(cookie)
+
+            if self.config.neverpause:
+                self.unpause_mpd()  # WHYD THE MUSIC STOP
+
         return self.playlist
 
 
@@ -128,7 +157,6 @@ class Model():
             else:
                 # let button stay if untouched
                 song["buttonstate"] = True
-
 
 
     def sync_playlist(self):
@@ -168,6 +196,28 @@ class Model():
                         self.logger.log(3, "Removing record of song " + votesentry
                                             + " from client " + client.cookie)
                         client.votes.remove(votesentry)
+
+    
+    def add_coverart(self):
+        """ Add coverart to current song on the playlist.
+        Coverart is gotten from last.fm, if it isn't already set.
+        """
+        self.logger.log(2, "Trying for new album art.")
+
+        # get current song
+        song = self.playlist[0]
+        album = song["album"]
+        artist = song["artist"]
+
+        # run unless album art already fetched
+        # or lastfm not connected
+        if self.artinfo[0] != album and self.lastfm:
+            self.logger.log(1, "Album has changed, getting new coveart.")
+            newart = (album, pylast.Album(artist, album, self.lastfm).get_cover_image())
+
+            self.playlist[0]["coverart"] = newart[1]
+            self.artinfo = newart
+
 
 
     def song_in_playlist(self, songid):
