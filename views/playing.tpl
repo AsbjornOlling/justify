@@ -1,8 +1,8 @@
 <!-- Currently playing --> 
-<div class="row">
+<div class="row" style="height=30%;">
 
 	<!-- Cover art -->
-  <div class="col-4">
+  <div class="col-4" style="height=30%;">
 		% if "coverart" in song.keys():
 			% coverart = song.get("coverart")
 		% else:
@@ -12,7 +12,7 @@
 	</div>
 
 	<!-- Song info -->
-  <div class="col-8">
+  <div class="col-8" style="height=30%;">
 		% title = song.get("title")
 		<h4 style="">{{ title }}</h4>
 

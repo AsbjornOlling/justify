@@ -21,7 +21,7 @@ class Model():
     # song-id : votecount pairs
     votes = {}
     # holds the last fetched coverart
-    artinfo = ("", "")
+    artinfo = ("album title", "coverart url")
 
 
     def __init__(self, parent):
@@ -202,22 +202,23 @@ class Model():
         """ Add coverart to current song on the playlist.
         Coverart is gotten from last.fm, if it isn't already set.
         """
-        self.logger.log(2, "Trying for new album art.")
+        self.logger.log(2, "Checking for cover art update.")
 
         # get current song
         song = self.playlist[0]
         album = song["album"]
         artist = song["artist"]
 
-        # run unless album art already fetched
-        # or lastfm not connected
+        # fetch new album if changed
         if self.artinfo[0] != album and self.lastfm:
-            self.logger.log(1, "Album has changed, getting new coveart.")
-            newart = (album, pylast.Album(artist, album, self.lastfm).get_cover_image())
+            self.logger.log(1, "Album has changed, getting new coverart.")
+            coverart = pylast.Album(artist, album, self.lastfm).get_cover_image()
+            self.artinfo = (album, coverart)
+        elif self.artinfo[0] == album and self.lastfm:
+            self.logger.log(1, "Didn't need to update cover art.")
 
-            self.playlist[0]["coverart"] = newart[1]
-            self.artinfo = newart
-
+        # put cover art url into playlist
+        self.playlist[0]["coverart"] = self.artinfo[1]
 
 
     def song_in_playlist(self, songid):
