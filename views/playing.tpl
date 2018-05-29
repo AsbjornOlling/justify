@@ -1,18 +1,18 @@
 <!-- Currently playing --> 
-<div class="row" style="height=30%;">
+<div class="row" style="">
 
 	<!-- Cover art -->
-  <div class="col-4" style="height=30%;">
+  <div class="col-4" style="">
 		% if "coverart" in song.keys():
 			% coverart = song.get("coverart")
 		% else:
 			% coverart = viewer.defaultcoverart
 		% end
-		<img src="{{ coverart }}"></img>
+		<img style="width: 100%;" class="rounded mx-auto d-block" src="{{ coverart }}"></img>
 	</div>
 
 	<!-- Song info -->
-  <div class="col-8" style="height=30%;">
+  <div class="col-8" style="hegiht: auto;">
 		% title = song.get("title")
 		<h4 style="">{{ title }}</h4>
 
