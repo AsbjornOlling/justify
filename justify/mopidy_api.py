@@ -27,8 +27,7 @@ def mopidy_post(command: str, *args, **kwargs) -> dict:
         rpccmd['params'] = list(args)
 
     try:
-        logger.info(f"Sending Mopidy RPC: {command}")
-        logger.info(f"Sending Mopidy RPC: {rpccmd}")
+        logger.debug(f"Sending Mopidy RPC: {rpccmd}")
 
         # do the HTTP POST to mopidy
         r = post(MOPIDY_RPC_URL,
@@ -36,11 +35,12 @@ def mopidy_post(command: str, *args, **kwargs) -> dict:
 
         # assert: no errors :^)
         assert 'error' not in r, r.get('error', None)
+        logger.debug("Got Mopidy response.")
         return r['result']
 
     # a whole bunch of error handling
     except AssertionError as ex:
-        err = f"Mopidy error: {ex} {helpstr}"
+        err = f"Mopidy error: {ex}"
         logger.error(err)
         # abort(500, err)
     except ConnectionError as ex:
@@ -48,7 +48,7 @@ def mopidy_post(command: str, *args, **kwargs) -> dict:
         logger.error(err)
         # abort(500, err)
     except JSONDecodeError:
-        err = f"Got weird response from mopidy. {helpstr}"
+        err = f"Got weird response from mopidy url. {helpstr}"
         logger.error(err)
         # abort(500, err)
 
