@@ -1,18 +1,23 @@
 
+# std lib
+from collections import namedtuple
+from typing import List, Dict, String
 
 # deps
 from requests import post
 from loguru import logger
 from werkzeug import abort
+from pprint import pprint as print
 
 # exceptions
 from json.decoder import JSONDecodeError
 from requests.exceptions import ConnectionError
 
 MOPIDY_RPC_URL = 'http://localhost:6680/mopidy/rpc'
+Track = namedtuple('Track', ['name', 'album', 'artists', 'length', 'uri'])
 
 
-def mopidy_post(command: str, *args, **kwargs) -> dict:
+def mopidy_post(command: str, *args, **kwargs):
     """ Call the Mopidy HTTP JSON RPC API """
     helpstr = """Check that MOPIDY_RPC_URL is set right
                  and that Mopidy is running and accessible."""
@@ -62,16 +67,36 @@ def get_playback_state() -> dict:
     return mopidy_post('core.playback.get_state')
 
 
-def search(**kwargs) -> dict:
+def search(**kwargs) -> List[Track]:
     """ Call the mopidy search function.
     Kwargs could be one of:
         - artist="death grips"
         - song="get got"
         - any="Sound of Silver"
     """
-    return mopidy_post('core.library.search', **kwargs)
+    # get from mopidy api
+    sresult = mopidy_post('core.library.search', **kwargs)
+
+    # parse into Track tuples
+    tracks = parse_search_tracks(sresult)
+
+    return tracks
 
 
-if __name__ == '__main__':
-    print(get_playback_state())
-    print(search(artist='death grips'))
+def parse_search_tracks(sresult: List) -> List[Track]:
+    """ Take the entire raw json results of a search,
+    and parse the "tracks" results into a list of Track tuples. """
+    # get just track results
+    tracks_raw: list = sresult[1]['tracks']
+
+    # filter dicts keeping only fields in 'Track' tuple
+    tracks_refined = [{k: t[k] for k in Track._fields} for t in tracks_raw]
+
+    # build list of Track tuples
+    tracks: List[Track] = []
+    for trackdict in tracks_refined:
+        tracks.append(Track(**trackdict))
+
+    logger.debug(tracks[0])
+
+    return tracks

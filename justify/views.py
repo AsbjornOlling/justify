@@ -2,12 +2,14 @@
 
 # deps
 from loguru import logger
-from flask import Blueprint, request
+from flask import Blueprint, request, render_template
 
 # app imports
 from .mopidy_api import search
 
-bp = Blueprint('web', __name__, url_prefix='/')
+bp = Blueprint('web', __name__,
+               url_prefix='/',
+               template_folder='../templates')
 
 
 # @bp.route('/playlist', methods=['GET'])
@@ -30,8 +32,8 @@ def search_view():
     # TODO: sanitization
 
     # do mopidy search
-    logger.info(f"Searching for: {squery}")
     results = search(artist=squery)
+    # logger.debug(f"Got: {results}")
 
-    # return render_template('search.tpl')
-    return str(results)
+    return render_template('searchresults.tpl', searchresults=results)
+    # return str(results)
