@@ -1,20 +1,30 @@
 
 # std lib
+from itertools import chain
 from collections import namedtuple
-from typing import List, Dict, String
+from typing import List, Dict, NamedTuple
 
 # deps
 from requests import post
 from loguru import logger
 from werkzeug import abort
-from pprint import pprint as print
 
 # exceptions
 from json.decoder import JSONDecodeError
 from requests.exceptions import ConnectionError
 
 MOPIDY_RPC_URL = 'http://localhost:6680/mopidy/rpc'
-Track = namedtuple('Track', ['name', 'album', 'artists', 'length', 'uri'])
+
+SearchResult = namedtuple('SearchResult', ['uri', 'artists', 'tracks', 'albums'])
+Track = namedtuple('Track', ['uri', 'name', 'album', 'artists', 'length'])
+Album = namedtuple('Album', ['uri', 'name', ])
+Artist = namedtuple('Artist', ['uri', 'name'])
+MopidyTypes = {
+    'SearchResult': SearchResult,
+    'Track':        Track,
+    'Album':        Album,
+    'Artist':       Artist
+}
 
 
 def mopidy_post(command: str, *args, **kwargs):
@@ -57,9 +67,36 @@ def mopidy_post(command: str, *args, **kwargs):
         logger.error(err)
         # abort(500, err)
 
-    # return empty dict if err
-    # XXX: Betr
-    return {}
+
+def deserialize_mopidy(data):
+    """ Recursively turn the structure of mopidy dicts
+    into an identical structure with namedtuples.
+    """
+    # first detect type of data
+    if isinstance(data, Dict) and '__model__' in data:
+        model = data['__model__']
+        logger.debug(f"Deserialzing {model}.")
+
+        # get namedtuple constructor from MopidyTypes dict
+        assert model in MopidyTypes, f"Unknown mopidy type: {data}"
+        nt = MopidyTypes[model]
+
+        # recurse on dict
+        recd = {k: deserialize_mopidy(data.get(k, None)) for k in nt._fields}
+
+        # make tuple
+        return nt(**recd)
+
+    elif isinstance(data, List):
+        # recurse on list
+        return list(map(deserialize_mopidy, data))
+
+    elif isinstance(data, str):
+        # strings should be the only primitives here
+        return data
+
+    else:
+        logger.error(f"Uncaught type: {type(data)}")
 
 
 def get_playback_state() -> dict:
@@ -67,6 +104,7 @@ def get_playback_state() -> dict:
     return mopidy_post('core.playback.get_state')
 
 
+@logger.catch
 def search(**kwargs) -> List[Track]:
     """ Call the mopidy search function.
     Kwargs could be one of:
@@ -74,17 +112,23 @@ def search(**kwargs) -> List[Track]:
         - song="get got"
         - any="Sound of Silver"
     """
-    # get from mopidy api
-    sresult = mopidy_post('core.library.search', **kwargs)
+    logger.info(f"Searching for {str(kwargs)}")
 
-    # parse into Track tuples
-    tracks = parse_search_tracks(sresult)
+    # get results from mopidy api
+    sresult: List[dict] = mopidy_post('core.library.search', **kwargs)
 
-    return tracks
+    # deserialize into tree of named tuples
+    results: List[SearchResult] = deserialize_mopidy(sresult)
+
+    # concatenate lists of tracks
+    tracks = chain(*[r.tracks for r in results if r.tracks is not None])
+
+    return list(tracks)
 
 
 def parse_search_tracks(sresult: List) -> List[Track]:
-    """ Take the entire raw json results of a search,
+    """ XXX: Bugged legacy function. Replaced by deserialization.
+    Take the entire raw json results of a search,
     and parse the "tracks" results into a list of Track tuples. """
     # get just track results
     tracks_raw: list = sresult[1]['tracks']
@@ -95,8 +139,7 @@ def parse_search_tracks(sresult: List) -> List[Track]:
     # build list of Track tuples
     tracks: List[Track] = []
     for trackdict in tracks_refined:
+        logger.debug(trackdict)
         tracks.append(Track(**trackdict))
-
-    logger.debug(tracks[0])
 
     return tracks

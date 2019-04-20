@@ -35,5 +35,5 @@ def search_view():
     results = search(artist=squery)
     # logger.debug(f"Got: {results}")
 
-    return render_template('searchresults.tpl', searchresults=results)
-    # return str(results)
+    # return render_template('searchresults.tpl', searchresults=results)
+    return str(results)
