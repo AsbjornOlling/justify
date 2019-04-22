@@ -4,8 +4,6 @@ This module contains functions to interact with
 the Mopidy JSON RPC.
 """
 
-# std lib
-from typing import List, Dict
 
 # deps
 from requests import post
@@ -14,9 +12,6 @@ from loguru import logger
 # exceptions
 from json.decoder import JSONDecodeError
 from requests.exceptions import ConnectionError
-
-# app imports
-from .types import MopidyTypes
 
 # TODO: get URL from config
 MOPIDY_RPC_URL = 'http://localhost:6680/mopidy/rpc'
@@ -63,34 +58,3 @@ def mopidy_post(command: str, *args, **kwargs):
         err = f"Got weird response from mopidy url. {helpstr}"
         logger.error(err)
         # abort(500, err)
-
-
-def deserialize_mopidy(data):
-    """ Recursively turn the structure of mopidy dicts
-    into an identical structure with namedtuples.
-    """
-    # first detect type of data
-    if isinstance(data, Dict) and '__model__' in data:
-        model = data['__model__']
-        logger.debug(f"Deserialzing {model}.")
-
-        # get namedtuple constructor from MopidyTypes dict
-        assert model in MopidyTypes, f"Unknown mopidy type: {data}"
-        nt = MopidyTypes[model]
-
-        # recurse on dict
-        recd = {k: deserialize_mopidy(data.get(k, None)) for k in nt._fields}
-
-        # make tuple
-        return nt(**recd)
-
-    elif isinstance(data, List):
-        # recurse on list
-        return list(map(deserialize_mopidy, data))
-
-    elif isinstance(data, str):
-        # strings should be the only primitives here
-        return data
-
-    else:
-        logger.error(f"Uncaught type: {type(data)}")

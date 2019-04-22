@@ -30,12 +30,11 @@ bp = Blueprint('web', __name__,
 @bp.route('/search', methods=['GET'])
 def search_view():
     """ Return search result tracks. """
-
-    # get ?query=<something> param
+    # 1. get ?query=<something> param
     squery = request.args.get('query')
 
-    # do mopidy api search
+    # 2. do mopidy api search with it
     tracks = search_tracks(any=squery)
 
-    # render html search results
+    # 3. render html search results
     return render_template('searchresults.tpl', tracks=tracks)

@@ -1,3 +1,4 @@
+{% extends 'base.tpl' %}
 
 {% block content %}
 	<div class="container">
@@ -40,19 +41,16 @@
 					<tr>
 						<td>{{ track.name }}</td>
 
-						<td>{{ track.artists }}</td>
+						<td>{{ track.artist }}</td>
 
-						<td class="d-none d-sm-table-cell">{{ track.album.name }}</td>
+						<td class="d-none d-sm-table-cell">{{ track.album }}</td>
 
-						<!-- XXX: % duration = str(int(int(song.get("time")) / 60)) + ":" + str(int(song.get("time")) % 60).zfill(2) -->
-						<td class="d-none d-sm-table-cell">{{ length }}</td>
+						<td class="d-none d-sm-table-cell">{{ track.time }}</td>
 
-						<!-- Add button -->
-						<td>
-							<form action="/add" method="POST">
-								<input type="hidden" name="songid" value="{{ track.uri }}"> 
+						<td> <!-- Add button -->
+							<form action="/vote/{{ track.uri }}" method="POST">
 								<button class="btn btn-secondary" type="submit">
-									<ion-icon name="add"></ion-icon>
+									<span class="mdi mdi-plus"></span>
 								</button> 
 							</form>
 						</td>

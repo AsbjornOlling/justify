@@ -7,8 +7,10 @@ from typing import List
 from loguru import logger
 
 # app imports
-from .jsonrpc import mopidy_post, deserialize_mopidy
+from .jsonrpc import mopidy_post
 from .types import (
+    deserialize_mopidy,
+    printable_tracks,
     Track,
     SearchResult
 )
@@ -35,6 +37,8 @@ def search_tracks(**kwargs) -> List[Track]:
     results: List[SearchResult] = deserialize_mopidy(sresult)
 
     # concatenate lists of tracks
-    tracks = list(chain(*[r.tracks for r in results if r.tracks is not None]))
+    tracks = chain(*[r.tracks for r in results if r.tracks is not None])
 
-    return tracks
+    # make printable (format everything to strings)
+    ptracks = printable_tracks(tracks)
+    return ptracks

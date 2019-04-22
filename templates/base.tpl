@@ -1,10 +1,10 @@
 {% block header %}
-	{% include header.tpl %}
+	{% include 'header.tpl' %}
 {% endblock %}
 
 {% block content %}
 {% endblock %}
 
 {% block footer %}
-	{% include footer.tpl %}
+	{% include 'footer.tpl' %}
 {% endblock %}
