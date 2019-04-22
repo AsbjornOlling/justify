@@ -1,34 +1,31 @@
+""" Mopidy JSON RPC module.
+
+This module contains functions to interact with
+the Mopidy JSON RPC.
+"""
 
 # std lib
-from itertools import chain
-from collections import namedtuple
-from typing import List, Dict, NamedTuple
+from typing import List, Dict
 
 # deps
 from requests import post
 from loguru import logger
-from werkzeug import abort
 
 # exceptions
 from json.decoder import JSONDecodeError
 from requests.exceptions import ConnectionError
 
-MOPIDY_RPC_URL = 'http://localhost:6680/mopidy/rpc'
+# app imports
+from .types import MopidyTypes
 
-SearchResult = namedtuple('SearchResult', ['uri', 'artists', 'tracks', 'albums'])
-Track = namedtuple('Track', ['uri', 'name', 'album', 'artists', 'length'])
-Album = namedtuple('Album', ['uri', 'name', ])
-Artist = namedtuple('Artist', ['uri', 'name'])
-MopidyTypes = {
-    'SearchResult': SearchResult,
-    'Track':        Track,
-    'Album':        Album,
-    'Artist':       Artist
-}
+# TODO: get URL from config
+MOPIDY_RPC_URL = 'http://localhost:6680/mopidy/rpc'
 
 
 def mopidy_post(command: str, *args, **kwargs):
-    """ Call the Mopidy HTTP JSON RPC API """
+    """ Call the Mopidy HTTP JSON RPC API, by sending
+    a HTTP POST with a specific JSON object.
+    """
     helpstr = """Check that MOPIDY_RPC_URL is set right
                  and that Mopidy is running and accessible."""
 
@@ -97,49 +94,3 @@ def deserialize_mopidy(data):
 
     else:
         logger.error(f"Uncaught type: {type(data)}")
-
-
-def get_playback_state() -> dict:
-    """ Return playback state. """
-    return mopidy_post('core.playback.get_state')
-
-
-@logger.catch
-def search(**kwargs) -> List[Track]:
-    """ Call the mopidy search function.
-    Kwargs could be one of:
-        - artist="death grips"
-        - song="get got"
-        - any="Sound of Silver"
-    """
-    logger.info(f"Searching for {str(kwargs)}")
-
-    # get results from mopidy api
-    sresult: List[dict] = mopidy_post('core.library.search', **kwargs)
-
-    # deserialize into tree of named tuples
-    results: List[SearchResult] = deserialize_mopidy(sresult)
-
-    # concatenate lists of tracks
-    tracks = chain(*[r.tracks for r in results if r.tracks is not None])
-
-    return list(tracks)
-
-
-def parse_search_tracks(sresult: List) -> List[Track]:
-    """ XXX: Bugged legacy function. Replaced by deserialization.
-    Take the entire raw json results of a search,
-    and parse the "tracks" results into a list of Track tuples. """
-    # get just track results
-    tracks_raw: list = sresult[1]['tracks']
-
-    # filter dicts keeping only fields in 'Track' tuple
-    tracks_refined = [{k: t[k] for k in Track._fields} for t in tracks_raw]
-
-    # build list of Track tuples
-    tracks: List[Track] = []
-    for trackdict in tracks_refined:
-        logger.debug(trackdict)
-        tracks.append(Track(**trackdict))
-
-    return tracks

@@ -3,14 +3,14 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-		<title>{{ viewer.headertext }}</title>
+		<title>GREAT TITLE</title>
 
 		<!-- CSS -->
 		<!-- link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" -->
-		<!-- link rel="stylesheet" href="https://bootswatch.com/cyborg/bootstrap.min.css" crossorigin="anonymous" -->
+		<link rel="stylesheet" href="https://bootswatch.com/cyborg/bootstrap.min.css" crossorigin="anonymous">
 		<!-- link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css" crossorigin="anonymous" -->
 		<!--link rel="stylesheet" href="/static/css/cyborg.css" crossorigin="anonymous"-->
-		<link rel="stylesheet" href="static/css/{{ viewer.theme }}.css" crossorigin="anonymous">
+		<!-- link rel="stylesheet" href="static/css/{{ "viewer.theme" }}.css" crossorigin="anonymous" -->
 
 		<!--  IonIcons -->
 		<script src="https://unpkg.com/ionicons@4.1.2/dist/ionicons.js"></script>
@@ -32,7 +32,7 @@
 
 				<!-- Header -->
 				<div class="navbar-header">
-					<a class="navbar-brand" style="font-family: 'Montserrat', sans-serif; font-weight: 700;"  href="/">{{ viewer.headertext }}</a>
+					<a class="navbar-brand" style="font-family: 'Montserrat', sans-serif; font-weight: 700;"  href="/">{{ "viewer.headertext" }}</a>
 				</div>
 
 				<!-- Search -->

@@ -1,6 +1,5 @@
 
-% include("header.tpl", viewer=viewer)
-
+{% block content %}
 	<div class="container">
 	
 		<!-- Header -->
@@ -10,8 +9,7 @@
 
 		<!-- Table -->
 		<table class="table table-striped">
-
-			<!-- Table Header -->
+			<!-- Table Legend -->
 			<thead>	
 				<tr>
 					<th>Song</th>
@@ -22,11 +20,11 @@
 				</tr>
 			</thead>	
 
-			<!-- Table contents -->
+			<!-- Table Body -->
 			<tbody>
 
 				<!-- If no results -->
-				% if not searchresults:
+				{% if not tracks %}
 					<tr>
 						<td>Huh, didn't find any tracks matching your search...</td>
 						<td/><td/><td/><td/>
@@ -35,42 +33,33 @@
 						<td>Maybe try <a class="btn btn-sm btn-default" href="/bettersearch"><b>Better Search</b></a> instead?</td>
 						<td/><td/><td/><td/>
 					</tr>
-				% end
+				{% endif %}
 
 				<!-- Actual results -->
-				% for song in searchresults:
-					% # filter out non-track results (artists and albums)
-					% if song["file"].split(":")[1] == "track":
-						<tr>
-							% title = song.get("title")
-							<td>{{ title }}</td>
+				{% for track in tracks %}
+					<tr>
+						<td>{{ track.name }}</td>
 
-							% artist = song.get("artist")
-							<td>{{ artist }}</td>
+						<td>{{ track.artists }}</td>
 
-							% album = song.get("album")
-							<td class="d-none d-sm-table-cell">{{ album }}</td>
+						<td class="d-none d-sm-table-cell">{{ track.album.name }}</td>
 
-							% duration = str(int(int(song.get("time")) / 60)) + ":" + str(int(song.get("time")) % 60).zfill(2)
-							<td class="d-none d-sm-table-cell">{{ duration }}</td>
-							<!-- Add button -->
-							<td>
-								<form action="/add" method="POST">
+						<!-- XXX: % duration = str(int(int(song.get("time")) / 60)) + ":" + str(int(song.get("time")) % 60).zfill(2) -->
+						<td class="d-none d-sm-table-cell">{{ length }}</td>
 
-									% songid = song["file"]
-									<input type="hidden" name="songid" value="{{ songid }}"> 
+						<!-- Add button -->
+						<td>
+							<form action="/add" method="POST">
+								<input type="hidden" name="songid" value="{{ track.uri }}"> 
+								<button class="btn btn-secondary" type="submit">
+									<ion-icon name="add"></ion-icon>
+								</button> 
+							</form>
+						</td>
+					</tr>
+				{% endfor %}
 
-									<button class="btn btn-secondary" type="submit">
-										<ion-icon name="add"></ion-icon>
-									</button> 
-								</form>
-							</td>
-						</tr>
-					% end  # track filtering
-				% end    # for loop
 			</tbody>
 		</table> <!-- table -->
-
 	</div> <!-- /container -->
-
-% include("footer.tpl", viewer=viewer)
+{% endblock %}
