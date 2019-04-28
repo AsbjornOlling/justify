@@ -16,11 +16,6 @@ from .types import (
 )
 
 
-def get_playback_state() -> dict:
-    """ Return playback state. """
-    return mopidy_post('core.playback.get_state')
-
-
 def search_tracks(**kwargs) -> List[Track]:
     """ Call the mopidy search function.
     Kwargs could be one of:
@@ -37,7 +32,10 @@ def search_tracks(**kwargs) -> List[Track]:
     results: List[SearchResult] = deserialize_mopidy(sresult)
 
     # concatenate lists of tracks
-    tracks = chain(*[r.tracks for r in results if r.tracks is not None])
+    if results:
+        tracks = chain(*[r.tracks for r in results if r.tracks is not None])
+    else:
+        return []
 
     # make printable (format everything to strings)
     ptracks = printable_tracks(tracks)

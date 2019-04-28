@@ -7,3 +7,4 @@ TODO.*
 log
 cookies
 .mypy_cache
+.env

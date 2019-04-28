@@ -4,7 +4,7 @@ from loguru import logger
 from flask import Flask
 
 # app imports
-# from . import config
+from . import config
 
 
 def create_app() -> Flask:
@@ -16,6 +16,11 @@ def create_app() -> Flask:
                 static_folder='',
                 static_url_path='/static')
 
+    # read configuration
+    conf = config.load_config()
+    app.config.update(**conf)
+
+    # register web endpoints
     from . import views
     app.register_blueprint(views.bp)
 
