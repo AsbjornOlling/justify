@@ -3,27 +3,48 @@
 
 # deps
 from loguru import logger
-from flask import Blueprint, request, render_template, redirect, url_for, session
+from flask import (
+    Blueprint,
+    request,
+    render_template,
+    redirect,
+    url_for,
+    session
+)
 
 # app imports
-from .mopidy_api.search import search_tracks
 from .vote import vote_and_sort
+from .types import printable_tracks
+from .mopidy_api.search import search_tracks
+from .mopidy_api.playlist import get_playlist
 
 
 # flask blueprint (encapsulates web endpoints)
-bp = Blueprint('web',
-               __name__,
+bp = Blueprint('web', __name__,
                url_prefix='/',
                template_folder='../templates')
 
 
-@bp.route('/playlist', methods=['GET'])
+@bp.route('/hello')
+def hello_world():
+    return "Hi!"
+
+
+@bp.route('/', methods=['GET'])
 def playlist_view():
-    """ TODO: Playlist view. """
-    return render_template('playlist.tpl')
+    """ Playlist view. """
+    logger.info("Serving playlist view.")
+
+    # get playlist from mopidy
+    mlist = get_playlist()
+    # make printable (also get votecount, vote status based on cookie)
+    plist = printable_tracks(mlist)
+
+    # render html
+    return render_template('playlist.tpl', playlist=plist)
 
 
-@bp.route('/vote/<str:songuri>', methods=['POST'])
+@bp.route('/vote/<string:songuri>', methods=['POST'])
 def vote_view(songuri: str):
     """ Voting.
     - one vote per cookie per song
@@ -36,6 +57,7 @@ def vote_view(songuri: str):
         # new list for new users
         logger.info("Init empty voted list for user.")
         session['voted'] = []
+        votedlist = []
 
     if songuri in votedlist:
         # if user already voted
@@ -48,7 +70,7 @@ def vote_view(songuri: str):
         vote_and_sort(songuri)
 
     # redirect to playlist
-    redirect(url_for(playlist_view))
+    return redirect(url_for('web.playlist_view'))
 
 
 @bp.route('/search', methods=['GET'])
@@ -62,5 +84,8 @@ def search_view():
     # 2. do mopidy api search with it
     tracks = search_tracks(any=squery)
 
-    # 3. render html search results
-    return render_template('searchresults.tpl', tracks=tracks)
+    # 3. put tracks in printable format
+    ptracks = printable_tracks(tracks)
+
+    # 4. render html search results
+    return render_template('searchresults.tpl', tracks=ptracks)

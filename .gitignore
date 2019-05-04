@@ -1,4 +1,3 @@
-#ignore the snipcart html file, as it contains our API key
 *.swp
 *.mp3
 config.txt

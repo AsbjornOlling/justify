@@ -1,4 +1,14 @@
 {% extends 'base.tpl' %}
+			<!-- Header text -->
+			<div class="page-header">
+				<div class="btn-toolbar float-right">
+					<div class="btn-group">
+						<a class="btn btn-secondary" href="/">
+							<ion-icon name="refresh"></ion-icon>
+						</a>
+					</div>
+				</div>
+			</div>
 
 {% block content %}
 	<div class="container">

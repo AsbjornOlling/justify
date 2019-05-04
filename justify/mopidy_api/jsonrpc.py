@@ -21,8 +21,8 @@ def mopidy_post(command: str, *args, **kwargs):
     """ Call the Mopidy HTTP JSON RPC API, by sending
     a HTTP POST with a specific JSON object.
     """
-    helpstr = """Check that MOPIDY_RPC_URL is set right
-                 and that Mopidy is running and accessible."""
+    helpstr = ("Check that MOPIDY_RPC_URL is set right "
+               "and that Mopidy is running and accessible.")
 
     # assemble rpc command
     rpccmd = {'jsonrpc': '2.0',

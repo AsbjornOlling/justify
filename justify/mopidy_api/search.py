@@ -10,7 +10,6 @@ from loguru import logger
 from .jsonrpc import mopidy_post
 from .types import (
     deserialize_mopidy,
-    printable_tracks,
     Track,
     SearchResult
 )
@@ -37,6 +36,5 @@ def search_tracks(**kwargs) -> List[Track]:
     else:
         return []
 
-    # make printable (format everything to strings)
-    ptracks = printable_tracks(tracks)
-    return ptracks
+    tracks: List[Track]
+    return tracks

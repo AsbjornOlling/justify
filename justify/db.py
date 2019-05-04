@@ -21,7 +21,7 @@ def get_redis():
         rhost = raddr.split(':')[0]
         rport = int(raddr.split(':')[-1])
         try:
-            g['redis'] = Redis(host=rhost, port=rport)
+            g.redis = Redis(host=rhost, port=rport)
             logger.info("Connected to Redis.")
         except ConnectionError as e:
             err = f"Could not connect to Redis: {e}"

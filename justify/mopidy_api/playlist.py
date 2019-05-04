@@ -9,13 +9,22 @@ from loguru import logger
 
 # app imports
 from .jsonrpc import mopidy_post
-from .types import deserialize_mopidy
+from .types import deserialize_mopidy, TlTrack
 
 
-def get_playlist():
+def get_playlist() -> List[TlTrack]:
     logger.info("Getting playlist from mopidy...")
     mplist = mopidy_post('core.tracklist.get_tl_tracks')
 
-    # parse into named tuples (from .types)
-    plist = deserialize_mopidy(mplist)
+    # parse into namedtuple types (tuples defined in .types)
+    plist: List[TlTrack] = deserialize_mopidy(mplist)
     return plist
+
+
+def add_uri(uri: str):
+    """ Add track to Mopidy's currently
+    playing tracklist by URI.
+    """
+    logger.info(f"Adding {uri} to Mopidy playlist.")
+    result = mopidy_post('core.tracklist.add', uri=uri)
+    logger.debug(f"Got: {result}")

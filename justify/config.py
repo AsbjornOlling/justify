@@ -4,9 +4,8 @@ from os import getenv
 
 # deps
 from loguru import logger
-from flask import Flask
-# debug
-import pysnooper
+from requests import head
+from requests.exceptions import ConnectionError, MissingSchema
 
 
 def _validate_REDIS_ADDR(REDIS_ADDR: str):
@@ -22,10 +21,52 @@ def _validate_REDIS_ADDR(REDIS_ADDR: str):
         assert portno <= 2**16, "REDIS_ADDR: {porno} is an invalid port number"
     except ValueError:
         raise AssertionError(formerr)
+    # TODO: check redis connection
+
+
+def _validate_SECRET_KEY(SECRET_KEY):
+    """ Warn if user hasn't set a key (used for cookie signing). """
+    errmsg = (
+        "SECRET_KEY not set. Will use default key for cookie signing."
+        " You should fix this by setting the SECRET_KEY config option,"
+        " if you care about users tampering with your session cookies."
+    )
+    assert SECRET_KEY is not None, errmsg
+
+
+def _validate_MOPIDY_RPC_URL(MOPIDY_RPC_URL: str):
+    """ Check connection to Mopidy instance. """
+    mopurl = MOPIDY_RPC_URL
+    # use default if not set
+    if mopurl is None:
+        mopurl = CONFVARS['MOPIDY_RPC_URL'][0]
+        logger.debug(
+            "MOPIDY_RPC_URL not set."
+            f" Using default: {mopurl}"
+        )
+
+    # test connection to mopidy
+    errmsg = ("Mopidy doesn't seem to be responding right."
+              " Justify will likely not work."
+              f" Is there a running Mopidy instance at {MOPIDY_RPC_URL}?"
+              " You can change this address by setting MOPIDY_RPC_URL.")
+    try:
+        r = head(mopurl)
+        assert r.status_code == 200, errmsg
+    except ConnectionError:
+        logger.error(errmsg)
+    except AssertionError as e:
+        logger.error(errmsg)
+        raise e
 
 
 CONFVARS = {
-    'REDIS_ADDR': ('localhost:6379', _validate_REDIS_ADDR),
+    'REDIS_ADDR':     ('localhost:6379',
+                       _validate_REDIS_ADDR),
+    'SECRET_KEY':     ('changeme-you-fool',
+                       _validate_SECRET_KEY),
+    'MOPIDY_RPC_URL': ('http://localhost:6680/mopidy/rpc',
+                       _validate_MOPIDY_RPC_URL)
 }
 
 
@@ -74,8 +115,8 @@ def load_config() -> dict:
             logger.info(defmsg)
             # use default value from CONFVARS
             finalconf[k] = default
-        # except Exception as e:
-        #     logger.error(f"Something happened: {e}")
+        except Exception as e:
+            logger.error(f"Something happened: {e}")
 
     logger.info("Finished reading configuration.")
     return finalconf
