@@ -14,7 +14,7 @@ from flask import (
 
 # app imports
 from .vote import vote_and_sort
-from .types import printable_tracks
+from .printabletrack import printable_tracks
 from .mopidy_api.search import search_tracks
 from .mopidy_api.playlist import get_playlist
 

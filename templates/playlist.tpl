@@ -58,10 +58,11 @@
 
 							<!-- Vote button -->
 							<td class="align-middle">
-								<a class="btn btn-outline-success" href="/vote/{{ track.uri }}" style="vertical-align: middle;">
+								<form action="/vote/{{ track.uri }}" method="POST">
 									<!-- TODO: new icon -->
-									{{ track.votes }}
-								</a>
+									<input value="{{ track.votes }}" type="submit" class="btn btn-outline-success {{ "" if track.canvote else "disabled" }}" style="vertical-align: middle;">
+									</input>
+								</form>
 							</td>
 						</tr>
 					{% endfor %}

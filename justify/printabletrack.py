@@ -10,6 +10,7 @@ from collections import namedtuple
 
 # deps
 from flask import session
+from loguru import logger
 
 # app imports
 from .mopidy_api.types import Track, TlTrack
@@ -39,16 +40,26 @@ def printable_tracks(ts: Iterable[Track]) -> Iterable[PrintableTrack]:
         t = t.track if isinstance(t, TlTrack) else t
         assert isinstance(t, Track)
 
-        # construct Track
+        # format into PrintableTrack
         yield PrintableTrack(
             uri=t.uri,
-            name=t.name if len(t.name) < 40 else t.name[:40] + '...',
             album=t.album.name,
+
+            # truncate to 40 chars
+            name=t.name if len(t.name) < 40 else f"{t.name[:40]}...",
+
+            # join with comma if multiple artists
             artist=", ".join([a.name for a in t.artists]),
+
+            # convert millis -> mm:ss str
             time="{mins}:{secs}".format(
                 mins=t.length // 60_000,
                 secs=str((t.length // 1000) % 60).zfill(2)
             ),
+
+            # no of votes
             votes=vdict.get(t.uri, 0),
+
+            # whether requesting user has already voted
             canvote=t.uri not in session.get('voted', [])
         )

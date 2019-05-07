@@ -11,10 +11,14 @@ from loguru import logger
 
 # app imports
 from .db import get_redis
-from .mopidy_api.playlist import get_playlist, add_uri
+from .mopidy_api.playlist import (
+    get_playlist,
+    get_playlist_uris,
+    add_uri
+)
 
 
-def get_votelist(withscores=False):
+def get_votelist(withscores=False) -> List:
     """ Get list of tracks, sorted by votes
     from Redis layer. Optionally return tuples, containing scores. """
     # get all of 'playlist_votes' from redis
@@ -24,10 +28,12 @@ def get_votelist(withscores=False):
     # clean results
     if not withscores:
         # cast to strings
-        result: List[str] = [str(b) for b in rlist]
+        result: List[str]
+        result = [b.decode('utf8') for b in rlist]
     elif withscores:
         # cast to (str, int) tuples
-        result: List[Tuple[str, int]] = [(str(s), int(b)) for s, b in rlist]
+        result: List[Tuple[str, int]]
+        result = [(s.decode('utf8'), int(b)) for s, b in rlist]
     return result
 
 
@@ -35,14 +41,14 @@ def get_votelist(withscores=False):
 def vote(songuri: str):
     """ Vote on a song by its Mopidy uri.
         - check if already in redis playlist
+        - if not in redis, add to mopidy  # XXX: change?
         - if not in redis, add with one vote
         - if in redis, increment with one vote
     """
     red = get_redis()
 
-    # if it's a new song, add it to mopidy
-    if songuri.encode('utf8') not in get_votelist():
-        # queue song in mopidy
+    if songuri not in get_playlist_uris():
+        # if song is unknown to mopidy, add it to playlist
         add_uri(songuri)
 
     # increment votecount in redis
@@ -51,26 +57,6 @@ def vote(songuri: str):
     logger.info(f"Voted on: {songuri}")
 
 
-def sort_mopidy():
-    """ TODO: Sorting.
-    Sort by mopidy_api calls.
-        - get playlist from mopidy_api
-        - plan efficient actions to sort playlist
-        - send actions to mopidy
-        - get playlist again, check state
-    """
-    # get playlist from mopidy
-    mplist = get_playlist()
-
-    # get sorted list of song uris from redis
-    vlist = get_votelist()
-
-    # TODO: algorithm for sorting mopidy
-    # if in redis, but not mopdiy
-    vlist, mplist
-
-
 def vote_and_sort(songuri: str):
     """ Function name says it all. """
     vote(songuri)
-    sort_mopidy()

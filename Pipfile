@@ -13,6 +13,7 @@ loguru = "*"
 pprint = "*"
 mopidy = "*"
 redis = "*"
+websocket-client = "*"
 
 [requires]
 python_version = "3.7"

@@ -1,2 +1,2 @@
 
-__all__ = ['search', 'types', 'jsonrpc']
+__all__ = ['search', 'types', 'connection', 'playlist']

@@ -7,7 +7,7 @@ from typing import List
 from loguru import logger
 
 # app imports
-from .jsonrpc import mopidy_post
+from .connection import mopidy_post
 from .types import (
     deserialize_mopidy,
     Track,

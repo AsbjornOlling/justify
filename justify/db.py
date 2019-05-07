@@ -1,4 +1,3 @@
-
 """ Handles connections to Redis """
 
 # deps
@@ -22,7 +21,6 @@ def get_redis():
         rport = int(raddr.split(':')[-1])
         try:
             g.redis = Redis(host=rhost, port=rport)
-            logger.info("Connected to Redis.")
         except ConnectionError as e:
             err = f"Could not connect to Redis: {e}"
             logger.error(err)

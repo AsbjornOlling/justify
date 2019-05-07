@@ -1,20 +1,29 @@
-""" Mopidy JSON RPC module.
+""" Mopidy connection handling
 
-This module contains functions to interact with
-the Mopidy JSON RPC.
+This module contains functions to conenct and
+interact with the Mopidy JSON RPC API,
+as well as the Mopidy Websocket API for events.
 """
 
 
 # deps
 from requests import post
 from loguru import logger
+from flask import current_app as app
+from websocket import WebSocketApp
 
 # exceptions
 from json.decoder import JSONDecodeError
 from requests.exceptions import ConnectionError
 
-# TODO: get URL from config
-MOPIDY_RPC_URL = 'http://localhost:6680/mopidy/rpc'
+
+def connect_ws(**kwargs) -> None:
+    """ Connect to Mopidy websocket.
+    Takes kwargs like `on_event=`, for callables.
+    """
+    logger.info("Connecting to Mopidy websocket.")
+    ws = WebSocketApp(app.config['MOPIDY_WS_URL'], **kwargs)
+    ws.run_forever()
 
 
 def mopidy_post(command: str, *args, **kwargs):
@@ -37,12 +46,11 @@ def mopidy_post(command: str, *args, **kwargs):
         logger.debug(f"Sending Mopidy RPC: {rpccmd}")
 
         # do the HTTP POST to mopidy
-        r = post(MOPIDY_RPC_URL,
+        r = post(app.config['MOPIDY_RPC_URL'],
                  json=rpccmd).json()
 
         # assert: no errors :^)
         assert 'error' not in r, r.get('error', None)
-        logger.debug("Got Mopidy response.")
         return r['result']
 
     # a whole bunch of error handling
@@ -55,6 +63,6 @@ def mopidy_post(command: str, *args, **kwargs):
         logger.error(err)
         # abort(500, err)
     except JSONDecodeError:
-        err = f"Got weird response from mopidy url. {helpstr}"
+        err = f"Got weird response from Mopidy. {helpstr}"
         logger.error(err)
         # abort(500, err)

@@ -1,3 +1,8 @@
+"""
+Reads an validates configuration variables,
+either from environment variables, a (WIP) config file,
+or from a default, defined in this module's CONFVARS dict.
+"""
 
 # std lib
 from os import getenv
@@ -40,17 +45,13 @@ def _validate_MOPIDY_RPC_URL(MOPIDY_RPC_URL: str):
     # use default if not set
     if mopurl is None:
         mopurl = CONFVARS['MOPIDY_RPC_URL'][0]
-        logger.debug(
-            "MOPIDY_RPC_URL not set."
-            f" Using default: {mopurl}"
-        )
 
-    # test connection to mopidy
+    # err in case connect fails
     errmsg = ("Mopidy doesn't seem to be responding right."
               " Justify will likely not work."
               f" Is there a running Mopidy instance at {MOPIDY_RPC_URL}?"
               " You can change this address by setting MOPIDY_RPC_URL.")
-    try:
+    try:  # test connection to mopidy
         r = head(mopurl)
         assert r.status_code == 200, errmsg
     except ConnectionError:
@@ -59,6 +60,21 @@ def _validate_MOPIDY_RPC_URL(MOPIDY_RPC_URL: str):
         logger.error(errmsg)
         raise e
 
+    # throw assertion error, in order to use default
+    raise AssertionError("MOPIDY_RPC_URL not set.")
+
+
+def _validate_MOPIDY_WS_URL(MOPIDY_WS_URL: str):
+    """ Check format of Mopidy Websocket URL """
+    # check if set
+    assert MOPIDY_WS_URL is not None, "MOPIDY_WS_URL not set."
+
+    # check for schema
+    schemerr = "Websocket schema ('ws://') missing from MOPIDY_WS_URL."
+    wsscheck = 'wss://' == MOPIDY_WS_URL[:6]
+    wscheck = 'ws://' == MOPIDY_WS_URL[:5]
+    assert wsscheck or wscheck, schemerr
+
 
 CONFVARS = {
     'REDIS_ADDR':     ('localhost:6379',
@@ -66,7 +82,9 @@ CONFVARS = {
     'SECRET_KEY':     ('changeme-you-fool',
                        _validate_SECRET_KEY),
     'MOPIDY_RPC_URL': ('http://localhost:6680/mopidy/rpc',
-                       _validate_MOPIDY_RPC_URL)
+                       _validate_MOPIDY_RPC_URL),
+    'MOPIDY_WS_URL':  ('http://localhost:6680/mopidy/rpc/ws',
+                       _validate_MOPIDY_WS_URL)
 }
 
 
@@ -109,9 +127,9 @@ def load_config() -> dict:
             validator(readconf[k])
             finalconf[k] = readconf[k]
         except AssertionError as e:
-            errmsg = f"Error configuring {k}: {e}"
+            errmsg = f"When configuring {k}: {e}"
             defmsg = f"Defaulting to {k}={default}"
-            logger.error(errmsg)
+            logger.warning(errmsg)
             logger.info(defmsg)
             # use default value from CONFVARS
             finalconf[k] = default
