@@ -4,13 +4,13 @@ import logging
 import asyncio
 import json
 from threading import Thread
+from collections import namedtuple
 
 # deps
 import websockets
 
 # app imports
-# from .mopidy_types import deserialize_mopidy
-from loguru import logger
+from mopidy_types import deserialize_mopidy
 
 
 class MopidyWSClient:
@@ -33,7 +33,6 @@ class MopidyWSClient:
                                name="WSListener", daemon=False)
         self.wsthread.start()
 
-    @logger.catch()
     def _websocket_runner(self, loop):
         """ Method to run in websocket handler thread.
         Receives websocket messages using the library 'websockets'.
@@ -56,45 +55,40 @@ class MopidyWSClient:
 
     def on_message(self, msgstr: str):
         """ Method to be called on every arriving websocket message. """
-        logger.debug(f"Websocket received: {msgstr}")
         msg = json.loads(msgstr)
         if 'event' in msg.keys():
             self.route_event(msg)
         else:
-            logger.debug(f"Received unknown type packet: {msg}")
+            self.logger.debug(f"Received unknown type packet: {msg}")
 
     def route_event(self, event: dict):
         """ Pass event data to the functions registered
         in the _event_callbacks dict.
         """
-        eventname = event['event']
-        logger.debug(f"Routing event: {eventname}")
-        callbacks = self._event_callbacks.get(eventname, [])
+        evname = event['event']
+        self.logger.debug(f"Routing event: {evname}")
+        callbacks = self._event_callbacks.get(evname, [])
         for cb in callbacks:
-            # TODO: deserialize data
-            cb(event)
+            # deserialize into neat named tuples
+            nt = namedtuple(evname, event.keys())
+            neatdata = nt(**{k: deserialize_mopidy(event[k]) for k in event})
+            # call the callback
+            cb(neatdata)
 
-    def on_event(self, eventname):
+    def on_event(self, event: str):
         """ Function decorator.
         Decorated function is added to callbacks dict,
         to be called when event arrives.
         TODO: check for invalid/unsupported event names
         """
-        def decorator(func):
+        cbs = self._event_callbacks
+
+        def decorator(f):
             """ Appends function to the event callbacks dict. """
-            cbs = self._event_callbacks
-            existingcallbacks = cbs.get(eventname, [])
-            cbs[eventname] = existingcallbacks.append(func)
-            return func
+            if event in cbs.keys():
+                cbs[event].add(f)
+            else:
+                cbs[event] = set([f])
+            return f
+
         return decorator
-
-
-if __name__ == '__main__':
-    # testing code
-    mp = MopidyWSClient(logger=logger)
-
-    @mp.on_event('volume_changed')
-    def shoopwoop():
-        print("SHOOP DA WOOP")
-        print("SHOOP DA WOOP")
-        print("SHOOP DA WOOP")
