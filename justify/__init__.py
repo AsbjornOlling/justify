@@ -5,7 +5,6 @@ from flask import Flask
 
 # app imports
 from . import config
-from . import sync
 
 
 def create_app() -> Flask:

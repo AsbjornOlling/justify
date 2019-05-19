@@ -35,7 +35,7 @@ def playlist_view():
     logger.info("Serving playlist view.")
 
     # get playlist from mopidy
-    mlist = mp.get_tracks()
+    mlist = mp.tracklist.get_tracks()
     # make printable (also get votecount, vote status based on cookie)
     plist = printable_tracks(mlist)
 

@@ -7,6 +7,7 @@ and functions to create them properly.
 # std lib
 from typing import Iterable
 from collections import namedtuple
+from itertools import chain
 
 # deps
 from flask import session
@@ -27,18 +28,50 @@ PrintableTrack = namedtuple(
      'canvote'])
 
 
-def printable_tracks(ts: Iterable) -> Iterable[PrintableTrack]:
+def get_only_tracks(mdata: Iterable) -> Iterable:
+    """ Get list of Track tuples from any Mopidy type. """
+    elementtype = type(mdata[0]).__name__
+    if elementtype == 'Track':
+        ts = mdata
+
+    elif elementtype == 'SearchResult':
+        # each searchresult contains a list of tracks
+        ts = [sr.tracks for sr in mdata if 'tracks' in sr._fields]
+        logger.debug(mdata[0].tracks)
+        logger.debug(mdata[0].tracks)
+        logger.debug(mdata[0].tracks)
+        if len(ts) > 1:
+            ts = chain(*ts)
+
+    elif elementtype == 'TlTrack':
+        # each track contains a track
+        ts = [tl.track for tl in mdata]
+
+    else:
+        # unforeseend type
+        err = f"Unexpected type: {elementtype}"
+        logger.error(err)
+        raise ValueError(err)
+
+    # assert that it went well
+    finaltype = type(ts[0]).__name__
+    assert ts != [] and finaltype == 'Track', f"Got {finaltype} from {elementtype}"
+    return ts
+
+
+@logger.catch()
+def printable_tracks(mdata: Iterable) -> Iterable[PrintableTrack]:
     """ Basically make every value a string,
     and the time be in MM:SS format.
     Also this is a generator.
     """
     # get list of votes (tuples, cast to dict)
     vdict = dict(get_votelist(withscores=True))
-    for t in ts:
-        # ensure that t is Track
-        t = t.track if type(t).__name__ == 'TlTrack' else t
-        assert type(t).__name__ == 'Track'
 
+    # ensure that data is list of Tracks
+    ts = get_only_tracks(mdata)
+
+    for t in ts:
         # format into PrintableTrack
         yield PrintableTrack(
             uri=t.uri,
