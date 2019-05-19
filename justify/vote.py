@@ -45,7 +45,7 @@ def vote(songuri: str):
 
     if songuri not in [t.uri for t in mp.tracklist.get_tracks()]:
         # if song is unknown to mopidy, add it to playlist
-        mp.mopidy_connection.add(uri=songuri)
+        mp.tracklist.add(uri=songuri)
 
     # increment votecount in redis
     # (adds it to the list if not already on)

@@ -100,7 +100,6 @@ def read_configfile() -> dict:
     return {}
 
 
-@logger.catch()
 def load_config() -> dict:
     """ Read configurations from
     environment varibles and from config file.

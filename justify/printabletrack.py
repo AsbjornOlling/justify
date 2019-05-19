@@ -28,49 +28,53 @@ PrintableTrack = namedtuple(
      'canvote'])
 
 
-def get_only_tracks(mdata: Iterable) -> Iterable:
-    """ Get list of Track tuples from any Mopidy type. """
-    elementtype = type(mdata[0]).__name__
-    if elementtype == 'Track':
+def tracks(mdata: Iterable) -> Iterable:
+    """ Get a list of Track tuples, from list of any one Mopidy type.
+    E.g. a list of SearchResults, which each have a list of Tracks,
+    or a list of TlTracks, each of which contain a single track.
+    """
+    # find the mopidy tuple type
+    mtype = type(mdata[0]).__name__
+
+    # mangle the data based on the type
+    if mtype == 'Track':
         ts = mdata
 
-    elif elementtype == 'SearchResult':
+    elif mtype == 'SearchResult':
         # each searchresult contains a list of tracks
-        ts = [sr.tracks for sr in mdata if 'tracks' in sr._fields]
-        logger.debug(mdata[0].tracks)
-        logger.debug(mdata[0].tracks)
-        logger.debug(mdata[0].tracks)
-        if len(ts) > 1:
-            ts = chain(*ts)
+        ts = list(chain(*[sr.tracks
+                          for sr in mdata
+                          if 'tracks' in sr._fields]))
 
-    elif elementtype == 'TlTrack':
+    elif mtype == 'TlTrack':
         # each track contains a track
         ts = [tl.track for tl in mdata]
 
     else:
-        # unforeseend type
-        err = f"Unexpected type: {elementtype}"
+        err = f"Unexpected type: {mtype}"
         logger.error(err)
         raise ValueError(err)
 
-    # assert that it went well
-    finaltype = type(ts[0]).__name__
-    assert ts != [] and finaltype == 'Track', f"Got {finaltype} from {elementtype}"
+    if ts:  # skip empty lists
+        # assert that it went well
+        testtype = type(ts[0]).__name__
+        assert testtype == 'Track', f"Got {testtype} from {mtype}"
     return ts
 
 
-@logger.catch()
 def printable_tracks(mdata: Iterable) -> Iterable[PrintableTrack]:
     """ Basically make every value a string,
     and the time be in MM:SS format.
     Also this is a generator.
     """
+    if mdata in [None, []]:
+        return []
+
     # get list of votes (tuples, cast to dict)
     vdict = dict(get_votelist(withscores=True))
 
     # ensure that data is list of Tracks
-    ts = get_only_tracks(mdata)
-
+    ts = tracks(mdata)
     for t in ts:
         # format into PrintableTrack
         yield PrintableTrack(
