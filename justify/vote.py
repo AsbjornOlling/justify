@@ -11,11 +11,7 @@ from loguru import logger
 
 # app imports
 from .db import get_redis
-from .mopidy_api.playlist import (
-    get_playlist,
-    get_playlist_uris,
-    add_uri
-)
+from .mopidy_connection import mp
 
 
 def get_votelist(withscores=False) -> List:
@@ -47,9 +43,9 @@ def vote(songuri: str):
     """
     red = get_redis()
 
-    if songuri not in get_playlist_uris():
+    if songuri not in [t.uri for t in mp.get_tracks()]:
         # if song is unknown to mopidy, add it to playlist
-        add_uri(songuri)
+        mp.mopidy_connection.add(uri=songuri)
 
     # increment votecount in redis
     # (adds it to the list if not already on)

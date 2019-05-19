@@ -15,8 +15,7 @@ from flask import (
 # app imports
 from .vote import vote_and_sort
 from .printabletrack import printable_tracks
-from .mopidy_api.search import search_tracks
-from .mopidy_api.playlist import get_playlist
+from .mopidy_connection import mp
 
 
 # flask blueprint (encapsulates web endpoints)
@@ -36,7 +35,7 @@ def playlist_view():
     logger.info("Serving playlist view.")
 
     # get playlist from mopidy
-    mlist = get_playlist()
+    mlist = mp.get_tracks()
     # make printable (also get votecount, vote status based on cookie)
     plist = printable_tracks(mlist)
 
@@ -81,8 +80,8 @@ def search_view():
     # 1. get ?query=<something> param
     squery = request.args.get('query')
 
-    # 2. do mopidy api search with it
-    tracks = search_tracks(any=squery)
+    # 2. do mopidy search for it
+    tracks = mp.library.search(any=squery)
 
     # 3. put tracks in printable format
     ptracks = printable_tracks(tracks)

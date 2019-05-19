@@ -5,15 +5,15 @@ verify_ssl = true
 
 [dev-packages]
 pysnooper = "*"
+docopt = "*"
 
 [packages]
 requests = "*"
 flask = "*"
 loguru = "*"
 pprint = "*"
-mopidy = "*"
 redis = "*"
-websocket-client = "*"
+mopidyapi = "*"
 
 [requires]
 python_version = "3.7"

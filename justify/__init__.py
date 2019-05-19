@@ -5,6 +5,7 @@ from flask import Flask
 
 # app imports
 from . import config
+from . import sync
 
 
 def create_app() -> Flask:
@@ -12,6 +13,7 @@ def create_app() -> Flask:
     Returns Flask app object. """
     logger.info("Starting Justify...")
 
+    # duh.. of course?
     app = Flask(__name__,
                 static_folder='',
                 static_url_path='/static')

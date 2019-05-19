@@ -13,7 +13,6 @@ from flask import session
 from loguru import logger
 
 # app imports
-from .mopidy_api.types import Track, TlTrack
 from .vote import get_votelist
 
 # justify objects (not to be deserialed from api)
@@ -28,7 +27,7 @@ PrintableTrack = namedtuple(
      'canvote'])
 
 
-def printable_tracks(ts: Iterable[Track]) -> Iterable[PrintableTrack]:
+def printable_tracks(ts: Iterable) -> Iterable[PrintableTrack]:
     """ Basically make every value a string,
     and the time be in MM:SS format.
     Also this is a generator.
@@ -37,8 +36,8 @@ def printable_tracks(ts: Iterable[Track]) -> Iterable[PrintableTrack]:
     vdict = dict(get_votelist(withscores=True))
     for t in ts:
         # ensure that t is Track
-        t = t.track if isinstance(t, TlTrack) else t
-        assert isinstance(t, Track)
+        t = t.track if type(t).__name__ == 'TlTrack' else t
+        assert type(t).__name__ == 'Track'
 
         # format into PrintableTrack
         yield PrintableTrack(
