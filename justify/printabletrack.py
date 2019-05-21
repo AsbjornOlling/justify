@@ -14,7 +14,7 @@ from flask import session
 from loguru import logger
 
 # app imports
-from .vote import get_votelist
+from .votelist import get_votelist
 
 # justify objects (not to be deserialed from api)
 PrintableTrack = namedtuple(

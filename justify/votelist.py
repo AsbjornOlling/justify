@@ -1,6 +1,9 @@
-""" vote.py
+""" votelist.py
 
-WIP: this module handles voting on songs
+Functions to manage the votelist,
+which is a Redis ZSET.
+(which is a list of (songuri, votecount) pairs,
+sorted by votes).
 """
 
 # std lib
@@ -13,17 +16,20 @@ from loguru import logger
 from .db import get_redis
 from .mopidy_connection import mp
 
+# name of votelist in redis
+REDIS_VOTELIST = 'justify:votelist'
+
 
 def get_votelist(withscores=False) -> List:
     """ Get list of tracks, sorted by votes
     from Redis layer. Optionally return tuples, containing scores. """
-    # get all of 'playlist_votes' from redis
+    # get the votelist from redis
     red = get_redis()
-    rlist: List = red.zrange('playlist_votes', 0, -1,
+    rlist: List = red.zrange(REDIS_VOTELIST, 0, -1,
                              withscores=withscores)
     # clean results
     if not withscores:
-        # cast to strings
+        # cast bytes to strings
         result: List[str]
         result = [b.decode('utf8') for b in rlist]
     elif withscores:
@@ -33,7 +39,6 @@ def get_votelist(withscores=False) -> List:
     return result
 
 
-# TODO: validate songuri
 def vote(songuri: str):
     """ Vote on a song by its Mopidy uri.
         - check if already in redis playlist
@@ -43,16 +48,22 @@ def vote(songuri: str):
     """
     red = get_redis()
 
+    # TODO: validate songuri
     if songuri not in [t.uri for t in mp.tracklist.get_tracks()]:
         # if song is unknown to mopidy, add it to playlist
         mp.tracklist.add(uri=songuri)
 
     # increment votecount in redis
     # (adds it to the list if not already on)
-    red.zincrby('playlist_votes', 1, songuri)
+    red.zincrby(REDIS_VOTELIST, 1, songuri)
     logger.info(f"Voted on: {songuri}")
 
 
-def vote_and_sort(songuri: str):
-    """ Function name says it all. """
-    vote(songuri)
+def remove_from_votelist(songuri: str):
+    """ Remove uri from redi votelist,
+    and from all sessions.
+    """
+    logger.info(f"Removing song with uri: {songuri}")
+    # red = get_redis()
+    # TODO: remove from zset
+    # TODO: remove from all user sessions

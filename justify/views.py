@@ -13,9 +13,10 @@ from flask import (
 )
 
 # app imports
-from .vote import vote_and_sort
-from .printabletrack import printable_tracks
+from .users import add_user
+from .votelist import vote
 from .mopidy_connection import mp
+from .printabletrack import printable_tracks
 
 
 # flask blueprint (encapsulates web endpoints)
@@ -24,9 +25,16 @@ bp = Blueprint('web', __name__,
                template_folder='../templates')
 
 
-@bp.route('/hello')
-def hello_world():
-    return "Hi!"
+@bp.route('/newuser', methods=['GET', 'POST'])
+def new_user():
+    # add user if user submitted form
+    if request.method == 'POST' and request.get('username') is not None:
+        # TODO: username sanitization
+        userid = add_user(request.get('username'))
+        session['userid'] = userid
+
+    # input username welcome page
+    return render_template('newuser.tpl')
 
 
 @bp.route('/', methods=['GET'])
@@ -36,7 +44,8 @@ def playlist_view():
 
     # get playlist from mopidy
     mlist = mp.tracklist.get_tracks()
-    # make printable (also get votecount, vote status based on cookie)
+
+    # make printable (also get votecount, vote status based on session)
     plist = printable_tracks(mlist)
 
     # render html
@@ -66,7 +75,8 @@ def vote_view(songuri: str):
         # valid vote
         logger.info(f"Vote on {songuri} deemed valid.")
         session['voted'].append(songuri)
-        vote_and_sort(songuri)
+        vote(songuri)
+        # TODO: sort playlist
 
     # redirect to playlist
     return redirect(url_for('web.playlist_view'))

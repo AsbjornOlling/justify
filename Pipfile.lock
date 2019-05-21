@@ -129,11 +129,11 @@
         },
         "mopidyapi": {
             "hashes": [
-                "sha256:62b70cede460fc8e351e6702553a14a4390b7a76c48cf679b3b418d76c970f69",
-                "sha256:acae9daf34824ceb3913591a293f424c99060315ad45af33f7d85802ae7d5245"
+                "sha256:f6fdf33743d82f491f540ff5ac22973057aff84c1349d043d7f7f1fc16ff9024",
+                "sha256:f89ee45c801654e039f403caf1f47c716fc29984b7cfd28f612aee9760f900e4"
             ],
             "index": "pypi",
-            "version": "==0.4.1"
+            "version": "==0.4.2"
         },
         "pprint": {
             "hashes": [
@@ -216,11 +216,11 @@
         },
         "pysnooper": {
             "hashes": [
-                "sha256:8ec553d4ec2573198988a7d2fdb7f2227bccecc75f881f33bcb47b5bbf54da78",
-                "sha256:91fbb929249f0735fc45e4df504064602940605c17298bc9f9552f17876a2c57"
+                "sha256:1fcaf92ef5dac202c7a64901d68c4dd94714849b12f65a065ff758bcdc2466b6",
+                "sha256:8011990443a02242a211f85de8195cad9739b5f5d9e86acf69e3189711f3d49c"
             ],
             "index": "pypi",
-            "version": "==0.0.38"
+            "version": "==0.0.39"
         }
     }
 }
