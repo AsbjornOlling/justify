@@ -13,9 +13,9 @@ from flask import (
 )
 
 # app imports
-from .users import add_user
+from .users import check_user, add_user
 from .votelist import vote
-from .mopidy_connection import mp
+from .mopidy_connection import mp, queue_song, in_tracklist
 from .printabletrack import printable_tracks
 
 
@@ -27,17 +27,28 @@ bp = Blueprint('web', __name__,
 
 @bp.route('/newuser', methods=['GET', 'POST'])
 def new_user():
-    # add user if user submitted form
-    if request.method == 'POST' and request.get('username') is not None:
+    """ The page a user hits, if he/she hasn't used the site yet. """
+    if request.method == 'POST' and request.form.get('username') is not None:
+        # get username from html form
+        username = request.form.get('username')
+        logger.info(f"User submitted: {username}")
         # TODO: username sanitization
-        userid = add_user(request.get('username'))
-        session['userid'] = userid
 
-    # input username welcome page
+        # add user to db, get unique id
+        userid = add_user(username)
+
+        # put unique id into session cookie and redirect
+        logger.debug(f"SESSION before: {session}")
+        session['userid'] = userid
+        logger.debug(f"SESSION after: {session}")
+        return redirect(url_for('web.playlist_view'))
+
+    # username welcome page
     return render_template('newuser.tpl')
 
 
 @bp.route('/', methods=['GET'])
+@check_user
 def playlist_view():
     """ Playlist view. """
     logger.info("Serving playlist view.")
@@ -53,10 +64,11 @@ def playlist_view():
 
 
 @bp.route('/vote/<string:songuri>', methods=['POST'])
+@check_user
 def vote_view(songuri: str):
     """ Voting.
-    - one vote per cookie per song
-    - vote triggers re-sort
+        - one vote per cookie per song
+        - vote triggers re-sort
     """
     # get songs already voted on by user
     votedlist = session.get('voted', None)
@@ -75,14 +87,21 @@ def vote_view(songuri: str):
         # valid vote
         logger.info(f"Vote on {songuri} deemed valid.")
         session['voted'].append(songuri)
-        vote(songuri)
+
+        # add song to mopidy if not in queue
+        if not in_tracklist(songuri):
+            queue_song(songuri)
+
+        # increment (or add) to votelist
         # TODO: sort playlist
+        vote(songuri)
 
     # redirect to playlist
     return redirect(url_for('web.playlist_view'))
 
 
 @bp.route('/search', methods=['GET'])
+@check_user
 def search_view():
     """ Return search result tracks.
     Takes GET parameters like ?query=Louis Armstrong

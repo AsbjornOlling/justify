@@ -22,18 +22,18 @@
 					<a class="navbar-brand" style="font-weight: 700;"  href="/">Justify</a>
 				</div>
 
+				{% block searchbar %}
 				<!-- Search -->
 				<form class="form-inline input-group my-auto" style="width: 66%;" action="/search" method="get">
-					<!-- Search field -->
 					<input class="form-control" placeholder="Search" name="query" type="text" />
 
-					<!-- Button -->
 					<div class="input-group-append">
 						<button class="btn btn-outline-primary" type="submit">
 							<span class="mdi mdi-magnify"></span>
 						</button>
 					</div>
-				</form>
+				</form> <!-- /inline search -->
+				{% endblock %}
 
 		</nav> <!-- /navbar -->
 

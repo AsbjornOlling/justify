@@ -14,7 +14,6 @@ from loguru import logger
 
 # app imports
 from .db import get_redis
-from .mopidy_connection import mp
 
 # name of votelist in redis
 REDIS_VOTELIST = 'justify:votelist'
@@ -41,20 +40,12 @@ def get_votelist(withscores=False) -> List:
 
 def vote(songuri: str):
     """ Vote on a song by its Mopidy uri.
-        - check if already in redis playlist
-        - if not in redis, add to mopidy  # XXX: change?
         - if not in redis, add with one vote
         - if in redis, increment with one vote
     """
-    red = get_redis()
-
-    # TODO: validate songuri
-    if songuri not in [t.uri for t in mp.tracklist.get_tracks()]:
-        # if song is unknown to mopidy, add it to playlist
-        mp.tracklist.add(uri=songuri)
-
     # increment votecount in redis
     # (adds it to the list if not already on)
+    red = get_redis()
     red.zincrby(REDIS_VOTELIST, 1, songuri)
     logger.info(f"Voted on: {songuri}")
 
@@ -64,6 +55,7 @@ def remove_from_votelist(songuri: str):
     and from all sessions.
     """
     logger.info(f"Removing song with uri: {songuri}")
+
     # red = get_redis()
     # TODO: remove from zset
     # TODO: remove from all user sessions

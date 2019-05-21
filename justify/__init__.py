@@ -23,16 +23,14 @@ def create_app() -> Flask:
     conf = config.load_config()
     app.config.update(**conf)
 
-    sessconf = {  # flask session config
+    sessconf = {  # flask session cookie config
         'SESSION_COOKIE_NAME':        'justify',
-        'SESSION_COOKIE_SECURE':      True,
         'PERMANENT_SESSION_LIFETIME': timedelta(days=10),
+        'SECRET_KEY':                 'wow_thats_very_safe',
+        # XXX: this breaks cookies
+        # 'SESSION_COOKIE_SECURE':     True,
     }
     app.config.update(**sessconf)
-
-    # let users module bind '@before_request' on app obj
-    with app.app_context():
-        from . import users
 
     # register web endpoints
     from . import views

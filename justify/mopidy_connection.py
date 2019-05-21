@@ -33,3 +33,13 @@ def track_playback_ended(event):
 def tracklist_changed(event):
     logger.debug(f"Trackist changed: {event}")
     pass
+
+
+def in_tracklist(songuri: str):
+    """ True if song with uri is in current Mopidy tracklist. """
+    return songuri in [t.uri for t in mp.tracklist.get_tracks()]
+
+
+def queue_song(songuri: str):
+    """ Add song to Mopidy tracklist based on Mopidy song uri.  """
+    mp.tracklist.add(uri=songuri)
