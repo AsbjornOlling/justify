@@ -9,21 +9,21 @@ from os import getenv
 
 # deps
 from loguru import logger
-from requests import head
+from requests import get
 from requests.exceptions import ConnectionError, MissingSchema
 
 
-def _validate_REDIS_ADDR(REDIS_ADDR: str):
-    """ Validator for REDIS_ADDR """
-    noneerr = f"REDIS_ADDR not set."
-    assert REDIS_ADDR is not None, noneerr
+def _validate_REDIS_HOST(REDIS_HOST: str):
+    """ Validator for REDIS_HOST """
+    noneerr = f"REDIS_HOST not set."
+    assert REDIS_HOST is not None, noneerr
 
-    formerr = f"REDIS_ADDR must be in format <host>:<port> Got: {REDIS_ADDR}"
-    assert ':' in REDIS_ADDR, formerr
+    formerr = f"REDIS_HOST must be in format <host>:<port> Got: {REDIS_HOST}"
+    assert ':' in REDIS_HOST, formerr
 
     try:  # check portnum
-        portno = int(REDIS_ADDR.split(':')[-1])
-        assert portno <= 2**16, "REDIS_ADDR: {porno} is an invalid port number"
+        port = int(REDIS_HOST.split(':')[-1])
+        assert port <= 2**16, "REDIS_HOST: {port} is an invalid port number"
     except ValueError:
         raise AssertionError(formerr)
     # TODO: check redis connection
@@ -39,52 +39,34 @@ def _validate_SECRET_KEY(SECRET_KEY):
     assert SECRET_KEY is not None, errmsg
 
 
-def _validate_MOPIDY_RPC_URL(MOPIDY_RPC_URL: str):
+def _validate_MOPIDY_HOST(MOPIDY_HOST: str):
     """ Check connection to Mopidy instance. """
-    mopurl = MOPIDY_RPC_URL
+    mophost = MOPIDY_HOST
     # use default if not set
-    if mopurl is None:
-        mopurl = CONFVARS['MOPIDY_RPC_URL'][0]
+    if mophost is None:
+        mophost = CONFVARS['MOPIDY_HOST'][0]
+
+    # check format
+    formerr = "MOPIDY_HOST should be in format: 'host:port'"
+    assert len(mophost.split(':')) == 2, formerr
 
     # err in case connect fails
     errmsg = ("Mopidy doesn't seem to be responding right."
-              " Justify will likely not work."
-              f" Is there a running Mopidy instance at {MOPIDY_RPC_URL}?"
-              " You can change this address by setting MOPIDY_RPC_URL.")
+              " Justify will not work."
+              f" Is there a running Mopidy instance at {MOPIDY_HOST}?"
+              " You can change this address by setting MOPIDY_HOST")
     try:  # test connection to mopidy
-        r = head(mopurl)
+        r = get(f"http://{mophost}/")
         assert r.status_code == 200, errmsg
-    except ConnectionError:
+    except Exception:
         logger.error(errmsg)
-    except AssertionError as e:
-        logger.error(errmsg)
-        raise e
-
-    # throw assertion error, in order to use default
-    raise AssertionError("MOPIDY_RPC_URL not set.")
-
-
-def _validate_MOPIDY_WS_URL(MOPIDY_WS_URL: str):
-    """ Check format of Mopidy Websocket URL """
-    # check if set
-    assert MOPIDY_WS_URL is not None, "MOPIDY_WS_URL not set."
-
-    # check for schema
-    schemerr = "Websocket schema ('ws://') missing from MOPIDY_WS_URL."
-    wsscheck = 'wss://' == MOPIDY_WS_URL[:6]
-    wscheck = 'ws://' == MOPIDY_WS_URL[:5]
-    assert wsscheck or wscheck, schemerr
+        quit(1)
 
 
 CONFVARS = {
-    'REDIS_ADDR':     ('localhost:6379',
-                       _validate_REDIS_ADDR),
-    'SECRET_KEY':     ('changeme-you-fool',
-                       _validate_SECRET_KEY),
-    'MOPIDY_RPC_URL': ('http://localhost:6680/mopidy/rpc',
-                       _validate_MOPIDY_RPC_URL),
-    'MOPIDY_WS_URL':  ('http://localhost:6680/mopidy/rpc/ws',
-                       _validate_MOPIDY_WS_URL)
+    'REDIS_HOST':     ('localhost:6379', _validate_REDIS_HOST),
+    'SECRET_KEY':     ('changeme-you-fool', _validate_SECRET_KEY),
+    'MOPIDY_HOST':    ('localhost:6680', _validate_MOPIDY_HOST)
 }
 
 
