@@ -22,7 +22,8 @@ from .printabletrack import printable_tracks
 # flask blueprint (encapsulates web endpoints)
 bp = Blueprint('web', __name__,
                url_prefix='/',
-               template_folder='../templates')
+               template_folder='templates',
+               static_folder='static')
 
 
 @bp.route('/newuser', methods=['GET', 'POST'])
@@ -66,10 +67,7 @@ def playlist_view():
 @bp.route('/vote/<string:songuri>', methods=['POST'])
 @check_user
 def vote_view(songuri: str):
-    """ Voting.
-        - one vote per cookie per song
-        - vote triggers re-sort
-    """
+    """ Voting. """
     # get songs already voted on by user
     votedlist = session.get('voted', None)
 
@@ -88,9 +86,9 @@ def vote_view(songuri: str):
         logger.info(f"Vote on {songuri} deemed valid.")
         session['voted'].append(songuri)
 
-        # add song to mopidy if not in queue
-        if not in_tracklist(songuri):
-            queue_song(songuri)
+        # add song to mopidy if not in tracklist already
+        if songuri not in [t.uri for t in mp.tracklist.get_tracks()]:
+            mp.tracklist.add(uri=songuri)
 
         # increment (or add) to votelist
         # TODO: sort playlist

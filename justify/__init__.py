@@ -15,9 +15,7 @@ def create_app() -> Flask:
     logger.info("Starting Justify...")
 
     # make flask app
-    app = Flask(__name__,
-                static_folder='',
-                static_url_path='/static')
+    app = Flask(__name__, static_url_path='/static')
 
     # read configuration into flask config obj
     conf = config.load_config()
@@ -26,9 +24,8 @@ def create_app() -> Flask:
     sessconf = {  # flask session cookie config
         'SESSION_COOKIE_NAME':        'justify',
         'PERMANENT_SESSION_LIFETIME': timedelta(days=10),
-        'SECRET_KEY':                 'wow_thats_very_safe',
-        # XXX: this breaks cookies
-        # 'SESSION_COOKIE_SECURE':     True,
+        # TODO: this breaks cookies - why? is it an ssl thing?
+        # 'SESSION_COOKIE_SECURE':    True
     }
     app.config.update(**sessconf)
 

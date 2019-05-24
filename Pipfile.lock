@@ -129,11 +129,11 @@
         },
         "mopidyapi": {
             "hashes": [
-                "sha256:f6fdf33743d82f491f540ff5ac22973057aff84c1349d043d7f7f1fc16ff9024",
-                "sha256:f89ee45c801654e039f403caf1f47c716fc29984b7cfd28f612aee9760f900e4"
+                "sha256:5f52848749bf83e67c09ba8ebe7f6692aa8f056d6b723a7aa867d58be10ead2b",
+                "sha256:e27b522e531f44ce3fd9728a05bea6bcaf0a86daec350d83b219b0c611e7be34"
             ],
             "index": "pypi",
-            "version": "==0.4.2"
+            "version": "==0.5.0"
         },
         "pprint": {
             "hashes": [
@@ -167,10 +167,10 @@
         },
         "urllib3": {
             "hashes": [
-                "sha256:a53063d8b9210a7bdec15e7b272776b9d42b2fd6816401a0d43006ad2f9902db",
-                "sha256:d363e3607d8de0c220d31950a8f38b18d5ba7c0830facd71a1c6b1036b7ce06c"
+                "sha256:b246607a25ac80bedac05c6f282e3cdaf3afb65420fd024ac94435cabe6e18d1",
+                "sha256:dbe59173209418ae49d485b87d1681aefa36252ee85884c31346debd19463232"
             ],
-            "version": "==1.25.2"
+            "version": "==1.25.3"
         },
         "websockets": {
             "hashes": [
