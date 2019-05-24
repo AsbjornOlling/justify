@@ -55,7 +55,4 @@ def remove_from_votelist(songuri: str):
     and from all sessions.
     """
     logger.info(f"Removing song with uri: {songuri}")
-
-    # red = get_redis()
-    # TODO: remove from zset
-    # TODO: remove from all user sessions
+    get_redis().zrem(REDIS_VOTELIST, str(songuri))
