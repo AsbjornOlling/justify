@@ -16,7 +16,7 @@ def get_redis():
     """
     if 'redis' not in g:
         # connect to redis
-        raddr = app.config['REDIS_ADDR']
+        raddr = app.config['REDIS_HOST']
         rhost = raddr.split(':')[0]
         rport = int(raddr.split(':')[-1])
         try:
