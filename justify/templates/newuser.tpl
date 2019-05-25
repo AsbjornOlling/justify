@@ -1,7 +1,12 @@
 {% extends 'base.tpl' %}
 
+{# No searchbar #}
+{% block searchbar %}
+{% endblock %}
+
 {% block content %}
 	<div class="container">
+		<h1 class="text-center">Welcome to Justify</h1>
 		
 		<img src="{{ url_for('static', filename='j256.png') }}" alt="logo" class="img-responsive mx-auto d-block" />
 
@@ -9,6 +14,7 @@
 
 		<br>
 
+		<h6 class="text-center">You seem new here...</h6>
 		<h5 class="text-center">Tell me your name to get started!</h5>
 		<form action="{{ url_for('web.new_user') }}" method="POST" class="input-group">
 			{# username field #}
