@@ -3,23 +3,23 @@
 {% block content %}
 	<div class="container">
 
-		<!-- Refresh button -->
+		{# Refresh button #}
 		<div class="page-header">
 			<div class="btn-toolbar float-right">
 				<div class="btn-group">
 					<a class="btn btn-secondary" href="/">
-						<!-- TODO: replace ionicon -->
+						{# TODO: replace ionicon #}
 						<ion-icon name="refresh"></ion-icon>
 					</a>
 				</div>
 			</div>
 		</div>
 
-		<!-- Table container -->
+		{# Table container #}
 		<div class="panel panel-default">
 			<table class="table table-striped table-hover">
 
-				<!-- Table header -->
+				{# Table header #}
 				<thead>
 					<tr>
 						<th>Song</th>
@@ -30,14 +30,14 @@
 					</tr>
 				</thead>
 
-				<!-- Table contents -->
+				{# Table contents #}
 				<tbody>
-					<!-- TODO: Currently playing song 
+					{# TODO: Currently playing song 
 					{% if playlist %}
 						% include("playing.tpl", song=playlist[0], viewer=viewer)
-					{% endif %} -->
+					{% endif %} #}
 
-					<!-- Remaining songs -->
+					{# Remaining songs #}
 					{% for track in playlist %}
 						<tr>
 							<td style="vertical-align: middle;">
@@ -56,10 +56,10 @@
 								{{ track.time }}
 							</td>
 
-							<!-- Vote button -->
+							{# Vote button #}
 							<td class="align-middle">
 								<form action="/vote/{{ track.uri }}" method="POST">
-									<!-- TODO: new icon -->
+									{# TODO: new icon #}
 									<input value="{{ track.votes }}" type="submit" class="btn btn-outline-success {{ "" if track.canvote else "disabled" }}" style="vertical-align: middle;">
 									</input>
 								</form>
@@ -69,6 +69,6 @@
 
 				</tbody>
 			</table>
-		</div> <!-- /table panel -->
-	</div> <!-- /container -->
+		</div> {# /table panel #}
+	</div> {# /container #}
 {% endblock %}

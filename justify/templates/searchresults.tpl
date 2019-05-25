@@ -1,5 +1,5 @@
 {% extends 'base.tpl' %}
-			<!-- Header text -->
+			{# Header text #}
 			<div class="page-header">
 				<div class="btn-toolbar float-right">
 					<div class="btn-group">
@@ -13,14 +13,14 @@
 {% block content %}
 	<div class="container">
 	
-		<!-- Header -->
+		{# Header #}
 		<div class="page-header">
 			<h3>Search Results</h3>
 		</div>
 
-		<!-- Table -->
+		{# Table #}
 		<table class="table table-striped">
-			<!-- Table Legend -->
+			{# Table Legend #}
 			<thead>	
 				<tr>
 					<th>Song</th>
@@ -31,10 +31,10 @@
 				</tr>
 			</thead>	
 
-			<!-- Table Body -->
+			{# Table Body #}
 			<tbody>
 
-				<!-- If no results -->
+				{# If no results #}
 				{% if not tracks %}
 					<tr>
 						<td>Huh, didn't find any tracks matching your search...</td>
@@ -46,7 +46,7 @@
 					</tr>
 				{% endif %}
 
-				<!-- Actual results -->
+				{# Actual results #}
 				{% for track in tracks %}
 					<tr>
 						<td>{{ track.name }}</td>
@@ -57,7 +57,7 @@
 
 						<td class="d-none d-sm-table-cell">{{ track.time }}</td>
 
-						<td> <!-- Add button -->
+						<td> {# Add button #}
 							<form action="/vote/{{ track.uri }}" method="POST">
 								<button class="btn btn-secondary" type="submit">
 									<span class="mdi mdi-plus"></span>
@@ -68,6 +68,6 @@
 				{% endfor %}
 
 			</tbody>
-		</table> <!-- table -->
-	</div> <!-- /container -->
+		</table> {# table #}
+	</div> {# /container #}
 {% endblock %}

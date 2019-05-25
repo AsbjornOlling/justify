@@ -11,13 +11,13 @@
 
 		<h5 class="text-center">Tell me your name to get started!</h5>
 		<form action="{{ url_for('web.new_user') }}" method="POST" class="input-group">
-			<!-- username field -->
+			{# username field #}
 			<input type="text" id="username" name="username" class="form-control" placeholder="Your Name">
 
-			<!-- submit button -->
+			{# submit button #}
 			<span class="input-group-append">
 				<button class="btn btn-secondary" type="submit">
-					GO! <!-- TODO: icon here -->
+					GO! {# TODO: icon here #}
 				</button>
 			</span>
 		</form>
@@ -47,5 +47,5 @@
 			If you want to know more, go get Asbjørn a beer.
 		</p>
 
-	</div> <!-- /container -->
+	</div> {# /container #}
 {% endblock %}
