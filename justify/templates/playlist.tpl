@@ -32,10 +32,11 @@
 
 				{# Table contents #}
 				<tbody>
-					{# TODO: Currently playing song 
-					{% if playlist %}
-						% include("playing.tpl", song=playlist[0], viewer=viewer)
-					{% endif %} #}
+					{# TODO: Currently playing song
+						{% if playlist %}
+							% include("playing.tpl", song=playlist[0], viewer=viewer)
+						{% endif %}
+					#}
 
 					{# Remaining songs #}
 					{% for track in playlist %}

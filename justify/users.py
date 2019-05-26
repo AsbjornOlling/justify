@@ -24,7 +24,6 @@ def check_user(f):
     """
     @wraps(f)
     def decorated_f(*args, **kwargs):
-        logger.debug(f"SESSION IN DEC: {session}")
         if 'userid' not in session:
             logger.info('Unknown user. Redirecting to new user endpoint.')
             return redirect(url_for('web.new_user'))
@@ -56,15 +55,29 @@ def add_user(username: str):
     return userid
 
 
+def get_user_votedlist(userid: str) -> List[str]:
+    """ Get list of song uris voted on by user. """
+    logger.debug(f"Getting votedlist for {userid}")
+
+    # get json from redis
+    rkey = f"{REDIS_USER_PREFIX}{userid}"
+    vdata: bytes = get_redis().hmget(rkey, 'votes_current')
+    logger.debug(f"VLIST: {vdata}")
+
+    # load as python list, check and return
+    vlist: List = json.loads(vdata)
+    return vlist
+
+
 def user_voted(songuri: str, uid=None):
     """ Add URI to list of songs voted on, for given userid. """
-    if uid is None:
-        userid = session['userid']
+    # fall back to session info if not explicity passed
+    userid = uid if uid is not None else session['userid']
 
     # get current user data from redis
     r = get_redis()
     rkey = f'{REDIS_USER_PREFIX}{userid}'
-    udata = r.hmget(rkey, 'votes_current', 'votes_history')
+    current, history = r.hmget(rkey, 'votes_current', 'votes_history')
 
     # append song uri to json lists of voted songs
     def appenduri(arraystr: str) -> str:
@@ -72,12 +85,14 @@ def user_voted(songuri: str, uid=None):
         array = json.loads(arraystr)
         return json.dumps(array.append(songuri))
 
-    udata['votes_current'] = appenduri(udata['votes_current'])
-    udata['votes_history'] = appenduri(udata['votes_history'])
+    udata = {
+        'votes_current': appenduri(current),
+        'votes_history': appenduri(history)
+    }
 
     # put the new data into redis
     r.hmset(rkey, udata)
-    logger.debug(f"Updated votelist of {udata['userdata']}")
+    logger.debug(f"Updated votelist of {userid}")
 
 
 def clear_uservotes(songuri: str):

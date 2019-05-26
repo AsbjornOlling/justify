@@ -1,5 +1,6 @@
 
 # std lib
+from typing import List
 
 # deps
 from loguru import logger
@@ -13,9 +14,9 @@ from flask import (
 )
 
 # app imports
-from .users import check_user, add_user
 from .votelist import vote
-from .mopidy_connection import mp, queue_song, in_tracklist
+from .mopidy_connection import mp
+from .users import check_user, add_user, get_user_votedlist, user_voted
 from .printabletrack import printable_tracks
 
 
@@ -68,23 +69,21 @@ def playlist_view():
 @check_user
 def vote_view(songuri: str):
     """ Voting. """
-    # get songs already voted on by user
-    votedlist = session.get('voted', None)
+    # TODO: validate songuri
 
-    if votedlist is None:
-        # new list for new users
-        logger.info("Init empty voted list for user.")
-        session['voted'] = []
-        votedlist = []
+    # get songs already voted on by user
+    votedlist: List[str] = get_user_votedlist(session['userid'])
+    logger.debug(votedlist)
 
     if songuri in votedlist:
         # if user already voted
         logger.warning(f"User already voted on song: {songuri}")
 
-    else:
-        # valid vote
+    else:  # vote allowed
         logger.info(f"Vote on {songuri} deemed valid.")
-        session['voted'].append(songuri)
+
+        # record user vote (to prevent re-vote)
+        user_voted(songuri, uri=session['uid'])
 
         # add song to mopidy if not in tracklist already
         if songuri not in [t.uri for t in mp.tracklist.get_tracks()]:

@@ -1,5 +1,7 @@
 """ Maintains a connection to mopidy
 Encpasulates the mopidy object.
+TODO: handle tracks added from another front-end
+TODO: handle connecting to mopidy with non-empty playlist
 """
 
 # deps

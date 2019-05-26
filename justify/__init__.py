@@ -30,7 +30,8 @@ def create_app() -> Flask:
     app.config.update(**sessconf)
 
     # register web endpoints
-    from . import views
+    with app.app_context():
+        from . import views
     app.register_blueprint(views.bp)
 
     return app

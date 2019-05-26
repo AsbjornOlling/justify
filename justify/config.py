@@ -40,27 +40,13 @@ def _validate_SECRET_KEY(SECRET_KEY):
 
 
 def _validate_MOPIDY_HOST(MOPIDY_HOST: str):
-    """ Check connection to Mopidy instance. """
-    mophost = MOPIDY_HOST
+    """ Format of MOPIDY_HOST string. """
     # use default if not set
-    if mophost is None:
-        mophost = CONFVARS['MOPIDY_HOST'][0]
+    assert MOPIDY_HOST is not None, ""
 
     # check format
     formerr = "MOPIDY_HOST should be in format: 'host:port'"
     assert len(mophost.split(':')) == 2, formerr
-
-    # err in case connect fails
-    errmsg = ("Mopidy doesn't seem to be responding right."
-              " Justify will not work."
-              f" Is there a running Mopidy instance at {MOPIDY_HOST}?"
-              " You can change this address by setting MOPIDY_HOST")
-    try:  # test connection to mopidy
-        r = get(f"http://{mophost}/")
-        assert r.status_code == 200, errmsg
-    except Exception:
-        logger.error(errmsg)
-        quit(1)
 
 
 CONFVARS = {
