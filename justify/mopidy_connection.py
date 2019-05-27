@@ -8,11 +8,15 @@ TODO: handle connecting to mopidy with non-empty playlist
 from mopidyapi import MopidyAPI
 from loguru import logger
 from flask import current_app as app
-from typing import List
+from typing import List, Set
 
 # app imports
-from .votelist import remove_from_votelist, get_votelist
 from .users import clear_uservotes
+from .votelist import (
+    remove_from_votelist,
+    get_votelist,
+    vote
+)
 
 # MopidyAPI
 # provides functions and event listeners
@@ -32,7 +36,7 @@ def track_playback_ended(event):
     """ Removes track from votelist and records of user votes,
     when mopidy finishes playing it.
     """
-    logger.debug(f"Track playback ended: {event}")
+    logger.debug(f"Track playback ended: {event.track.name}")
     remove_from_votelist(event.track.uri)
     clear_uservotes(event.track.uri)
 
@@ -40,7 +44,31 @@ def track_playback_ended(event):
 @mp.on_event('tracklist_changed')
 def tracklist_changed(event):
     logger.debug(f"Trackist changed: {event}")
-    pass
+    # app context needed to get redis obj
+    # set explicitly, b/c this is called from thread
+    with app.app_context():
+        sync_votelist()
+        sort_mopidy()
+
+
+def sync_votelist():
+    """ Checks for discrepencies between votelist,
+    and the current Mopidy tracklist.
+    Modifies votelist to match Mopidy if necessary.
+    """
+    vlist: Set[str] = set(get_votelist(withscores=False))
+    tlist: Set[str] = {str(t.uri) for t in mp.tracklist.get_tracks()}
+
+    vlistonly: Set[str] = vlist - tlist
+    for songuri in vlistonly:
+        logger.warning(f"Removing orphaned song: {songuri}")
+        remove_from_votelist(songuri)
+        clear_uservotes(songuri)
+
+    tlistonly: Set[str] = tlist - vlist
+    for songuri in tlistonly:
+        logger.warning(f"Adding unknown song to votelist: {songuri}")
+        vote(songuri)
 
 
 def sort_mopidy():

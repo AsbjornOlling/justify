@@ -8,6 +8,7 @@ and functions to create them properly.
 from typing import Iterable
 from collections import namedtuple
 from itertools import chain
+from functools import lru_cache
 
 # deps
 from flask import session

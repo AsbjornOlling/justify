@@ -16,8 +16,13 @@ from flask import (
 # app imports
 from .votelist import vote
 from .mopidy_connection import mp
-from .users import check_user, add_user, get_user_votedlist, user_voted
 from .printabletrack import printable_tracks
+from .users import (
+    check_user,
+    add_user,
+    user_voted,
+    add_uservote
+)
 
 
 # flask blueprint (encapsulates web endpoints)
@@ -40,9 +45,7 @@ def new_user():
         userid = add_user(username)
 
         # put unique id into session cookie and redirect
-        logger.debug(f"SESSION before: {session}")
         session['userid'] = userid
-        logger.debug(f"SESSION after: {session}")
         return redirect(url_for('web.playlist_view'))
 
     # username welcome page
@@ -65,52 +68,50 @@ def playlist_view():
     return render_template('playlist.tpl', playlist=plist)
 
 
-@bp.route('/vote/<string:songuri>', methods=['POST'])
 @check_user
+@bp.route('/vote/<string:songuri>', methods=['POST'])
 def vote_view(songuri: str):
-    """ Voting. """
-    # TODO: validate songuri
-
-    # get songs already voted on by user
-    votedlist: List[str] = get_user_votedlist(session['userid'])
-    logger.debug(votedlist)
-
-    if songuri in votedlist:
-        # if user already voted
-        logger.warning(f"User already voted on song: {songuri}")
+    """ Voting.
+    TODO: redirect on HTTP GET
+    """
+    if user_voted(songuri, uid=session['userid']):
+        logger.warning(f"User already voted on: {songuri}. Disallowing vote.")
 
     else:  # vote allowed
         logger.info(f"Vote on {songuri} deemed valid.")
 
         # record user vote (to prevent re-vote)
-        user_voted(songuri, uri=session['uid'])
+        add_uservote(songuri, uid=session['userid'])
 
         # add song to mopidy if not in tracklist already
-        if songuri not in [t.uri for t in mp.tracklist.get_tracks()]:
+        if str(songuri) not in [str(t.uri) for t in mp.tracklist.get_tracks()]:
             mp.tracklist.add(uri=songuri)
 
-        # increment (or add) to votelist
-        # TODO: sort playlist
+        # increment (or add) in votelist
         vote(songuri)
 
     # redirect to playlist
     return redirect(url_for('web.playlist_view'))
 
 
-@bp.route('/search', methods=['GET'])
 @check_user
+@bp.route('/search', methods=['GET'])
 def search_view():
     """ Return search result tracks.
     Takes GET parameters like ?query=Louis Armstrong
     """
-    # 1. get ?query=<something> param
+    # get ?query=<something> param
     squery = request.args.get('query')
+    if len(squery) == 0:
+        logger.warning("Attempted empty search. Redirecting")
+        return redirect(url_for('web.playlist_view'))
 
-    # 2. do mopidy search for it
-    tracks = mp.library.search(any=squery)
+    # do mopidy search for it
+    logger.info(f"Searching for: {squery}")
+    tracks = mp.library.search(any=[squery])
 
-    # 3. put tracks in printable format
+    # put tracks in printable format
     ptracks = printable_tracks(tracks)
 
-    # 4. render html search results
+    # render html search results
     return render_template('searchresults.tpl', tracks=ptracks)

@@ -4,11 +4,10 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-		{# TODO: inject header #}
 		<title>Justify</title>
 
 		{# TODO: stop using web resources #}
-		<link rel="stylesheet" href="https://bootswatch.com/4/cyborg/bootstrap.min.css" crossorigin="anonymous">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/cyborg.min.css') }}">
 		<link rel="stylesheet" href="https://cdn.materialdesignicons.com/3.6.95/css/materialdesignicons.min.css" crossorigin="anonymous">
 
 		{# css patch: center in tables #}

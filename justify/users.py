@@ -1,5 +1,5 @@
 """
-Manages registered users in Redis.
+Manages known users in Redis.
 """
 
 # std lib
@@ -11,6 +11,7 @@ from typing import List
 # deps
 from loguru import logger
 from flask import redirect, url_for, session
+from werkzeug import abort
 
 # app imports
 from .db import get_redis
@@ -59,17 +60,31 @@ def get_user_votedlist(userid: str) -> List[str]:
     """ Get list of song uris voted on by user. """
     logger.debug(f"Getting votedlist for {userid}")
 
-    # get json from redis
-    rkey = f"{REDIS_USER_PREFIX}{userid}"
-    vdata: bytes = get_redis().hmget(rkey, 'votes_current')
-    logger.debug(f"VLIST: {vdata}")
+    try:
+        # get json from redis
+        rkey = f"{REDIS_USER_PREFIX}{userid}"
+        vdata: bytes = get_redis().hmget(rkey, 'votes_current')
+        assert len(vdata) == 1
+        assert vdata[0] != b'null'
+    except Exception as e:
+        logger.error(f"Error reading user votes: '{e}' - Resetting user.")
+        del session['userid']
+        abort(redirect(url_for('web.new_user')))
 
     # load as python list, check and return
-    vlist: List = json.loads(vdata)
+    logger.debug(f"VDATA: {vdata}")
+    vlist: List = json.loads(vdata[0])
+    logger.debug(f"VLIST: {vlist}")
     return vlist
 
 
-def user_voted(songuri: str, uid=None):
+def user_voted(songuri: str, uid=None) -> bool:
+    """ Return True if user already voted on song with URI. """
+    assert uid is not None
+    return songuri in get_user_votedlist(uid)
+
+
+def add_uservote(songuri: str, uid=None):
     """ Add URI to list of songs voted on, for given userid. """
     # fall back to session info if not explicity passed
     userid = uid if uid is not None else session['userid']
@@ -83,7 +98,8 @@ def user_voted(songuri: str, uid=None):
     def appenduri(arraystr: str) -> str:
         """ Safely append song uri to a json array of strings. """
         array = json.loads(arraystr)
-        return json.dumps(array.append(songuri))
+        array.append(songuri)
+        return json.dumps(array)
 
     udata = {
         'votes_current': appenduri(current),
@@ -92,24 +108,24 @@ def user_voted(songuri: str, uid=None):
 
     # put the new data into redis
     r.hmset(rkey, udata)
-    logger.debug(f"Updated votelist of {userid}")
+    logger.debug(f"Recorded vote from user {userid}")
 
 
 def clear_uservotes(songuri: str):
     """ Remove uri from all users' 'votes_current' lists. """
     # get all redis keys
     r = get_redis()
-    userids = r.scan_iter(f"{REDIS_USER_PREFIX}*")
+    rkeys = r.scan_iter(f"{REDIS_USER_PREFIX}*")
 
-    for uid in userids:
+    for rkey in rkeys:
         # get 'votes_current' field from user entry
-        vcurr = r.hmget(uid, 'votes_current')[0]
+        vcurr = r.hmget(rkey, 'votes_current')[0]
         assert isinstance(vcurr, bytes)
 
         if str(songuri) in str(vcurr):
             # if user voted on song, remove the vote
-            logger.info(f"Clearing vote {songuri} for user {uid}")
+            logger.debug(f"Clearing vote {songuri} for user {rkey}")
             currlist = json.loads(vcurr[0])
             newvcurr = json.dumps(currlist.remove(songuri))
             assert len(newvcurr) < len(vcurr)
-            r.hmset(uid, {'votes_current': newvcurr})
+            r.hmset(rkey, {'votes_current': newvcurr})
