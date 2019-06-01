@@ -3,18 +3,6 @@
 {% block content %}
 	<div class="container">
 
-		{# Refresh button #}
-		<div class="page-header">
-			<div class="btn-toolbar float-right">
-				<div class="btn-group">
-					<a class="btn btn-secondary" href="/">
-						{# TODO: replace ionicon #}
-						<ion-icon name="refresh"></ion-icon>
-					</a>
-				</div>
-			</div>
-		</div>
-
 		{# Table container #}
 		<div class="panel panel-default">
 			<table class="table table-striped table-hover">
