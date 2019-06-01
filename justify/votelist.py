@@ -52,5 +52,5 @@ def vote(songuri: str):
 
 def remove_from_votelist(songuri: str):
     """ Remove uri from redis votelist. """
-    logger.info(f"Removing song with uri: {songuri}")
+    logger.debug(f"Removing from votelist: {songuri}")
     get_redis().zrem(REDIS_VOTELIST, str(songuri))

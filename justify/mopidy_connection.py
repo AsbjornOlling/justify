@@ -24,7 +24,8 @@ from .votelist import (
 try:
     # get address and port from config
     mphost, mpport = app.config['MOPIDY_HOST'].split(':')
-    mp = MopidyAPI(host=mphost, port=int(mpport), logger=logger)
+    mp = MopidyAPI(host=mphost, port=int(mpport),
+                   logger=logger, flask_object=app)
 except ConnectionError:
     logger.error("Fatal error: could not establish connection to Mopidy."
                  " Are you sure Mopidy is running and accessible?")
@@ -36,19 +37,18 @@ def track_playback_ended(event):
     """ Removes track from votelist and records of user votes,
     when mopidy finishes playing it.
     """
-    logger.debug(f"Track playback ended: {event.track.name}")
-    remove_from_votelist(event.track.uri)
-    clear_uservotes(event.track.uri)
+    logger.debug(f"Track playback ended: {event}")
+    remove_from_votelist(event.tl_track.track.uri)
+    clear_uservotes(event.tl_track.track.uri)
 
 
-@mp.on_event('tracklist_changed')
-def tracklist_changed(event):
-    logger.debug(f"Trackist changed: {event}")
-    # app context needed to get redis obj
-    # set explicitly, b/c this is called from thread
-    with app.app_context():
-        sync_votelist()
-        sort_mopidy()
+def sync_state():
+    """ 1. Ensure the same tracks are in mopidy and votelist
+        2. Sort tracks in Mopidy based on votes.
+    XXX: this feels like it needs refactoring...
+    """
+    sync_votelist()
+    sort_mopidy()
 
 
 def sync_votelist():
@@ -74,32 +74,32 @@ def sync_votelist():
 def sort_mopidy():
     """ Ensure that the Mopidy playlist is ordered
     according to the Justify-controlled votelist.
-    This could involve quite a lot of mopidy calls.
+    This could involve quite a lot of Mopidy calls.
+    XXX: this is likely not the most clean / efficient
+         implementation possible - and it is definitely
+         a known buggy function as of now.
     """
     logger.debug("Sorting Mopidy...")
 
-    # list of TlTracks in current mopidy tracklist
-    # (leave currently playing track in place)
-    tls = mp.tracklist.get_tl_tracks()[1:]
-
-    # list of uris sorted by no of votes
+    # list of uris (sorted by no of votes)
     vlist: List[str] = get_votelist()
 
-    # loop through tracks in vote order ([1:] skips currently plying)
-    for dst, songuri in enumerate(vlist)[1:]:
-        # get TlTrack that matches uri
-        tltrack = next(tl for tl in tls if tl.track.uri == songuri)
-        tlpos = mp.tracklist.index(tl_track=tltrack)
+    # TlTracks in current playlist order
+    tllist = mp.tracklist.get_tl_tracks()
 
-        if tlpos != dst:
+    # loop through tracks in vote order (except currently playing track)
+    tlsorted = sorted(tllist, key=lambda t: vlist.index(t.track.uri))
+    for dst, tltrack in list(enumerate(tlsorted))[1:]:
+        src = mp.tracklist.index(tl_track=tltrack)
+
+        if src != dst:
             # move track to destination spot on tracklist
-            logger.debug(f"Moving track {songuri} to {dst}")
-            mp.tracklist.move(tlpos, tlpos+1, dst)
+            logger.debug(f"Moving track {tltrack.track.uri} to {dst}.")
+            mp.tracklist.move(src, src+1, dst)
 
-    # check final ordering from mopidy
+    # check resulting mopidy order
     finalorder = [str(t.uri) for t in mp.tracklist.get_tracks()]
     if finalorder != vlist:
-        # run again, if order is bad
-        # (likely because something happened while it was sorting)
+        # run again, if sort failed
         logger.warning("Running sort again, b/c result wasn't as expected.")
         sort_mopidy()

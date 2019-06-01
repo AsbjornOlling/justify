@@ -15,8 +15,8 @@ from flask import (
 
 # app imports
 from .votelist import vote
-from .mopidy_connection import mp
 from .printabletrack import printable_tracks
+from .mopidy_connection import mp, sync_state
 from .users import (
     check_user,
     add_user,
@@ -90,6 +90,9 @@ def vote_view(songuri: str):
         # increment (or add) in votelist
         vote(songuri)
 
+        # order in mopidy
+        sync_state()
+
     # redirect to playlist
     return redirect(url_for('web.playlist_view'))
 
@@ -103,7 +106,7 @@ def search_view():
     # get ?query=<something> param
     squery = request.args.get('query')
     if len(squery) == 0:
-        logger.warning("Attempted empty search. Redirecting")
+        logger.debug("Attempted empty search. Redirecting to list view.")
         return redirect(url_for('web.playlist_view'))
 
     # do mopidy search for it
