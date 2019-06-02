@@ -1,7 +1,5 @@
 """ Maintains a connection to mopidy
 Encpasulates the mopidy object.
-TODO: handle tracks added from another front-end
-TODO: handle connecting to mopidy with non-empty playlist
 """
 
 # deps
@@ -42,10 +40,35 @@ def track_playback_ended(event):
     clear_uservotes(event.tl_track.track.uri)
 
 
+@mp.on_event('options_changed')
+def fix_mopidy_options():
+    """ Sets the necessary playback options in Mopidy.
+    Since setting an option triggers the 'options_changed'
+    event, we have to check the option first, to avoid an
+    infinite loop.
+    """
+    # obviously shuffle won't make sense
+    if mp.tracklist.get_random() is not False:
+        mp.tracklist.set_random(False)
+
+    # remove track from playlist after playing
+    if mp.tracklist.get_consume() is not True:
+        mp.tracklist.set_consume(True)
+
+    # dont loop tracks
+    if mp.tracklist.get_repeat() is not False:
+        mp.tracklist.set_repeat(False)
+
+    # dont stop playing after each track
+    if mp.tracklist.get_single() is not False:
+        mp.tracklist.set_single(False)
+
+
 def sync_state():
-    """ 1. Ensure the same tracks are in mopidy and votelist
-        2. Sort tracks in Mopidy based on votes.
-    XXX: this feels like it needs refactoring...
+    """ 1. Ensure votelist and Mopidy tracklist contain only the same tracks.
+        2. Sort tracklist based on votes.
+    This function is called on every vote,
+    (TODO should probably be called on some other mopidy event).
     """
     sync_votelist()
     sort_mopidy()
@@ -76,22 +99,22 @@ def sort_mopidy():
     according to the Justify-controlled votelist.
     This could involve quite a lot of Mopidy calls.
     XXX: this is likely not the most clean / efficient
-         implementation possible - and it is definitely
-         a known buggy function as of now.
+         implementation possible.
     """
     logger.debug("Sorting Mopidy...")
 
-    # list of uris (sorted by no of votes)
-    vlist: List[str] = get_votelist()
+    vlist: List[str] = get_votelist()        # list of uris in vote order
+    tllist = mp.tracklist.get_tl_tracks()    # TlTracks in playlist order
+    tlsorted = sorted(tllist, reverse=True,  # TlTracks in vote order
+                      key=lambda t: vlist.index(t.track.uri))
 
-    # TlTracks in current playlist order
-    tllist = mp.tracklist.get_tl_tracks()
+    if [str(t.track.uri) for t in tllist] == vlist:
+        logger.debug("Songs already in order. Aborting sort.")
+        return
 
-    # loop through tracks in vote order (except currently playing track)
-    tlsorted = sorted(tllist, key=lambda t: vlist.index(t.track.uri))
+    # move all tracks into place (except currently playing)
     for dst, tltrack in list(enumerate(tlsorted))[1:]:
         src = mp.tracklist.index(tl_track=tltrack)
-
         if src != dst:
             # move track to destination spot on tracklist
             logger.debug(f"Moving track {tltrack.track.uri} to {dst}.")
@@ -101,5 +124,5 @@ def sort_mopidy():
     finalorder = [str(t.uri) for t in mp.tracklist.get_tracks()]
     if finalorder != vlist:
         # run again, if sort failed
-        logger.warning("Running sort again, b/c result wasn't as expected.")
+        logger.error("Sort result unsuccessful. Running again...")
         sort_mopidy()
