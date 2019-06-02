@@ -16,14 +16,13 @@
 
 		<h6 class="text-center">You seem new here...</h6>
 		<h5 class="text-center">Tell me your name to get started!</h5>
-		<form action="{{ url_for('web.new_user') }}" method="POST" class="input-group">
-			{# username field #}
-			<input type="text" id="username" name="username" class="form-control" placeholder="Your Name">
 
-			{# submit button #}
+		{# Username field #}
+		<form action="{{ url_for('web.new_user') }}" method="POST" class="input-group">
+			<input type="text" id="username" name="username" class="form-control" placeholder="Your Name">
 			<span class="input-group-append">
 				<button class="btn btn-secondary" type="submit">
-					GO! {# TODO: icon here #}
+					<span class="mdi mdi-arrow-right-bold"></span>
 				</button>
 			</span>
 		</form>
