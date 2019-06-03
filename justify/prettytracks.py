@@ -99,7 +99,7 @@ def printable_tracks(mdata: Iterable) -> Iterable[PrintableTrack]:
             votes=vdict.get(t.uri, 0),
 
             # whether requesting user has already voted
-            canvote=user_canvote(str(t.uri), uid=session['userid'])
+            canvote=user_canvote(str(t.uri), uid=session.get('userid'))
         )
 
 
