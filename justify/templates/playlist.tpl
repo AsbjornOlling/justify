@@ -3,6 +3,22 @@
 {% block content %}
 	<div class="container">
 
+		{# Currently playing #}
+		<div class="row" style="">
+			<div class="col-4" style=""> {# art #}
+				<img style="width: 100%;" class="rounded mx-auto d-block" src="{{ imageurl }}"></img>
+			</div>
+			<div class="col-8" style="height: auto;">
+				<h4>{{ current.name }}</h4>
+				<h4>{{ current.artist }}</h4>
+				<h4 style="vertical-align: middle;">{{ current.album }}</h4>
+				<h4 style="vertical-align: middle;">{{ current.time }}</h4>
+				<button class="btn btn-outline-secondary disabled">
+					{{ current.votes }} {# TODO: icon #}
+				</button>
+			</div>
+		</div>
+
 		{# Table container #}
 		<div class="panel panel-default">
 			<table class="table table-striped table-hover">
@@ -20,30 +36,13 @@
 
 				{# Table contents #}
 				<tbody>
-					{# TODO: Currently playing song
-						{% if playlist %}
-							% include("playing.tpl", song=playlist[0], viewer=viewer)
-						{% endif %}
-					#}
-
 					{# Remaining songs #}
 					{% for track in playlist %}
 						<tr>
-							<td style="vertical-align: middle;">
-								{{ track.name }}
-							</td>
-
-							<td style="vertical-align: middle;">
-								{{ track.artist }}
-							</td>
-
-							<td class="d-none d-sm-table-cell" style="vertical-align: middle;">
-								{{ track.album }}
-							</td>
-
-							<td class="d-none d-sm-table-cell" style="vertical-align: middle;">
-								{{ track.time }}
-							</td>
+							<td style="vertical-align: middle;">{{ track.name }}</td>
+							<td style="vertical-align: middle;">{{ track.artist }}</td>
+							<td class="d-none d-sm-table-cell" style="vertical-align: middle;">{{ track.album }}</td>
+							<td class="d-none d-sm-table-cell" style="vertical-align: middle;">{{ track.time }}</td>
 
 							{# Vote button #}
 							<td class="align-middle">

@@ -1,6 +1,7 @@
 
 # std lib
 from typing import List
+from functools import wraps
 
 # deps
 from loguru import logger
@@ -15,10 +16,9 @@ from flask import (
 
 # app imports
 from .votelist import vote
-from .printabletrack import printable_tracks
 from .mopidy_connection import mp, sync_state
+from .prettytracks import printable_tracks, coverart
 from .users import (
-    check_user,
     add_user,
     user_voted,
     add_uservote
@@ -30,6 +30,19 @@ bp = Blueprint('web', __name__,
                url_prefix='/',
                template_folder='templates',
                static_folder='static')
+
+
+def check_user(f):
+    """ Decorator: redirects user to new_user page
+    if the user is unknown.
+    """
+    @wraps(f)
+    def decorated_f(*args, **kwargs):
+        if 'userid' not in session:
+            logger.info('Unknown user. Redirecting to new user endpoint.')
+            return redirect(url_for('web.new_user'))
+        return f(*args, **kwargs)
+    return decorated_f
 
 
 @bp.route('/newuser', methods=['GET', 'POST'])
@@ -52,20 +65,28 @@ def new_user():
     return render_template('newuser.tpl')
 
 
-@bp.route('/', methods=['GET'])
 @check_user
+@bp.route('/', methods=['GET'])
 def playlist_view():
     """ Playlist view. """
     logger.info("Serving playlist view.")
 
     # get playlist from mopidy
     mlist = mp.tracklist.get_tracks()
+    if len(mlist) == 0:
+        return render_template('empty.tpl')
 
-    # make printable (also get votecount, vote status based on session)
+    # make pretty track tuples (also get votecount, TODO: fix 'canvote')
     plist = printable_tracks(mlist)
 
+    # top of list is currently playing track
+    current = next(plist)
+
     # render html
-    return render_template('playlist.tpl', playlist=plist)
+    return render_template('playlist.tpl',
+                           playlist=plist,
+                           current=current,
+                           imageurl=coverart(current.uri))
 
 
 @check_user

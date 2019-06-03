@@ -1,23 +1,24 @@
-""" Justify types.
-
-Contains the types used only internally in Justify,
-and functions to create them properly.
+"""
+This module contains the functions (and a type)
+used for processing data before piping it into
+Jinja for html rendering.
 """
 
 # std lib
+from itertools import chain
 from typing import Iterable
 from collections import namedtuple
-from itertools import chain
-from functools import lru_cache
 
 # deps
-from flask import session
 from loguru import logger
+from flask import session, url_for
 
 # app imports
+from .users import user_canvote
 from .votelist import get_votelist
+from .mopidy_connection import mp
 
-# justify objects (not to be deserialed from api)
+# justify objects
 PrintableTrack = namedtuple(
     'PrintableTrack',
     ['uri',
@@ -98,5 +99,22 @@ def printable_tracks(mdata: Iterable) -> Iterable[PrintableTrack]:
             votes=vdict.get(t.uri, 0),
 
             # whether requesting user has already voted
-            canvote=t.uri not in session.get('voted', [])
+            canvote=user_canvote(str(t.uri), uid=session['userid'])
         )
+
+
+def coverart(songuri: str) -> str:
+    """ Get the cover art for a specific track.
+    If there's no coverart, use a default.
+    """
+    mresult: dict = mp.library.get_images([songuri])
+    ims: list = mresult.get(songuri)
+
+    if ims == [] or ims is None:
+        # if mopidy has no images, use default
+        logger.debug(f"No image got for {songuri}. Using default.")
+        return url_for('static', filename='default_coverart.png')
+
+    # otherwise, return uri of the biggest image
+    biggest = max(ims, key=lambda i: i.height)
+    return biggest.uri

@@ -1,10 +1,14 @@
 """
-Manages known users in Redis.
+Manages user data in redis.
+This includes:
+    - uuid of user
+    - chosen username
+    - current songs a user has voted on
+    - history of all votes
 """
 
 # std lib
 import json
-from functools import wraps
 from uuid import uuid4
 from typing import List
 
@@ -17,19 +21,6 @@ from werkzeug import abort
 from .db import get_redis
 
 REDIS_USER_PREFIX = 'justify:user:'
-
-
-def check_user(f):
-    """ Decorator: redirects user to new_user page
-    if the user is unknown.
-    """
-    @wraps(f)
-    def decorated_f(*args, **kwargs):
-        if 'userid' not in session:
-            logger.info('Unknown user. Redirecting to new user endpoint.')
-            return redirect(url_for('web.new_user'))
-        return f(*args, **kwargs)
-    return decorated_f
 
 
 def add_user(username: str):
@@ -79,9 +70,17 @@ def get_user_votedlist(userid: str) -> List[str]:
 
 
 def user_voted(songuri: str, uid=None) -> bool:
-    """ Return True if user already voted on song with URI. """
+    """ True if user already voted on song with URI. """
     assert uid is not None
     return songuri in get_user_votedlist(uid)
+
+
+def user_canvote(songuri: str, uid=None) -> bool:
+    """ True if user has not voted on song, OR user is None """
+    if uid is None:
+        return True
+    else:
+        return not user_voted(songuri, uid=uid)
 
 
 def add_uservote(songuri: str, uid=None):
@@ -111,11 +110,12 @@ def add_uservote(songuri: str, uid=None):
     logger.debug(f"Recorded vote from user {userid}")
 
 
+@logger.catch()
 def clear_uservotes(songuri: str):
     """ Remove uri from all users' 'votes_current' lists. """
     # get all redis keys
     r = get_redis()
-    rkeys = r.scan_iter(f"{REDIS_USER_PREFIX}*")
+    rkeys = r.scan_iter(f'{REDIS_USER_PREFIX}*')
 
     for rkey in rkeys:
         # get 'votes_current' field from user entry
@@ -125,7 +125,11 @@ def clear_uservotes(songuri: str):
         if str(songuri) in str(vcurr):
             # if user voted on song, remove the vote
             logger.debug(f"Clearing vote {songuri} for user {rkey}")
-            currlist = json.loads(vcurr[0])
-            newvcurr = json.dumps(currlist.remove(songuri))
+
+            # load into list and remove songuri
+            currlist = filter(lambda x: x != songuri, json.loads(vcurr[0]))
+
+            # dump back into json and update redis
+            newvcurr: str = json.dumps(list(currlist))
             assert len(newvcurr) < len(vcurr)
             r.hmset(rkey, {'votes_current': newvcurr})
