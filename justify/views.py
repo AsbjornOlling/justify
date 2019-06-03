@@ -38,7 +38,8 @@ def check_user(f):
     """
     @wraps(f)
     def decorated_f(*args, **kwargs):
-        if 'userid' not in session:
+        logger.debug("Checking user...")
+        if 'userid' not in session.keys():
             logger.info('Unknown user. Redirecting to new user endpoint.')
             return redirect(url_for('web.new_user'))
         return f(*args, **kwargs)
@@ -65,7 +66,6 @@ def new_user():
     return render_template('newuser.tpl')
 
 
-@check_user
 @bp.route('/', methods=['GET'])
 def playlist_view():
     """ Playlist view. """
@@ -76,7 +76,7 @@ def playlist_view():
     if len(mlist) == 0:
         return render_template('empty.tpl')
 
-    # make pretty track tuples (also get votecount, TODO: fix 'canvote')
+    # make pretty track tuples (also get votecount)
     plist = printable_tracks(mlist)
 
     # top of list is currently playing track
@@ -89,8 +89,8 @@ def playlist_view():
                            imageurl=coverart(current.uri))
 
 
-@check_user
 @bp.route('/vote/<string:songuri>', methods=['POST'])
+@check_user
 def vote_view(songuri: str):
     """ Voting.
     TODO: redirect on HTTP GET
@@ -118,8 +118,8 @@ def vote_view(songuri: str):
     return redirect(url_for('web.playlist_view'))
 
 
-@check_user
 @bp.route('/search', methods=['GET'])
+@check_user
 def search_view():
     """ Return search result tracks.
     Takes GET parameters like ?query=Louis Armstrong
