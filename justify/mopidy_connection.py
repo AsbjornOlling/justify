@@ -100,7 +100,6 @@ def sort_mopidy():
     This could involve quite a lot of Mopidy calls.
     XXX: this is likely not the most clean / efficient
          implementation possible.
-    TODO: this is weirdly buggy. sorts in reverse order
     """
     logger.debug("Sorting Mopidy...")
 
