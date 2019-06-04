@@ -14,7 +14,8 @@
 				<h4 style="vertical-align: middle;">{{ current.album }}</h4>
 				<h4 style="vertical-align: middle;">{{ current.time }}</h4>
 				<button class="btn btn-outline-secondary disabled">
-					{{ current.votes }} {# TODO: icon #}
+					{{ current.votes }}
+					<span class="mdi mdi-thumbs-up"></span>
 				</button>
 			</div>
 		</div>
@@ -47,8 +48,8 @@
 							{# Vote button #}
 							<td class="align-middle">
 								<form action="/vote/{{ track.uri }}" method="POST">
-									{# TODO: new icon #}
 									<input value="{{ track.votes }}" type="submit" class="btn btn-outline-success {{ "" if track.canvote else "disabled" }}" style="vertical-align: middle;">
+										<span class="mdi mdi-thumbs-up"></span>
 									</input>
 								</form>
 							</td>
