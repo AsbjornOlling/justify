@@ -23,9 +23,7 @@ def create_app() -> Flask:
 
     sessconf = {  # flask session cookie config
         'SESSION_COOKIE_NAME':        'justify',
-        'PERMANENT_SESSION_LIFETIME': timedelta(days=10),
-        # TODO: this breaks cookies - why? is it an ssl thing?
-        # 'SESSION_COOKIE_SECURE':    True
+        'PERMANENT_SESSION_LIFETIME': timedelta(days=2)
     }
     app.config.update(**sessconf)
 
@@ -33,6 +31,11 @@ def create_app() -> Flask:
     with app.app_context():
         from . import views
     app.register_blueprint(views.bp)
+
+    # check (and fix) mopidy settings
+    with app.app_context():
+        from .mopidy_connection import fix_mopidy_options
+        fix_mopidy_options(None)
 
     return app
 

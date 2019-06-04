@@ -1,6 +1,5 @@
 
 # std lib
-from typing import List
 from functools import wraps
 
 # deps
@@ -89,12 +88,14 @@ def playlist_view():
                            imageurl=coverart(current.uri))
 
 
-@bp.route('/vote/<string:songuri>', methods=['POST'])
+@bp.route('/vote/<string:songuri>', methods=['POST', 'GET'])
 @check_user
 def vote_view(songuri: str):
-    """ Voting.
-    TODO: redirect on HTTP GET
-    """
+    """ Voting. """
+    if request.method == 'GET':
+        # if user somehow ends up issuing a GET here, just redirect
+        return redirect(url_for('web.playlist_view'))
+
     if user_voted(songuri, uid=session['userid']):
         logger.warning(f"User already voted on: {songuri}. Disallowing vote.")
 
