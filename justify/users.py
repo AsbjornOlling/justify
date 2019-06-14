@@ -14,7 +14,7 @@ from typing import List
 
 # deps
 from loguru import logger
-from flask import redirect, url_for, session
+from flask import redirect, url_for, session, g
 from werkzeug import abort
 
 # app imports
@@ -49,10 +49,13 @@ def add_user(username: str):
 
 def get_user_votedlist(userid: str) -> List[str]:
     """ Get list of song uris voted on by user. """
-    logger.debug(f"Getting votedlist for {userid}")
+    # if cached
+    if 'votedlist' in g:
+        logger.debug(f"Getting votedlist for {userid} from g cache.")
+        return g.votedlist
 
-    try:
-        # get json from redis
+    try:  # else, get from redis
+        logger.debug(f"Getting votedlist for {userid} from redis.")
         rkey = f"{REDIS_USER_PREFIX}{userid}"
         vdata: bytes = get_redis().hmget(rkey, 'votes_current')
         assert len(vdata) == 1
@@ -62,10 +65,9 @@ def get_user_votedlist(userid: str) -> List[str]:
         del session['userid']
         abort(redirect(url_for('web.new_user')))
 
-    # load as python list, check and return
-    logger.debug(f"VDATA: {vdata}")
+    # load as python list, cache and return
     vlist: List = json.loads(vdata[0])
-    logger.debug(f"VLIST: {vlist}")
+    g.votedlist = vlist
     return vlist
 
 
@@ -109,8 +111,11 @@ def add_uservote(songuri: str, uid=None):
     r.hmset(rkey, udata)
     logger.debug(f"Recorded vote from user {userid}")
 
+    # delete old cached list
+    if 'votedlist' in g:
+        del g.votedlist
 
-@logger.catch()
+
 def clear_uservotes(songuri: str):
     """ Remove uri from all users' 'votes_current' lists. """
     # get all redis keys
@@ -133,3 +138,7 @@ def clear_uservotes(songuri: str):
             newvcurr: str = json.dumps(list(currlist))
             assert len(newvcurr) < len(vcurr)
             r.hmset(rkey, {'votes_current': newvcurr})
+
+            # remove old list from g cache
+            if 'votedlist' in g:
+                del g.votedlist
