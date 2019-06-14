@@ -11,9 +11,9 @@ docopt = "*"
 requests = "*"
 flask = "*"
 loguru = "*"
-pprint = "*"
 redis = "*"
 mopidyapi = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"

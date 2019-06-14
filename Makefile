@@ -14,3 +14,10 @@ gen-controller-code:
 	--template $(CODEGEN_DIR)/controller.tpl \
 	--outdir justify/mopidy_api/controllers
 
+DOCKERIMG=justify
+
+docker-run: docker-build
+	docker run -p 8080:80 -t $(DOCKERIMG)
+
+docker-build:
+	docker build . -t $(DOCKERIMG)
