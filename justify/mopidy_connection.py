@@ -1,5 +1,7 @@
 """ Maintains a connection to mopidy
 Encpasulates the mopidy object.
+# TODO: find more mopidy events to call sync_state on
+# TODO: handle case where track at index 0 is not currently playing track
 """
 
 # deps
@@ -20,7 +22,6 @@ from .votelist import (
 # provides functions and event listeners
 # defaults to connecting to localhost
 try:
-    # get address and port from config
     mphost, mpport = app.config['MOPIDY_HOST'].split(':')
     mp = MopidyAPI(host=mphost, port=int(mpport),
                    logger=logger, flask_object=app)
@@ -65,13 +66,34 @@ def fix_mopidy_options(event):
 
 
 def sync_state():
-    """ 1. Ensure votelist and Mopidy tracklist contain only the same tracks.
-        2. Sort tracklist based on votes.
+    """ 1. Remove all tracks before the currently playing track
+        2. Ensure votelist and Mopidy tracklist contain only the same tracks.
+        3. Sort tracklist based on votes.
     This function is called on every vote,
     (TODO should probably be called on some other mopidy event).
     """
+    remove_before_current()
     sync_votelist()
     sort_mopidy()
+
+
+def remove_before_current():
+    """ Remove all tracks before the currentlly
+    playing track from Mopidy.
+    This ensures that the currently playing track
+    is always track 0, without changing playback.
+    """
+    # index of currently playing track
+    curridx = mp.tracklist.index()
+
+    # remove tracks if necessary
+    if curridx != 0:
+        logger.warning(f"Current track is at idx: {curridx}"
+                       "Removing all tracks before it.")
+        tracks = mp.tracklist.get_tracks()
+        remuris = [t.uri for t in tracks[:curridx]]
+        logger.debug(f"Removing tracks: {remuris}")
+        mp.tracklist.remove({'uri': remuris})
 
 
 def sync_votelist():
