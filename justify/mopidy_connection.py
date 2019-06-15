@@ -1,14 +1,12 @@
 """ Maintains a connection to mopidy
 Encpasulates the mopidy object.
-# TODO: find more mopidy events to call sync_state on
-# TODO: handle case where track at index 0 is not currently playing track
 """
 
 # deps
+from typing import List, Set
 from mopidyapi import MopidyAPI
 from loguru import logger
 from flask import current_app as app
-from typing import List, Set
 
 # app imports
 from .users import clear_uservotes
@@ -22,8 +20,8 @@ from .votelist import (
 # provides functions and event listeners
 # defaults to connecting to localhost
 try:
-    mphost, mpport = app.config['MOPIDY_HOST'].split(':')
-    mp = MopidyAPI(host=mphost, port=int(mpport),
+    MPHOST, MPPORT = app.config['MOPIDY_HOST'].split(':')
+    mp = MopidyAPI(host=MPHOST, port=int(MPPORT),
                    logger=logger, flask_object=app)
 except ConnectionError:
     logger.error("Fatal error: could not establish connection to Mopidy."
