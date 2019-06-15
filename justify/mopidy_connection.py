@@ -45,22 +45,28 @@ def fix_mopidy_options(event):
     Since setting an option triggers the 'options_changed'
     event, we have to check the option first, to avoid an
     infinite loop.
+    To avoid doing a lot of duplicate checks (because of the event trigger)
+    the function terminates after setting just one option.
     """
     # remove track from playlist after playing
     if mp.tracklist.get_consume() is not True:
         mp.tracklist.set_consume(True)
+        return
 
     # obviously shuffle won't make sense
     if mp.tracklist.get_random() is not False:
         mp.tracklist.set_random(False)
+        return
 
     # dont loop tracks
     if mp.tracklist.get_repeat() is not False:
         mp.tracklist.set_repeat(False)
+        return
 
     # dont stop playing after each track
     if mp.tracklist.get_single() is not False:
         mp.tracklist.set_single(False)
+        return
 
 
 def sync_state():
