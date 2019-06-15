@@ -33,7 +33,7 @@
 
 		<h4 class="list-group-item-heading">Add whatever music you want!</h4>
 		<p style="font-size: 16px;" class="list-group-item-text">
-			Search for any song. Results come from spotify, soundcloud, and youtube. Odds are you'll find what you're looking for.
+			Search for any song. Results come from multiple music sources. Odds are you'll find what you're looking for.
 		</p>
 
 		<br>
