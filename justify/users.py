@@ -78,7 +78,8 @@ def user_voted(songuri: str, uid=None) -> bool:
 
 
 def user_canvote(songuri: str, uid=None) -> bool:
-    """ True if user has not voted on song, OR user is None """
+    """ True if user has not voted on song,
+        OR if user is None """
     if uid is None:
         return True
     else:
@@ -124,20 +125,20 @@ def clear_uservotes(songuri: str):
 
     for rkey in rkeys:
         # get 'votes_current' field from user entry
-        vcurr = r.hmget(rkey, 'votes_current')[0]
-        assert isinstance(vcurr, bytes)
+        vlist = get_user_votedlist()
+        assert isinstance(vlist, list), f"Got votedlist of type {vlist}"
 
-        if str(songuri) in str(vcurr):
+        if songuri in vlist:
             # if user voted on song, remove the vote
             logger.debug(f"Clearing vote {songuri} for user {rkey}")
 
             # load into list and remove songuri
-            currlist = filter(lambda x: x != songuri, json.loads(vcurr[0]))
+            newlist = filter(lambda x: x != songuri, vlist)
+            assert len(newlist) < len(vlist)
 
             # dump back into json and update redis
-            newvcurr: str = json.dumps(list(currlist))
-            assert len(newvcurr) < len(vcurr)
-            r.hmset(rkey, {'votes_current': newvcurr})
+            newliststr: str = json.dumps(list(newlist))
+            r.hmset(rkey, {'votes_current': newliststr})
 
             # remove old list from g cache
             if 'votedlist' in g:
