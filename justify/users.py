@@ -125,7 +125,8 @@ def clear_uservotes(songuri: str):
 
     for rkey in rkeys:
         # get 'votes_current' field from user entry
-        vlist = get_user_votedlist()
+        uid = rkey.strip(REDIS_USER_PREFIX)
+        vlist = get_user_votedlist(uid)
         assert isinstance(vlist, list), f"Got votedlist of type {vlist}"
 
         if songuri in vlist:
