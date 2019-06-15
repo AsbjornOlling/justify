@@ -1,5 +1,6 @@
 # std lib
 from datetime import timedelta
+from time import sleep
 
 # deps
 from loguru import logger
@@ -34,6 +35,7 @@ def create_app() -> Flask:
 
     # check (and fix) mopidy settings
     with app.app_context():
+        sleep(5)  # this sleep is shit, but necessary because the mopidy container is a liar
         from .mopidy_connection import fix_mopidy_options
         fix_mopidy_options(None)
 
