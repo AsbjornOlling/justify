@@ -1,9 +1,7 @@
 *.swp
 *.mp3
-config.txt
 __pycache__
 TODO.*
-log
-cookies
 .mypy_cache
 .env
+examples/*
