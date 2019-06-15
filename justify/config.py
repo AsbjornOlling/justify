@@ -2,6 +2,7 @@
 Reads an validates configuration variables,
 either from environment variables, a (WIP) config file,
 or from a default, defined in this module's CONFVARS dict.
+TODO: prefix env vars with JUSTIFY_
 """
 
 # std lib
@@ -9,8 +10,6 @@ from os import getenv
 
 # deps
 from loguru import logger
-from requests import get
-from requests.exceptions import ConnectionError, MissingSchema
 
 
 def _validate_REDIS_HOST(REDIS_HOST: str):
@@ -26,7 +25,6 @@ def _validate_REDIS_HOST(REDIS_HOST: str):
         assert port <= 2**16, "REDIS_HOST: {port} is an invalid port number"
     except ValueError:
         raise AssertionError(formerr)
-    # TODO: check redis connection
 
 
 def _validate_SECRET_KEY(SECRET_KEY):
@@ -41,12 +39,11 @@ def _validate_SECRET_KEY(SECRET_KEY):
 
 def _validate_MOPIDY_HOST(MOPIDY_HOST: str):
     """ Format of MOPIDY_HOST string. """
-    # use default if not set
-    assert MOPIDY_HOST is not None, ""
+    assert MOPIDY_HOST is not None, "MOPIDY_HOST not set."
 
     # check format
     formerr = "MOPIDY_HOST should be in format: 'host:port'"
-    assert len(mophost.split(':')) == 2, formerr
+    assert len(MOPIDY_HOST.split(':')) == 2, formerr
 
 
 CONFVARS = {
