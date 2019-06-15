@@ -7,7 +7,7 @@
 		<title>Justify</title>
 
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/cyborg.min.css') }}">
-		<link rel="stylesheet" href="{{ url_for('static', filename='css/materialdesignicons.min.css' }} crossorigin="anonymous">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/materialdesignicons.min.css') }} crossorigin="anonymous">
 
 		{# css patch: center in tables #}
 		<style> .table > tbody > tr > td { vertical-align: middle; } </style>
