@@ -60,14 +60,16 @@ def get_user_votedlist(userid: str) -> List[str]:
         vdata: bytes = get_redis().hmget(rkey, 'votes_current')
         assert len(vdata) == 1
         assert vdata[0] != b'null'
+
+        # load as python list, cache and return
+        vlist: List = json.loads(vdata[0])
+        g.votedlist = vlist
+
     except Exception as e:
         logger.error(f"Error reading user votes: '{e}' - Resetting user.")
         del session['userid']
         abort(redirect(url_for('web.new_user')))
 
-    # load as python list, cache and return
-    vlist: List = json.loads(vdata[0])
-    g.votedlist = vlist
     return vlist
 
 
@@ -125,7 +127,7 @@ def clear_uservotes(songuri: str):
 
     for rkey in rkeys:
         # get 'votes_current' field from user entry
-        uid = rkey.strip(REDIS_USER_PREFIX)
+        uid = (rkey.decode('utf8')).split(':')[-1]
         vlist = get_user_votedlist(uid)
         assert isinstance(vlist, list), f"Got votedlist of type {vlist}"
 
@@ -134,11 +136,11 @@ def clear_uservotes(songuri: str):
             logger.debug(f"Clearing vote {songuri} for user {rkey}")
 
             # load into list and remove songuri
-            newlist = filter(lambda x: x != songuri, vlist)
+            newlist = list(filter(lambda x: x != songuri, vlist))
             assert len(newlist) < len(vlist)
 
             # dump back into json and update redis
-            newliststr: str = json.dumps(list(newlist))
+            newliststr: str = json.dumps(newlist)
             r.hmset(rkey, {'votes_current': newliststr})
 
             # remove old list from g cache

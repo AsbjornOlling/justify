@@ -127,7 +127,7 @@ def search_view():
     """
     # get ?query=<something> param
     squery = request.args.get('query')
-    if len(squery) == 0:
+    if len(squery.strip(' ')) == 0:
         logger.debug("Attempted empty search. Redirecting to list view.")
         return redirect(url_for('web.playlist_view'))
 

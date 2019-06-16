@@ -1,5 +1,5 @@
 """ Maintains a connection to mopidy
-Encpasulates the mopidy object.
+jncpasulates the mopidy object.
 """
 
 # deps
@@ -69,6 +69,19 @@ def fix_mopidy_options(event):
         return
 
 
+def remove_tracks(uris: List[str]):
+    """ Removes track from Mopidy, and from justify.
+    This function should be used in place of
+    mp.tracklist.remove() - to avoid weird conflicting states.
+    """
+    # remove from mopidy
+    mp.tracklist.remove({'uri': uris})
+    for uri in uris:
+        # remove from justify
+        clear_uservotes(uri)
+        remove_from_votelist(uri)
+
+
 def sync_state():
     """ 1. Remove all tracks before the currently playing track
         2. Ensure votelist and Mopidy tracklist contain only the same tracks.
@@ -76,9 +89,18 @@ def sync_state():
     This function is called on every vote,
     (TODO should probably be called on some other mopidy event).
     """
+    force_play()
     remove_before_current()
     sync_votelist()
     sort_mopidy()
+
+
+def force_play():
+    """ If mopidy isn't playing, make it play. """
+    state = mp.playback.get_state()
+    if state.lower() != 'playing':
+        logger.debug(f"Playing state was {state}. Playing...")
+        mp.playback.set_state('playing')
 
 
 def remove_before_current():
@@ -87,8 +109,14 @@ def remove_before_current():
     This ensures that the currently playing track
     is always track 0, without changing playback.
     """
+    tltracks = mp.tracklist.get_tl_tracks()
+    if len(tltracks) == 0:
+        logger.debug("Tracklist empty. Aborting track removals.")
+        return
+
     # index of currently playing track
-    curridx = mp.tracklist.index()
+    current = tltracks[0]
+    curridx = mp.tracklist.index(tlid=current.tlid)
 
     # remove tracks if necessary
     if curridx != 0:
@@ -97,7 +125,7 @@ def remove_before_current():
         tracks = mp.tracklist.get_tracks()
         remuris = [t.uri for t in tracks[:curridx]]
         logger.debug(f"Removing tracks: {remuris}")
-        mp.tracklist.remove({'uri': remuris})
+        remove_tracks(remuris)
 
 
 def sync_votelist():
@@ -131,6 +159,9 @@ def sort_mopidy():
 
     vlist: List[str] = get_votelist()            # list of uris in vote order
     tllist: list = mp.tracklist.get_tl_tracks()  # TlTracks in playlist order
+    if len(tllist) == 0:
+        logger.debug("No tracks in tracklist. Aborting sort.")
+        return
 
     # remove currently playing track from both lists
     vlist.remove(tllist[0].track.uri)

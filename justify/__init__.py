@@ -32,7 +32,7 @@ def create_app() -> Flask:
         from . import views
     app.register_blueprint(views.bp)
 
-    # check (and fix) mopidy settings
+    # fix options on setup
     with app.app_context():
         from .mopidy_connection import fix_mopidy_options
         fix_mopidy_options(None)
