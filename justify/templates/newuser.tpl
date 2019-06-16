@@ -1,6 +1,5 @@
 {% extends 'base.tpl' %}
 
-{# No searchbar #}
 {% block searchbar %}
 {% endblock %}
 

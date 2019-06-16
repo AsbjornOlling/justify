@@ -40,10 +40,6 @@
 						<td>Huh, didn't find any tracks matching your search...</td>
 						<td/><td/><td/><td/>
 					</tr>
-					<tr>
-						<td>Maybe try <a class="btn btn-sm btn-default" href="/bettersearch"><b>Better Search</b></a> instead?</td>
-						<td/><td/><td/><td/>
-					</tr>
 				{% endif %}
 
 				{# Actual results #}
@@ -68,6 +64,6 @@
 				{% endfor %}
 
 			</tbody>
-		</table> {# table #}
+		</table>
 	</div> {# /container #}
 {% endblock %}
