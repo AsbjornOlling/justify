@@ -36,41 +36,40 @@ bp = Blueprint('web', __name__,
 
 def check_user(force_signup=True):
     """ Decorator: Check that the user is valid.
-    If userid is unset (or invalid), redirect to new_user page.
-    If force_signup is False, let it slip.
+    If userid is unset or invalid, redirect to new_user page.
+    If force_signup is False, let just it slip.
+    Load username into flask.g
     """
     def f_decorator(f):
+
         @wraps(f)
         def decorated_f(*args, **kwargs):
             logger.debug("Checking user...")
 
-            if 'userid' not in session.keys():
+            if force_signup and 'userid' not in session.keys():
                 # if no 'userid' in session cookie
-                logger.info('No userid found.')
-                userid = False
-            else:
-                userid = True
-                # if 'userid' in session cookie
-                try:  # load username into g
-                    load_username(session['userid'])
-                    realuser = True
-                except Exception as e:
-                    # if redis doesnt know username, redirect to new_user page
-                    logger.error(f"User has bad userid: {e}")
-                    del session['userid']
-                    realuser = False
-
-            if force_signup and (not userid or not realuser):
-                # if user failed check, redirect
-                logger.info("Redirecting to new user endpoint")
+                logger.info('No userid found. Redirecting...')
                 return redirect(url_for('web.new_user'))
 
+            else:   # we know 'userid' is in session
+                try:
+                    # load username into flask.g
+                    load_username(session['userid'])
+                except Exception as e:
+                    logger.error(f"User has bad userid: {e}")
+                    del session['userid']  # redis doesn't know the id anyway
+                    if force_signup:
+                        logger.info("Redirecting to new user endpoint")
+                        return redirect(url_for('web.new_user'))
+
+            # call original endpoint func, if we made it through
             return f(*args, **kwargs)
+
         return decorated_f
     return f_decorator
 
 
-@bp.route('/newuser', methods=['GET', 'POST'])
+@bp.route('/newuser', methods=('GET', 'POST'))
 def new_user():
     """ The page a user hits, if he/she hasn't used the site yet. """
     if request.method == 'POST' and request.form.get('username') is not None:
@@ -95,11 +94,6 @@ def new_user():
 def playlist_view():
     """ Playlist view. """
     logger.info("Serving playlist view.")
-
-    # load user into g
-    # XXX: crashes on unvalid userid
-    if 'userid' in session:
-        load_username(session['userid'])
 
     # get playlist from mopidy
     mlist = mp.tracklist.get_tracks()
