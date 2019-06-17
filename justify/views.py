@@ -10,7 +10,8 @@ from flask import (
     render_template,
     redirect,
     url_for,
-    session
+    session,
+    g
 )
 
 # app imports
@@ -19,8 +20,10 @@ from .mopidy_connection import mp, sync_state
 from .prettytracks import printable_tracks, coverart
 from .users import (
     add_user,
+    get_username,
     user_voted,
-    add_uservote
+    add_uservote,
+    get_user_votedlist
 )
 
 
@@ -39,8 +42,15 @@ def check_user(f):
     def decorated_f(*args, **kwargs):
         logger.debug("Checking user...")
         if 'userid' not in session.keys():
-            logger.info('Unknown user. Redirecting to new user endpoint.')
+            logger.info('No userid found. Redirecting to new user endpoint.')
             return redirect(url_for('web.new_user'))
+        else:
+            try:
+                uname = get_username(session['userid'])
+                g.username = uname
+            except Exception as e:
+                logger.error(f"Redirect to newuser. Failed checking user: {e}")
+                return redirect(url_for('web.new_user'))
         return f(*args, **kwargs)
     return decorated_f
 
@@ -54,7 +64,7 @@ def new_user():
         logger.info(f"User submitted: {username}")
         # TODO: username sanitization
 
-        # add user to db, get unique id
+        # add user to redis, get unique id back
         userid = add_user(username)
 
         # put unique id into session cookie and redirect
@@ -75,13 +85,18 @@ def playlist_view():
     if len(mlist) == 0:
         return render_template('empty.tpl')
 
-    # make pretty track tuples (also get votecount)
-    plist = printable_tracks(mlist)
+    # get user votes (if signed up)
+    if 'username' in g:
+        vlist = get_user_votedlist(session['userid'])
+    else:
+        logger.warning("Making playlist for un-initiated user.")
+        vlist = []
 
-    # top of list is currently playing track
-    current = next(plist)
+    # make pretty track tuples, votecount and all
+    plist = printable_tracks(mlist, vlist)
 
     # render html
+    current = next(plist)  # current track is top of list
     return render_template('playlist.tpl',
                            playlist=plist,
                            current=current,
@@ -100,16 +115,17 @@ def vote_view(songuri: str):
         logger.warning(f"User already voted on: {songuri}. Disallowing vote.")
 
     else:  # vote allowed
+        # TODO: disallow really long songs
         logger.info(f"Vote on {songuri} deemed valid.")
 
-        # record user vote (to prevent re-vote)
+        # record to user data (to prevent re-vote)
         add_uservote(songuri, uid=session['userid'])
 
         # add song to mopidy if not in tracklist already
         if str(songuri) not in [str(t.uri) for t in mp.tracklist.get_tracks()]:
             mp.tracklist.add(uri=songuri)
 
-        # increment (or add) in votelist
+        # increment (or add) to votelist
         vote(songuri)
 
         # order in mopidy
@@ -136,7 +152,8 @@ def search_view():
     tracks = mp.library.search(any=squery.split(' '))
 
     # put tracks in printable format
-    ptracks = printable_tracks(tracks)
+    votedlist = get_user_votedlist(session['userid'])
+    ptracks = printable_tracks(tracks, votedlist)
 
     # render html search results
     return render_template('searchresults.tpl', tracks=ptracks)

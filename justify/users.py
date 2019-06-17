@@ -73,19 +73,25 @@ def get_user_votedlist(userid: str) -> List[str]:
     return vlist
 
 
+def get_username(userid: str) -> str:
+    """ Get username of userid.
+    Raise exception if unknown user.
+    """
+    r = get_redis()
+    rkey = f"{REDIS_USER_PREFIX}{userid}"
+    rresult: list = r.hmget(rkey, 'username')
+    assert len(rresult) == 1
+
+    if rresult[0] is None:
+        raise ValueError(f"Unknown user with id: {userid}")
+
+    return rresult[0].decode('utf8')
+
+
 def user_voted(songuri: str, uid=None) -> bool:
     """ True if user already voted on song with URI. """
     assert uid is not None
     return songuri in get_user_votedlist(uid)
-
-
-def user_canvote(songuri: str, uid=None) -> bool:
-    """ True if user has not voted on song,
-        OR if user is None """
-    if uid is None:
-        return True
-    else:
-        return not user_voted(songuri, uid=uid)
 
 
 def add_uservote(songuri: str, uid=None):
