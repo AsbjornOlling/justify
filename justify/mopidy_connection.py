@@ -1,5 +1,5 @@
 """ Maintains a connection to mopidy
-jncpasulates the mopidy object.
+encpasulates the mopidy object.
 """
 
 # deps
@@ -89,6 +89,7 @@ def sync_state():
     This function is called on every vote,
     (TODO should probably be called on some other mopidy event).
     """
+    logger.info("Running Mopidy state sync.")
     force_play()
     remove_before_current()
     sync_votelist()
@@ -96,11 +97,15 @@ def sync_state():
 
 
 def force_play():
-    """ If mopidy isn't playing, make it play. """
+    """ If mopidy isn't playing, make it play.
+    TODO: this is broken in Mopidy 2.2.2 on Arch.
+    """
     state = mp.playback.get_state()
     if state.lower() != 'playing':
         logger.debug(f"Playing state was {state}. Playing...")
         mp.playback.set_state('playing')
+    else:
+        logger.debug(f"Playback state was {state}. Leaving be.")
 
 
 def remove_before_current():
@@ -188,7 +193,6 @@ def sort_mopidy():
     finalorder = [str(t.uri) for t in mp.tracklist.get_tracks()]
     if finalorder != vlist:
         # run again, if sort failed
-        logger.error("Sort result unsuccessful. (( NOT )) Running again...")
+        logger.error("Sort result seems unsuccessful. Not running again tho.")
         logger.debug(f"Final: {finalorder}")
         logger.debug(f"Vlist: {vlist}")
-        # sort_mopidy()

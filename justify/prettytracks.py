@@ -6,15 +6,14 @@ Jinja for html rendering.
 
 # std lib
 from itertools import chain
-from typing import Iterable
+from typing import Iterable, List, NamedTuple
 from collections import namedtuple
 
 # deps
 from loguru import logger
-from flask import session, url_for
+from flask import url_for
 
 # app imports
-from .users import user_canvote
 from .votelist import get_votelist
 from .mopidy_connection import mp
 
@@ -30,7 +29,7 @@ PrintableTrack = namedtuple(
      'canvote'])
 
 
-def tracks(mdata: Iterable) -> Iterable:
+def tracks(mdata: List[NamedTuple]) -> Iterable:
     """ Get a list of Track tuples, from list of any one Mopidy type.
     E.g. a list of SearchResults, which each have a list of Tracks,
     or a list of TlTracks, each of which contain a single track.
@@ -64,12 +63,12 @@ def tracks(mdata: Iterable) -> Iterable:
     return ts
 
 
-def printable_tracks(mdata: Iterable) -> Iterable[PrintableTrack]:
+def printable_tracks(mdata, vlist: List[str]) -> Iterable[PrintableTrack]:
     """ Basically make every value a string,
     and the time be in MM:SS format.
     Also this is a generator.
     """
-    if mdata in [None, []]:
+    if mdata in (None, []):
         return []
 
     # get list of votes (tuples, cast to dict)
@@ -99,7 +98,8 @@ def printable_tracks(mdata: Iterable) -> Iterable[PrintableTrack]:
             votes=vdict.get(t.uri, 0),
 
             # whether requesting user has already voted
-            canvote=user_canvote(str(t.uri), uid=session.get('userid'))
+            # TODO: this is broken
+            canvote=t.uri not in vlist
         )
 
 
