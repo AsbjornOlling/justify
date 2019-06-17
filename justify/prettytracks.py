@@ -98,7 +98,6 @@ def printable_tracks(mdata, vlist: List[str]) -> Iterable[PrintableTrack]:
             votes=vdict.get(t.uri, 0),
 
             # whether requesting user has already voted
-            # TODO: this is broken
             canvote=t.uri not in vlist
         )
 
