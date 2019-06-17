@@ -73,6 +73,14 @@ def get_user_votedlist(userid: str) -> List[str]:
     return vlist
 
 
+def load_username(userid):
+    """ Load username into g,
+    throw exception if user not in Redis. """
+    uname = get_username(userid)
+    g.username = uname
+    logger.info(f"Loaded user with name: {g.username}")
+
+
 def get_username(userid: str) -> str:
     """ Get username of userid.
     Raise exception if unknown user.

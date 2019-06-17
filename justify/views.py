@@ -20,10 +20,10 @@ from .mopidy_connection import mp, sync_state
 from .prettytracks import printable_tracks, coverart
 from .users import (
     add_user,
-    get_username,
+    load_username,
     user_voted,
     add_uservote,
-    get_user_votedlist
+    get_user_votedlist,
 )
 
 
@@ -34,25 +34,40 @@ bp = Blueprint('web', __name__,
                static_folder='static')
 
 
-def check_user(f):
-    """ Decorator: redirects user to new_user page
-    if the user is unknown.
+def check_user(force_signup=True):
+    """ Decorator: Check that the user is valid.
+    If userid is unset (or invalid), redirect to new_user page.
+    If force_signup is False, let it slip.
     """
-    @wraps(f)
-    def decorated_f(*args, **kwargs):
-        logger.debug("Checking user...")
-        if 'userid' not in session.keys():
-            logger.info('No userid found. Redirecting to new user endpoint.')
-            return redirect(url_for('web.new_user'))
-        else:
-            try:
-                uname = get_username(session['userid'])
-                g.username = uname
-            except Exception as e:
-                logger.error(f"Redirect to newuser. Failed checking user: {e}")
+    def f_decorator(f):
+        @wraps(f)
+        def decorated_f(*args, **kwargs):
+            logger.debug("Checking user...")
+
+            if 'userid' not in session.keys():
+                # if no 'userid' in session cookie
+                logger.info('No userid found.')
+                userid = False
+            else:
+                userid = True
+                # if 'userid' in session cookie
+                try:  # load username into g
+                    load_username(session['userid'])
+                    realuser = True
+                except Exception as e:
+                    # if redis doesnt know username, redirect to new_user page
+                    logger.error(f"User has bad userid: {e}")
+                    del session['userid']
+                    realuser = False
+
+            if force_signup and (not userid or not realuser):
+                # if user failed check, redirect
+                logger.info("Redirecting to new user endpoint")
                 return redirect(url_for('web.new_user'))
-        return f(*args, **kwargs)
-    return decorated_f
+
+            return f(*args, **kwargs)
+        return decorated_f
+    return f_decorator
 
 
 @bp.route('/newuser', methods=['GET', 'POST'])
@@ -76,9 +91,15 @@ def new_user():
 
 
 @bp.route('/', methods=['GET'])
+@check_user(force_signup=False)
 def playlist_view():
     """ Playlist view. """
     logger.info("Serving playlist view.")
+
+    # load user into g
+    # XXX: crashes on unvalid userid
+    if 'userid' in session:
+        load_username(session['userid'])
 
     # get playlist from mopidy
     mlist = mp.tracklist.get_tracks()
@@ -104,7 +125,7 @@ def playlist_view():
 
 
 @bp.route('/vote/<string:songuri>', methods=['POST', 'GET'])
-@check_user
+@check_user()
 def vote_view(songuri: str):
     """ Voting. """
     if request.method == 'GET':
@@ -118,25 +139,21 @@ def vote_view(songuri: str):
         # TODO: disallow really long songs
         logger.info(f"Vote on {songuri} deemed valid.")
 
-        # record to user data (to prevent re-vote)
-        add_uservote(songuri, uid=session['userid'])
-
         # add song to mopidy if not in tracklist already
         if str(songuri) not in [str(t.uri) for t in mp.tracklist.get_tracks()]:
             mp.tracklist.add(uri=songuri)
 
-        # increment (or add) to votelist
-        vote(songuri)
+        vote(songuri)          # increment (or add) to votelist
+        sync_state()           # put mopidy in order
+        add_uservote(songuri,  # record to user data (prevent re-vote)
+                     uid=session['userid'])
 
-        # order in mopidy
-        sync_state()
-
-    # redirect to playlist
+    # redirect back to playlist
     return redirect(url_for('web.playlist_view'))
 
 
 @bp.route('/search', methods=['GET'])
-@check_user
+@check_user()
 def search_view():
     """ Return search result tracks.
     Takes GET parameters like ?query=Louis Armstrong
