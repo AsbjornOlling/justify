@@ -46,10 +46,11 @@ def check_user(force_signup=True):
         def decorated_f(*args, **kwargs):
             logger.debug("Checking user...")
 
-            if force_signup and 'userid' not in session.keys():
+            if 'userid' not in session.keys():
                 # if no 'userid' in session cookie
                 logger.info('No userid found. Redirecting...')
-                return redirect(url_for('web.new_user'))
+                if force_signup:
+                    return redirect(url_for('web.new_user'))
 
             else:   # we know 'userid' is in session
                 try:
