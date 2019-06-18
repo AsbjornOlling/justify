@@ -31,10 +31,10 @@
         },
         "certifi": {
             "hashes": [
-                "sha256:59b7658e26ca9c7339e00f8f4636cdfe59d34fa37b9b04f6f9e9926b3cece1a5",
-                "sha256:b26104d6835d1f5e49452a26eb2ff87fe7090b89dfcaee5ea2212697e1e1d7ae"
+                "sha256:046832c04d4e752f37383b628bc601a7ea7211496b4638f6514d0e5b9acc4939",
+                "sha256:945e3ba63a0b9f577b1395204e13c3a231f9bc0223888be653286534e5873695"
             ],
-            "version": "==2019.3.9"
+            "version": "==2019.6.16"
         },
         "chardet": {
             "hashes": [
@@ -137,11 +137,11 @@
         },
         "mopidyapi": {
             "hashes": [
-                "sha256:0edc4ff9051ab87f4504d445188e5c4937aca4417765c07db976cebf1554b733",
-                "sha256:a751a68b6ca5898a675ae5c0f5cb65367bbbe9b585a6f0c6762b1ae5d8086678"
+                "sha256:0c62047b21bbee964b31d5d7abc7db9c7f05befad508d2b56c1a17abeb4219b6",
+                "sha256:4d3d2073a467914968e4ad9781250b68e82b06d7d0845e3759b257e280aad0ee"
             ],
             "index": "pypi",
-            "version": "==0.6.1"
+            "version": "==0.6.4"
         },
         "pygments": {
             "hashes": [
@@ -217,11 +217,11 @@
         },
         "pysnooper": {
             "hashes": [
-                "sha256:9b5d8434c7f1e9fe77bb4ac25e57edb04163d9913a92eb1a1d1993e38b65ff99",
-                "sha256:a6b6f326d70efcacd78e29d3f8d66f1ad8dd678e86ad60e61ca62a092b50e4eb"
+                "sha256:87a289830da91d7a8092d06d66482dbe14529c44161f783d2037d68d4f19e344",
+                "sha256:a15e2af94efb21fa71b69c65ed6d7355f72158eebf1d8e3e84f4928e95a49685"
             ],
             "index": "pypi",
-            "version": "==0.2.0"
+            "version": "==0.2.1"
         }
     }
 }
