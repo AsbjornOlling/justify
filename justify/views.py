@@ -136,7 +136,7 @@ def vote_view(songuri: str):
 
         # add song to mopidy if not in tracklist already
         if str(songuri) not in [str(t.uri) for t in mp.tracklist.get_tracks()]:
-            mp.tracklist.add(uri=songuri)
+            mp.tracklist.add(uris=[songuri])
 
         vote(songuri)          # increment (or add) to votelist
         sync_state()           # put mopidy in order
