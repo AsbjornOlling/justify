@@ -12,8 +12,8 @@ requests = "*"
 flask = "*"
 loguru = "*"
 redis = "*"
-mopidyapi = "*"
+mopidyapi = ">=1.0.0"
 gunicorn = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
