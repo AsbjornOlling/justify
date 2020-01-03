@@ -161,7 +161,7 @@ def search_view():
 
     # do mopidy search for it
     logger.info(f"Searching for: {squery}")
-    tracks = mp.library.search(any=squery.split(' '))
+    tracks = mp.library.search({'any': squery.split(' ')})
 
     # put tracks in printable format
     votedlist = get_user_votedlist(session['userid'])
