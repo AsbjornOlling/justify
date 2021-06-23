@@ -119,7 +119,7 @@ def playlist_view():
                            imageurl=coverart(current.uri))
 
 
-@bp.route('/vote/<string:songuri>', methods=['POST', 'GET'])
+@bp.route('/vote/<path:songuri>', methods=['POST', 'GET'])
 @check_user()
 def vote_view(songuri: str):
     """ Voting. """
