@@ -5,14 +5,18 @@ from functools import wraps
 # deps
 from loguru import logger
 from flask import (
+    abort,
+    current_app,
     Blueprint,
     request,
     render_template,
     redirect,
     url_for,
+    Response,
     session,
     g
 )
+import requests
 
 # app imports
 from .votelist import vote
@@ -119,13 +123,20 @@ def playlist_view():
                            imageurl=coverart(current.uri))
 
 
-@bp.route('/vote/<path:songuri>', methods=['POST', 'GET'])
+@bp.route('/vote', methods=['POST', 'GET'])
 @check_user()
-def vote_view(songuri: str):
+def vote_view():
     """ Voting. """
     if request.method == 'GET':
         # if user somehow ends up issuing a GET here, just redirect
         return redirect(url_for('web.playlist_view'))
+
+    # validate and parse form data
+    if request.method == 'POST' and not request.form.get("songuri"):
+        errmsg = f"Missing `songuri` form input: {request.form}"
+        logger.error(errmsg)
+        abort(400, errmsg)
+    songuri = request.form["songuri"]
 
     if user_voted(songuri, uid=session['userid']):
         logger.warning(f"User already voted on: {songuri}. Disallowing vote.")
@@ -136,7 +147,9 @@ def vote_view(songuri: str):
 
         # add song to mopidy if not in tracklist already
         if str(songuri) not in [str(t.uri) for t in mp.tracklist.get_tracks()]:
-            mp.tracklist.add(uris=[songuri])
+            r = mp.tracklist.add(uris=[songuri])
+            if not r:
+                logger.error(f"Failed adding uri: {songuri}")
 
         vote(songuri)          # increment (or add) to votelist
         sync_state()           # put mopidy in order
@@ -169,3 +182,15 @@ def search_view():
 
     # render html search results
     return render_template('searchresults.tpl', tracks=ptracks)
+
+@bp.route("/local/<path:path>")
+def album_art_proxy(path: str):
+    """ Proxy album art requests through to Mopidy. """
+    url = f'http://{current_app.config["MOPIDY_HOST"]}/local/{path}'
+    r = requests.get(url)
+    if r.status_code != 200:
+        errmsg = f"Got {r.status_code} from Mopidy: /local/{path}"
+        logger.error(errmsg)
+        return r.status_code, errmsg
+
+    return Response(r.content, mimetype=r.headers.get("content-type", "image"))

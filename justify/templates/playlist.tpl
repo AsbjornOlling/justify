@@ -47,10 +47,11 @@
 
 							{# Vote button #}
 							<td class="align-middle">
-								<form action="/vote/{{ track.uri }}" method="POST">
+								<form action="/vote" method="POST">
 									<input value="{{ track.votes }}" type="submit" class="btn btn-outline-success {{ "" if track.canvote else "disabled" }}" style="vertical-align: middle;">
 										<span class="mdi mdi-thumbs-up"></span>
 									</input>
+									<input name="songuri" value="{{ track.uri }}" type="hidden"></input>
 								</form>
 							</td>
 						</tr>

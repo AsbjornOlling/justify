@@ -54,10 +54,11 @@
 						<td class="d-none d-sm-table-cell">{{ track.time }}</td>
 
 						<td> {# Add button #}
-							<form action="/vote/{{ track.uri }}" method="POST">
+							<form action="/vote" method="POST">
 								<button class="btn btn-secondary" type="submit">
 									<span class="mdi mdi-plus"></span>
 								</button> 
+								<input name="songuri" value="{{ track.uri }}" type="hidden"></input>
 							</form>
 						</td>
 					</tr>
