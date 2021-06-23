@@ -14,8 +14,7 @@ from typing import List
 
 # deps
 from loguru import logger
-from flask import redirect, url_for, session, g
-from werkzeug import abort
+from flask import redirect, url_for, session, g, abort
 
 # app imports
 from .db import get_redis

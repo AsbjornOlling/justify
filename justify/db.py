@@ -3,8 +3,7 @@
 # deps
 from loguru import logger
 from flask import current_app as app
-from flask import g
-from werkzeug import abort
+from flask import g, abort
 from redis import Redis
 from redis.exceptions import ConnectionError
 
